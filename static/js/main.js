@@ -216,3 +216,93 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(suggestionsBox, { attributes: true });
+
+// Wait for DOM to load before adding event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', async function() {
+            try {
+                // Get the Devanagari translation
+                const resp = await fetch('/api/transliterate_text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: input.value })
+                });
+                const data = await resp.json();
+                const devanagariText = data.result;
+
+                // Create a temporary iframe for printing
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                // Write content to the iframe with improved formatting
+                iframe.contentDocument.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Bihar Police Document</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+                        <style>
+                            @page {
+                                size: A4;
+                                margin: 2.54cm; /* Standard 1-inch margin */
+                            }
+                            body {
+                                font-family: 'Noto Sans Devanagari', sans-serif;
+                                margin: 0;
+                                padding: 0;
+                                font-size: 14pt;
+                                line-height: 1.6;
+                                color: #000;
+                            }
+                            .content {
+                                white-space: pre-wrap;
+                                word-wrap: break-word;
+                                padding: 0;
+                                margin: 0;
+                            }
+                            /* Preserve spaces and newlines */
+                            .content p {
+                                margin: 0;
+                                padding: 0;
+                                min-height: 1.6em;
+                            }
+                            /* Preserve multiple spaces */
+                            .content span {
+                                white-space: pre;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="content">
+                            ${devanagariText.split('\n').map(line => 
+                                `<p><span>${line}</span></p>`
+                            ).join('')}
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                iframe.contentDocument.close();
+
+                // Wait for resources to load then print
+                setTimeout(() => {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    
+                    // Cleanup
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 1000);
+                }, 500);
+
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('An error occurred while preparing the document for printing.');
+            }
+        });
+    }
+});
