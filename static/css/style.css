@@ -1,45 +1,55 @@
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    background: #f5f5f5;
+    background: #f0f2f5;
     margin: 0;
     padding: 0;
+    color: #1a1a1a;
 }
+
 #container {
-    max-width: 900px;
-    margin: 40px auto;
+    max-width: 1000px;
+    margin: 20px auto;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 32px 24px 24px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    padding: 32px;
 }
+
 .header-gov {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 24px;
-    padding-bottom: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e8e8e8;
 }
+
 .header-logo {
     display: flex;
     align-items: center;
+    gap: 20px;
 }
+
 .header-logo img {
-    height: 60px;
-    margin-right: 18px;
+    height: 80px;
 }
+
 .logo-text h1 {
-    font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-    font-size: 2em;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 2.5em;
     margin: 0;
-    color: #4A90E2;
+    color: #1a237e;
 }
+
 .logo-text p {
     margin: 0;
     color: #333;
 }
+
 .format-selector {
     margin-bottom: 18px;
 }
+
 #inputBox {
     width: 100%;
     font-size: 1.2em;
@@ -50,63 +60,72 @@ body {
     min-height: 80px;
     font-family: 'Roboto', Arial, sans-serif;
 }
+
 .editor-wrapper {
     position: relative;
     margin-bottom: 20px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+
 #hinglish-input {
     width: 100%;
-    font-size: 1.2em;
-    padding: 12px;
-    margin-top: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    min-height: 120px;
-    font-family: 'Noto Sans Devanagari', 'Roboto', Arial, sans-serif;
-    line-height: 1.5;
+    min-height: 150px;
+    padding: 16px;
+    font-size: 1.3em;
+    line-height: 1.6;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans Devanagari', 'Roboto', sans-serif;
     resize: vertical;
 }
+
 #hinglish-input:focus {
-    border-color: #4A90E2;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.1);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(74,144,226,0.1);
 }
+
 .suggestions-box {
-    position: fixed;
+    position: absolute;
     background: #fff;
-    border: 2px solid #4A90E2;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 9999;
-    width: 100%;
-    max-height: 200px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 1000;
+    width: calc(100% - 40px);
+    max-height: 250px;
     overflow-y: auto;
-    display: none;
+    margin-top: 8px;
 }
+
 .suggestion {
-    padding: 8px 16px;
+    padding: 12px 16px;
     cursor: pointer;
-    color: #333;
-    font-family: 'Noto Sans Devanagari', 'Roboto', Arial, sans-serif;
-    font-size: 1.1em;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eef2f6;
     transition: all 0.2s ease;
-    border-bottom: 1px solid #eee;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
 }
+
 .suggestion:last-child {
     border-bottom: none;
 }
+
 .suggestion:hover {
-    background: #f0f7ff;
-    color: #4A90E2;
+    background: #f8fafd;
+    color: #4a90e2;
 }
+
 .button-group {
     margin-top: 18px;
     text-align: right;
 }
+
 #exportBtn {
     background: #28a745;
     color: #fff;
@@ -117,9 +136,11 @@ body {
     cursor: pointer;
     transition: background 0.2s;
 }
+
 #exportBtn:hover {
     background: #218838;
 }
+
 .modal-overlay {
     display: none;
     position: fixed;
@@ -129,6 +150,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .modal-content {
     background: #fff;
     border-radius: 8px;
@@ -137,6 +159,7 @@ body {
     padding: 24px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.18);
 }
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -144,16 +167,19 @@ body {
     border-bottom: 1px solid #eee;
     margin-bottom: 12px;
 }
+
 .close-btn {
     background: none;
     border: none;
     font-size: 1.5em;
     cursor: pointer;
 }
+
 .modal-footer {
     text-align: right;
     margin-top: 18px;
 }
+
 .modal-btn {
     padding: 8px 18px;
     border-radius: 4px;
@@ -162,17 +188,22 @@ body {
     margin-left: 8px;
     cursor: pointer;
 }
+
 .btn-primary {
     background: #4A90E2;
     color: #fff;
 }
+
 .btn-secondary {
     background: #ccc;
     color: #222;
 }
+
 .footer-gov {
-    margin-top: 32px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e8e8e8;
     text-align: center;
-    color: #888;
+    color: #666;
     font-size: 0.95em;
 }

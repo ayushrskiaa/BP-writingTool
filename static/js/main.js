@@ -93,9 +93,24 @@ input.addEventListener('keydown', async function(e) {
     }
 });
 
+// Add click handler for the input field
+input.addEventListener('click', async function(e) {
+    const value = input.value;
+    const cursor = input.selectionStart;
+    const [start, end] = getWordBoundaries(value, cursor);
+    const word = value.slice(start, end);
+
+    if (word.trim()) {
+        const suggestions = await fetchSuggestions(word);
+        if (suggestions && suggestions.length > 0) {
+            showSuggestions(suggestions, start, end);
+        }
+    }
+});
+
 // Hide suggestions when clicking outside
 document.addEventListener('click', function(e) {
-    if (!suggestionsBox.contains(e.target)) {
+    if (!suggestionsBox.contains(e.target) && !input.contains(e.target)) {
         suggestionsBox.style.display = 'none';
     }
 });
@@ -118,6 +133,14 @@ async function fetchSuggestions(word) {
     }
 }
 
+// Update the document click handler to not hide suggestions when clicking inside the input
+document.addEventListener('click', function(e) {
+    if (!suggestionsBox.contains(e.target) && !input.contains(e.target)) {
+        suggestionsBox.style.display = 'none';
+    }
+});
+
+// Update showSuggestions to position the box near the clicked word
 function showSuggestions(suggestions, wordStart, wordEnd) {
     suggestionsBox.innerHTML = '';
     if (!suggestions || suggestions.length === 0) {
@@ -125,12 +148,16 @@ function showSuggestions(suggestions, wordStart, wordEnd) {
         return;
     }
 
-    // Position the suggestions box below the textarea
-    const pos = input.getBoundingClientRect();
+    // Get the position of the clicked word
+    const textBeforeWord = input.value.substring(0, wordStart);
+    const textWidth = getTextWidth(textBeforeWord, input);
+    const inputPos = input.getBoundingClientRect();
+    const lineHeight = parseInt(window.getComputedStyle(input).lineHeight);
+    const lines = textBeforeWord.split('\n').length - 1;
+
     suggestionsBox.style.position = 'fixed';
-    suggestionsBox.style.left = pos.left + 'px';
-    suggestionsBox.style.top = (pos.bottom + 5) + 'px'; // 5px gap below textarea
-    suggestionsBox.style.width = pos.width + 'px';
+    suggestionsBox.style.left = (inputPos.left + Math.min(textWidth, input.offsetWidth - 200)) + 'px';
+    suggestionsBox.style.top = (inputPos.top + (lines * lineHeight) + lineHeight + 5) + 'px';
     
     suggestions.forEach((suggestion) => {
         const div = document.createElement('div');
@@ -146,6 +173,16 @@ function showSuggestions(suggestions, wordStart, wordEnd) {
     });
     
     suggestionsBox.style.display = 'block';
+}
+
+// Helper function to calculate text width
+function getTextWidth(text, element) {
+    const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+    const context = canvas.getContext('2d');
+    const font = window.getComputedStyle(element, null).getPropertyValue('font');
+    context.font = font;
+    const metrics = context.measureText(text);
+    return metrics.width;
 }
 
 // Ensure suggestions don't go off-screen
