@@ -5,6 +5,8 @@ const suggestionsBox = document.getElementById('suggestions');
 let prefetchCache = {};
 let lastTranslation = '';
 
+const STORAGE_KEY = 'biharPolice_autosave';
+
 function getCaretPosition(input) {
     // Get the bounding rectangle of the textarea
     const rect = input.getBoundingClientRect();
@@ -62,6 +64,10 @@ input.addEventListener('input', function() {
     } else {
         suggestionsBox.style.display = 'none';
     }
+
+    // Add auto-save
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(saveToLocalStorage, AUTOSAVE_DELAY);
 });
 
 input.addEventListener('keydown', async function(e) {
@@ -305,4 +311,50 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Restore saved content
+    restoreSavedContent();
 });
+
+let autoSaveTimer;
+const AUTOSAVE_DELAY = 1000; // Save after 1 second of inactivity
+
+// Auto-save functionality
+function saveToLocalStorage() {
+    const contentToSave = {
+        mainInput: input.value,
+        timestamp: new Date().getTime()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(contentToSave));
+}
+
+// Restore saved content
+function restoreSavedContent() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const { mainInput, timestamp } = JSON.parse(saved);
+            input.value = mainInput;
+            
+            // Show restoration message
+            const timeDiff = Math.round((new Date().getTime() - timestamp) / 60000);
+            const message = `पिछला कार्य पुनर्स्थापित किया गया (${timeDiff} मिनट पहले का)`;
+            showRestoreMessage(message);
+        }
+    } catch (error) {
+        console.error('Error restoring saved content:', error);
+    }
+}
+
+// Show restore message
+function showRestoreMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'restore-message';
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.classList.add('fade-out');
+        setTimeout(() => document.body.removeChild(messageDiv), 500);
+    }, 3000);
+}
