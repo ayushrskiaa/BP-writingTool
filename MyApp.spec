@@ -12,7 +12,11 @@ a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('templates', 'templates'),  # Include Flask templates
+        ('static', 'static'),       # Include static files
+        (model_data),              # Include hindi_xlit model data
+    ],
     hiddenimports=['flask', 'werkzeug', 'tkinter'],
     hookspath=['.'],
     hooksconfig={},

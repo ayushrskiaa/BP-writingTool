@@ -13,6 +13,17 @@ import queue
 import socket
 from hindi_xlit import HindiTransliterator
 
+# Get the application path - works both in dev and PyInstaller bundle
+def get_app_path():
+    if getattr(sys, 'frozen', False):
+        # If the application is run as a bundle (PyInstaller)
+        return sys._MEIPASS
+    else:
+        # If run from Python interpreter
+        return os.path.dirname(os.path.abspath(__file__))
+
+# Initialize hindi_xlit with proper model path
+app_path = get_app_path()
 transliterator = HindiTransliterator()
 
 # Cache for transliterations
@@ -46,8 +57,12 @@ logger.info("=" * 50)
 logger.info("Application Starting")
 logger.info(f"Python executable: {sys.executable}")
 logger.info(f"Working directory: {os.getcwd()}")
+logger.info(f"Application path: {app_path}")
 
-app = Flask(__name__)
+# Initialize Flask app with correct template and static folders
+app = Flask(__name__, 
+           template_folder=os.path.join(app_path, 'templates'),
+           static_folder=os.path.join(app_path, 'static'))
 
 def check_port_available(port):
     try:
