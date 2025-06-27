@@ -57,37 +57,40 @@ body {
     margin-top: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    min-height: 80px;
+    min-height: 70px;
     font-family: 'Roboto', Arial, sans-serif;
 }
 
 .editor-wrapper {
     position: relative;
-    margin-bottom: 20px;
     background: #fff;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: 70%;
+    height: calc(100vh - 85px); /* Increased margin to account for header + padding */
+    margin: 55px auto 20px; /* Added bottom margin */
+    box-sizing: border-box; /* Add this to include padding in width calculation */
+    overflow: visible; /* Add this to prevent content from overflowing */
 }
 
 #hinglish-input {
     width: 100%;
-    min-height: 150px;
-    padding: 16px;
-    font-size: 1.3em;
-    line-height: 1.6;
-    border: 2px solid #e0e0e0;
+    height: 100%;
+    padding: 20px;
+    border: 1px solid var(--brand-color-1);
     border-radius: 8px;
-    background: #fff;
-    transition: all 0.3s ease;
-    font-family: 'Noto Sans Devanagari', 'Roboto', sans-serif;
-    resize: vertical;
+    font-size: 16px;
+    line-height: 1.5;
+    resize: none;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    box-sizing: border-box; /* Add this to include padding in width calculation */
 }
 
 #hinglish-input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74,144,226,0.1);
     outline: none;
+    border-color: var(--brand-color-1);
+    box-shadow: 0 0 0 2px rgba(5, 35, 97, 0.1);
 }
 
 .suggestions-box {
@@ -97,7 +100,7 @@ body {
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     z-index: 1000;
-    max-height: 200px;
+    /* max-height: 200px; */
     overflow-y: auto;
     padding: 4px 0;
 }
@@ -138,6 +141,251 @@ body {
 
 #exportBtn:hover {
     background: #218838;
+}
+
+/* Header Styles */
+.header-frame {
+    background-color: var(--brand-color-2);
+    width: 100%;
+    height: 45px; /* Reduced height */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1728px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* Switch Button Styles */
+.switch-wrapper {
+    margin-right: 20px;
+}
+
+.switch-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--brand-color-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.switch-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Template Filter Styles */
+.template-filter-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 36px; /* Reduced height */
+}
+
+.template-filter {
+    height: 36px; /* Reduced height */
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Language Toggle */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.lang-text {
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 55px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.toggle-switch label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #e0e0e0;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.toggle-switch label:after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background: #fff;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked + label {
+    background: var(--brand-color-1);
+}
+
+.toggle-switch input:checked + label:after {
+    left: calc(100% - 26px);
+}
+
+/* Preview Text */
+.preview-text {
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 24px;
+    color: var(--brand-color-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+/* Action Buttons Styles */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 36px; /* Reduced height */
+}
+
+.action-btn {
+    height: 36px; /* Reduced height */
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Action Buttons */
+.action-btn i {
+    font-size: 18px;
+}
+
+.action-btn span {
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.save-btn {
+    color: #000000;
+}
+
+.export-btn {
+    color: var(--brand-color-1);
+}
+
+/* Hover effects */
+.template-filter:hover,
+.action-btn:hover {
+    background-color: rgba(5, 35, 97, 0.05);
+}
+
+/* Add these CSS variables if not already present */
+:root {
+    --brand-color-1: rgba(5, 35, 97, 1);
+    --brand-color-2: rgba(224, 202, 64, 1);
+}
+
+/* Filename Input Styles */
+.filename-wrapper {
+    height: 36px; /* Reduced height */
+}
+
+.filename-input {
+    height: 36px; /* Reduced height */
+    width: 180px;
+    padding: 0 12px;
+    border: 1px solid var(--brand-color-1);
+    border-radius: 8px;
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 16px;
+    color: var(--brand-color-1);
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.filename-input:focus {
+    outline: none;
+    border-color: var(--brand-color-1);
+    box-shadow: 0 0 0 2px rgba(5, 35, 97, 0.1);
+}
+
+.filename-input::placeholder {
+    color: rgba(5, 35, 97, 0.5);
+}
+
+/* New File Modal Styles */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .header-content {
+        padding: 0 20px;
+    }
+    
+    .filename-wrapper {
+        width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filename-input {
+        width: 120px;
+    }
+    
+    .action-btn span {
+        display: none;
+    }
 }
 
 /* Preview Modal Styles */

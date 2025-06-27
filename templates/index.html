@@ -2,40 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bihar Police - Hinglish to Devanagari Converter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bihar Police - Hinglish to Devanagari Converter</title>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div id="container">
-        <div class="header-gov">
-            <div class="header-logo">
-                <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo" title="Bihar Police">
-                <div class="logo-text">
-                    <h1>बिहार पुलिस</h1>
-                    <p>Bihar Police</p>
-                    <p>Government of Bihar</p>
+    <header class="header-frame">
+        <div class="header-content">
+            <!-- Left section -->
+            <div class="header-left">
+                <!-- Switch Button -->
+                <div class="switch-wrapper">
+                    <button class="switch-btn">
+                        <i class="fas fa-toggle-on"></i>
+                    </button>
+                </div>
+
+                <!-- Template Controls -->
+                <div class="template-filter-wrapper">
+                    <div class="template-filter">
+                        <i class="fas fa-chevron-down"></i>
+                        <span class="filter-text">Letter</span>
+                    </div>
+                    <button class="add-template-btn">
+                        <div class="plus-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right section -->
+            <div class="header-right">
+                <div class="filename-wrapper">
+                    <input type="text" class="filename-input" placeholder="Enter file name...">
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn save-btn" id="saveBtn">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Save</span>
+                    </button>
+                    <button class="action-btn export-btn" id="exportBtn">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export</span>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="main-content">
-            <div class="editor-wrapper">
-                <label for="hinglish-input" style="font-weight:600;">Hinglish Input (Devanagari output will appear as you type):</label>
-                <textarea id="hinglish-input" autocomplete="off" autofocus placeholder="यहाँ Hinglish में टाइप करें..."></textarea>
+    </header>
+
+    <!-- Add this after the header section -->
+    <div class="modal-overlay" id="newFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New File</h3>
+                <button class="close-btn" id="closeNewFile">&times;</button>
             </div>
-            <div id="suggestions" class="suggestions-box"></div>
-            <!-- Add export button -->
-            <div class="button-group">
-                <button id="export-btn" class="action-btn">
-                    <span>निर्यात करें (Export)</span>
-                </button>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="newFileName">File Name:</label>
+                    <input type="text" id="newFileName" placeholder="Enter file name...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelNewFile" class="modal-btn btn-secondary">Cancel</button>
+                <button id="createNewFile" class="modal-btn btn-primary">Create</button>
             </div>
         </div>
-        <div class="footer-gov">
-            <p>© Bihar Police Department | Government of Bihar</p>
-            <p>Last Updated: {{ current_date }}</p>
+    </div>
+
+    <div class="main-content">
+        <div class="editor-wrapper">
+            <!-- <label for="hinglish-input" style="font-weight:600;">Hinglish Input (Devanagari output will appear as you type):</label> -->
+            <textarea id="hinglish-input" 
+                      placeholder="यहाँ Hinglish में टाइप करें..."
+                      autocomplete="off" 
+                      autofocus></textarea>
+            <div id="suggestions" class="suggestions-box"></div>
         </div>
     </div>
     <div class="modal-overlay" id="previewModal">

@@ -225,95 +225,107 @@ observer.observe(suggestionsBox, { attributes: true });
 
 // Wait for DOM to load before adding event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    const exportBtn = document.getElementById('export-btn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', async function() {
-            try {
-                // Get the Devanagari translation
-                const resp = await fetch('/api/transliterate_text', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: input.value })
-                });
-                const data = await resp.json();
-                const devanagariText = data.result;
+    const addTemplateBtn = document.querySelector('.add-template-btn');
+    const newFileModal = document.getElementById('newFileModal');
+    const closeNewFile = document.getElementById('closeNewFile');
+    const cancelNewFile = document.getElementById('cancelNewFile');
+    const createNewFile = document.getElementById('createNewFile');
+    const newFileName = document.getElementById('newFileName');
+    const filenameInput = document.querySelector('.filename-input');
+    const exportBtn = document.getElementById('exportBtn');
 
-                // Create a temporary iframe for printing
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
+    // Add template button click handler
+    addTemplateBtn.addEventListener('click', function() {
+        newFileModal.style.display = 'block';
+        newFileName.focus();
+    });
+
+    // Close modal handlers
+    [closeNewFile, cancelNewFile].forEach(btn => {
+        btn.addEventListener('click', function() {
+            newFileModal.style.display = 'none';
+            newFileName.value = '';
+        });
+    });
+
+    // Create new file handler
+    createNewFile.addEventListener('click', function() {
+        const fileName = newFileName.value.trim();
+        if (fileName) {
+            filenameInput.value = fileName;
+            newFileModal.style.display = 'none';
+            document.getElementById('hinglish-input').value = ''; // Clear existing content
+            document.getElementById('hinglish-input').focus();
+        }
+    });
+
+    // Update the export button handler
+    exportBtn.addEventListener('click', async function() {
+        try {
+            const content = document.getElementById('hinglish-input').value;
+            
+            // Get the transliterated text
+            const resp = await fetch('/api/transliterate_text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: content })
+            });
+            
+            const data = await resp.json();
+            if (data.result) {
+                // Create a print window
+                const printWindow = window.open('', '_blank');
                 
-                // Write content to the iframe with improved formatting
-                iframe.contentDocument.write(`
+                // Add the content with proper styling
+                printWindow.document.write(`
                     <!DOCTYPE html>
                     <html>
                     <head>
                         <meta charset="UTF-8">
-                        <title>Bihar Police Document</title>
-                        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+                        <title>Print Document</title>
                         <style>
-                            @page {
+                            @page { 
                                 size: A4;
-                                margin: 2.54cm; /* Standard 1-inch margin */
+                                margin: 2.54cm;
                             }
                             body {
                                 font-family: 'Noto Sans Devanagari', sans-serif;
-                                margin: 0;
-                                padding: 0;
-                                font-size: 14pt;
-                                line-height: 1.6;
-                                color: #000;
-                            }
-                            .content {
+                                font-size: 14px;
+                                line-height: 1.5;
                                 white-space: pre-wrap;
-                                word-wrap: break-word;
-                                padding: 0;
-                                margin: 0;
-                            }
-                            /* Preserve spaces and newlines */
-                            .content p {
-                                margin: 0;
-                                padding: 0;
-                                min-height: 1.6em;
-                            }
-                            /* Preserve multiple spaces */
-                            .content span {
-                                white-space: pre;
                             }
                         </style>
                     </head>
                     <body>
-                        <div class="content">
-                            ${devanagariText.split('\n').map(line => 
-                                `<p><span>${line}</span></p>`
-                            ).join('')}
-                        </div>
+                        ${data.result}
                     </body>
                     </html>
                 `);
                 
-                iframe.contentDocument.close();
+                printWindow.document.close();
 
                 // Wait for resources to load then print
-                setTimeout(() => {
-                    iframe.contentWindow.focus();
-                    iframe.contentWindow.print();
-                    
-                    // Cleanup
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                    }, 1000);
-                }, 500);
-
-            } catch (error) {
-                console.error('Export error:', error);
-                alert('An error occurred while preparing the document for printing.');
+                printWindow.onload = function() {
+                    printWindow.print();
+                    // Close the print window after printing
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
+                };
             }
-        });
-    }
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('An error occurred while exporting.');
+        }
+    });
 
-    // Restore saved content
-    restoreSavedContent();
+    // Close modals when clicking outside
+    window.addEventListener('click', function(e) {
+        if (e.target === newFileModal) {
+            newFileModal.style.display = 'none';
+            newFileName.value = '';
+        }
+    });
 });
 
 let autoSaveTimer;
