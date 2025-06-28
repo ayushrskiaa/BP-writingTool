@@ -18,7 +18,7 @@
                 <!-- Switch Button -->
                 <div class="switch-wrapper">
                     <button class="switch-btn">
-                        <i class="fas fa-toggle-on"></i>
+                        <img src="{{ url_for('static', filename='images/switch.png') }}" alt="Switch" class="switch-icon">
                     </button>
                 </div>
 
@@ -100,6 +100,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Add this sidebar code -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-header">
+                <h3>History</h3>
+            </div>
+            <div class="template-list">
+                <div class="template-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>General Letter</span>
+                </div>
+                <div class="template-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Official Notice</span>
+                </div>
+                <div class="template-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Report</span>
+                </div>
+                <!-- Add more template items as needed -->
+            </div>
+            
+            <!-- Add this language toggle section -->
+            <div class="sidebar-footer">
+                <div class="language-toggle">
+                    <span class="lang-text">Hinglish</span>
+                    <button class="lang-toggle-btn">
+                        <i class="fas fa-toggle-on"></i>
+                    </button>
+                    <span class="lang-text">हिंदी</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

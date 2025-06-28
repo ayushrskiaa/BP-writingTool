@@ -326,6 +326,58 @@ document.addEventListener('DOMContentLoaded', function() {
             newFileName.value = '';
         }
     });
+
+    const switchBtn = document.querySelector('.switch-btn');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.main-content');
+    let isToggled = false;
+
+    switchBtn.addEventListener('click', function() {
+        isToggled = !isToggled;
+        this.classList.toggle('active');
+        sidebar.classList.toggle('open');
+        mainContent.classList.toggle('shifted');
+        
+        // Rotate switch icon when sidebar is open
+        const switchIcon = this.querySelector('.switch-icon');
+        switchIcon.style.transform = isToggled ? 'rotate(180deg)' : 'rotate(0)';
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(e) {
+        if (isToggled && 
+            !sidebar.contains(e.target) && 
+            !switchBtn.contains(e.target)) {
+            isToggled = false;
+            switchBtn.classList.remove('active');
+            sidebar.classList.remove('open');
+            mainContent.classList.remove('shifted');
+            switchBtn.querySelector('.switch-icon').style.transform = 'rotate(0)';
+        }
+    });
+
+    // Language toggle functionality
+    const langToggleBtn = document.querySelector('.lang-toggle-btn');
+    let isHindi = false;
+
+    langToggleBtn.addEventListener('click', function() {
+        isHindi = !isHindi;
+        this.classList.toggle('active');
+        
+        // Toggle the icon
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-toggle-on');
+        icon.classList.toggle('fa-toggle-off');
+        
+        // Add your language switch logic here
+        console.log('Language switched to:', isHindi ? 'हिंदी' : 'Hinglish');
+        
+        // Update textarea placeholder based on language
+        const textarea = document.getElementById('hinglish-input');
+        textarea.placeholder = isHindi ? 
+            "यहाँ हिंदी में टाइप करें..." : 
+            "यहाँ Hinglish में टाइप करें...";
+    });
 });
 
 let autoSaveTimer;
