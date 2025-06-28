@@ -523,6 +523,16 @@ document.addEventListener('DOMContentLoaded', function() {
         newFileName.value = '';
         newFileName.focus();
     });
+
+    function updateLogoBg() {
+        if (input.value.trim() === '') {
+            input.classList.add('bg-logo');
+        } else {
+            input.classList.remove('bg-logo');
+        }
+    }
+    updateLogoBg();
+    input.addEventListener('input', updateLogoBg);
 });
 
 let autoSaveTimer;

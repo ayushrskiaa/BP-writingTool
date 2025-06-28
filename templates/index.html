@@ -13,8 +13,12 @@
 <body>
     <header class="header-frame">
         <div class="header-content">
-            <!-- Left section -->
             <div class="header-left">
+                <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo" class="bihar-police-logo-header">
+                <div class="bihar-police-title">
+                    <span class="bihar-police-hindi">बिहार पुलिस</span>
+                    <span class="bihar-police-english">Bihar Police</span>
+                </div>
                 <!-- Switch Button -->
                 <div class="switch-wrapper">
                     <button class="switch-btn">
@@ -152,15 +156,20 @@
             <!-- Keep the language toggle section -->
             <div class="sidebar-footer">
                 <div class="language-toggle">
-                    <span class="lang-text">Hinglish</span>
+                    <span class="lang-text">हिंदी</span>
                     <button class="lang-toggle-btn">
                         <i class="fas fa-toggle-on"></i>
                     </button>
-                    <span class="lang-text">हिंदी</span>
+                    <span class="lang-text">Hinglish</span>
                 </div>
             </div>
         </div>
     </div>
+
+    <footer class="footer-bihar-police">
+        <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo" class="bihar-police-logo-footer">
+        <span>Powered by Bihar Police</span>
+    </footer>
 
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
