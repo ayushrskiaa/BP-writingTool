@@ -231,14 +231,153 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelNewFile = document.getElementById('cancelNewFile');
     const createNewFile = document.getElementById('createNewFile');
     const newFileName = document.getElementById('newFileName');
-    const filenameInput = document.querySelector('.filename-input');
     const exportBtn = document.getElementById('exportBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const filenameInput = document.querySelector('.filename-input');
+    const historyList = document.querySelector('.history-list');
 
-    // Add template button click handler
-    addTemplateBtn.addEventListener('click', function() {
-        newFileModal.style.display = 'block';
-        newFileName.focus();
+    // Helper to get today's date string
+    function getDateString(date) {
+        const today = new Date();
+        if (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+        ) return 'Today';
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        if (
+            date.getDate() === yesterday.getDate() &&
+            date.getMonth() === yesterday.getMonth() &&
+            date.getFullYear() === yesterday.getFullYear()
+        ) return 'Yesterday';
+        return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Save document to localStorage
+    saveBtn.addEventListener('click', function() {
+        const filename = filenameInput.value.trim() || 'Untitled';
+        const content = input.value.trim();
+        if (!content) return alert('Cannot save empty document!');
+        const now = new Date();
+        let history = JSON.parse(localStorage.getItem('historyDocs') || '[]');
+
+        // Check if editing an existing doc (by filename)
+        let existingDoc = history.find(doc => doc.filename === filename);
+
+        if (existingDoc) {
+            // Update only content, lastUpdate, and time
+            existingDoc.content = content;
+            existingDoc.lastUpdate = now.toISOString();
+            existingDoc.time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            // Do NOT update existingDoc.date!
+            showNotification('Document updated successfully!');
+        } else {
+            // New doc
+            const doc = {
+                id: Date.now(),
+                filename,
+                content,
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: now.toISOString(),
+                lastUpdate: now.toISOString()
+            };
+            history.unshift(doc); // Add to top
+            showNotification('Document saved successfully!');
+        }
+
+        localStorage.setItem('historyDocs', JSON.stringify(history));
+        renderHistory();
     });
+
+    // Render history in sidebar
+    function renderHistory() {
+        let history = JSON.parse(localStorage.getItem('historyDocs') || '[]');
+        // Group by date
+        const groups = {};
+        history.forEach(doc => {
+            const dateKey = getDateString(new Date(doc.date));
+            if (!groups[dateKey]) groups[dateKey] = [];
+            groups[dateKey].push(doc);
+        });
+
+        historyList.innerHTML = '';
+        Object.keys(groups).forEach(dateKey => {
+            // Create group container
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'history-date-group';
+
+            // Create collapsible header
+            const header = document.createElement('div');
+            header.className = 'date-header collapsible-header';
+            header.innerHTML = `<span class="collapse-arrow">&#9660;</span> ${dateKey}`;
+            groupDiv.appendChild(header);
+
+            // Create items container
+            const itemsContainer = document.createElement('div');
+            itemsContainer.className = 'history-items-container';
+
+            groups[dateKey].forEach(doc => {
+                const firstLine = doc.content.split('\n')[0].slice(0, 40);
+                const created = new Date(doc.date);
+                const createdStr = `${created.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })} ${created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                let lastUpdateStr = '';
+                if (doc.lastUpdate && doc.lastUpdate !== doc.date) {
+                    const lastUpdate = new Date(doc.lastUpdate);
+                    lastUpdateStr = `<span class="history-item-lastupdate" style="color:#999;font-size:11px;">Last update: ${lastUpdate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })} ${lastUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
+                }
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <i class="fas fa-file-alt"></i>
+                    <div class="history-item-details">
+                        <span class="history-item-name">${doc.filename}</span>
+                        <span class="history-item-time">Created: ${createdStr}</span>
+                        <span class="history-item-preview">${firstLine}</span>
+                        ${lastUpdateStr}
+                    </div>
+                    <button class="history-delete-btn" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                // Click to load document
+                item.querySelector('.history-item-details').onclick = () => {
+                    filenameInput.value = doc.filename;
+                    input.value = doc.content;
+                };
+                // Click to delete document
+                item.querySelector('.history-delete-btn').onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm('Are you sure you want to delete this file?')) {
+                        // Remove from history and update storage
+                        history = history.filter(d => d.id !== doc.id);
+                        localStorage.setItem('historyDocs', JSON.stringify(history));
+                        renderHistory();
+                        showNotification('Document deleted.');
+                    }
+                };
+                itemsContainer.appendChild(item);
+            });
+
+            groupDiv.appendChild(itemsContainer);
+
+            // Collapse/expand logic
+            header.addEventListener('click', function() {
+                itemsContainer.classList.toggle('collapsed');
+                const arrow = header.querySelector('.collapse-arrow');
+                if (itemsContainer.classList.contains('collapsed')) {
+                    arrow.innerHTML = '&#9654;'; // right arrow
+                } else {
+                    arrow.innerHTML = '&#9660;'; // down arrow
+                }
+            });
+
+            historyList.appendChild(groupDiv);
+        });
+    }
+
+    // Initial render
+    renderHistory();
 
     // Close modal handlers
     [closeNewFile, cancelNewFile].forEach(btn => {
@@ -378,6 +517,12 @@ document.addEventListener('DOMContentLoaded', function() {
             "यहाँ हिंदी में टाइप करें..." : 
             "यहाँ Hinglish में टाइप करें...";
     });
+
+    addTemplateBtn.addEventListener('click', function() {
+        newFileModal.style.display = 'block';
+        newFileName.value = '';
+        newFileName.focus();
+    });
 });
 
 let autoSaveTimer;
@@ -403,22 +548,22 @@ function restoreSavedContent() {
             // Show restoration message
             const timeDiff = Math.round((new Date().getTime() - timestamp) / 60000);
             const message = `पिछला कार्य पुनर्स्थापित किया गया (${timeDiff} मिनट पहले का)`;
-            showRestoreMessage(message);
+            showNotification(message);
         }
     } catch (error) {
         console.error('Error restoring saved content:', error);
     }
 }
 
-// Show restore message
-function showRestoreMessage(message) {
+// Show notification message
+function showNotification(message) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'restore-message';
     messageDiv.textContent = message;
     document.body.appendChild(messageDiv);
-    
+
     setTimeout(() => {
         messageDiv.classList.add('fade-out');
         setTimeout(() => document.body.removeChild(messageDiv), 500);
-    }, 3000);
+    }, 2000);
 }

@@ -129,18 +129,19 @@ body {
 }
 
 #exportBtn {
-    background: #28a745;
-    color: #fff;
-    border: none;
+    background: #fff;           /* Change from green to white */
+    color: var(--brand-color-1);/* Use your brand color for text/icon */
+    border: 1px solid var(--brand-color-1); /* Optional: add border for visibility */
     border-radius: 4px;
     padding: 8px 18px;
     font-size: 1em;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
 }
 
 #exportBtn:hover {
-    background: #218838;
+    background: #f0f2f5;        /* Light background on hover */
+    color: var(--brand-color-1);
 }
 
 /* Header Styles */
@@ -164,7 +165,20 @@ body {
     margin: 0 auto;
     padding: 0 16px;
 }
-
+/* .plus-icon{
+    
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.1);
+} */
+.add-template-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 .header-left, .header-right {
     display: flex;
     align-items: center;
@@ -215,6 +229,9 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    border: 1px black solid;
+    border-radius: 8px;
+
 }
 
 /* Language Toggle */
@@ -285,10 +302,12 @@ body {
 
 .save-btn {
     color: #000000;
+    border-radius: 8px;
 }
 
 .export-btn {
-    color: var(--brand-color-1);
+    color: #000000;
+    border-radius: 8px;
 }
 
 /* Hover effects */
@@ -430,7 +449,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 60%;
+    width: 70%;
     margin-top: 370px;
 }
 
@@ -552,6 +571,131 @@ body {
 
 .restore-message.fade-out {
     opacity: 0;
+}
+
+/* History List Styles */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.history-date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.date-header {
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 13px;
+    color: #666;
+    padding: 0 12px;
+    margin-bottom: 4px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.history-item:hover {
+    background-color: rgba(5, 35, 97, 0.05);
+}
+
+.history-item i {
+    color: var(--brand-color-1);
+    font-size: 16px;
+    min-width: 16px;
+}
+
+.history-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.history-item-name {
+    color: var(--brand-color-1);
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item-time {
+    color: #666;
+    font-family: "Roboto", Helvetica;
+    font-size: 12px;
+}
+
+.history-item-preview {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    gap: 6px;
+}
+
+.collapse-arrow {
+    font-size: 14px;
+    transition: transform 0.2s;
+    display: inline-block;
+    width: 18px;
+    text-align: center;
+}
+
+.history-items-container.collapsed {
+    display: none;
+}
+
+.history-delete-btn {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.history-delete-btn:hover {
+    color: #a62828;
+}
+
+.main-content {
+    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+    margin-left: 0;
+}
+
+.main-content.shifted {
+    margin-left: 300px; /* Match the sidebar width */
 }
 
 @media print {
