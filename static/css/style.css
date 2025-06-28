@@ -754,6 +754,28 @@ body {
     letter-spacing: 0.5px;
 }
 
+.history-item-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: 8px;
+}
+.history-item-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1em;
+    padding: 2px 4px;
+    transition: color 0.2s;
+}
+.history-item-actions button:hover {
+    color: #e74c3c;
+}
+.edit-btn:hover {
+    color: #4a90e2;
+}
+
 @media print {
     .modal-overlay {
         position: static;

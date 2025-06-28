@@ -12,6 +12,7 @@ from werkzeug.serving import make_server
 import queue
 import socket
 from hindi_xlit import HindiTransliterator
+from tinydb import TinyDB, Query
 
 # Get the application path - works both in dev and PyInstaller bundle
 def get_app_path():
@@ -63,6 +64,10 @@ logger.info(f"Application path: {app_path}")
 app = Flask(__name__, 
            template_folder=os.path.join(app_path, 'templates'),
            static_folder=os.path.join(app_path, 'static'))
+
+# Initialize TinyDB
+db = TinyDB('db.json')
+Document = Query()
 
 def check_port_available(port):
     try:
@@ -327,6 +332,32 @@ def api_transliterate_text():
         result = result[0] if result else ''  # Take first suggestion if multiple
     
     return jsonify({'result': result})
+
+@app.route('/api/save_document', methods=['POST'])
+def save_document():
+    data = request.get_json()
+    filename = data.get('filename')
+    content = data.get('content')
+    now = datetime.now().isoformat()
+    # Check if document exists
+    existing = db.get(Document.filename == filename)
+    if existing:
+        db.update({'content': content, 'updated_at': now}, Document.filename == filename)
+    else:
+        db.insert({'filename': filename, 'content': content, 'created_at': now, 'updated_at': now})
+    return jsonify({'success': True})
+
+@app.route('/api/delete_document', methods=['POST'])
+def delete_document():
+    data = request.get_json()
+    filename = data.get('filename')
+    db.remove(Document.filename == filename)
+    return jsonify({'success': True})
+
+@app.route('/api/get_documents', methods=['GET'])
+def get_documents():
+    docs = db.all()
+    return jsonify({'documents': docs})
 
 if __name__ == '__main__':
     gui = FlaskAppGUI()

@@ -255,77 +255,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Save document to localStorage
-    saveBtn.addEventListener('click', function() {
+    saveBtn.addEventListener('click', async function() {
         const filename = filenameInput.value.trim() || 'Untitled';
         const content = input.value.trim();
         if (!content) return alert('Cannot save empty document!');
-        const now = new Date();
-        let history = JSON.parse(localStorage.getItem('historyDocs') || '[]');
 
-        // Check if editing an existing doc (by filename)
-        let existingDoc = history.find(doc => doc.filename === filename);
-
-        if (existingDoc) {
-            // Update only content, lastUpdate, and time
-            existingDoc.content = content;
-            existingDoc.lastUpdate = now.toISOString();
-            existingDoc.time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            // Do NOT update existingDoc.date!
-            showNotification('Document updated successfully!');
-        } else {
-            // New doc
-            const doc = {
-                id: Date.now(),
-                filename,
-                content,
-                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                date: now.toISOString(),
-                lastUpdate: now.toISOString()
-            };
-            history.unshift(doc); // Add to top
-            showNotification('Document saved successfully!');
+        try {
+            const resp = await fetch('/api/save_document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename, content })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                showNotification('Document saved to server!');
+                // Optionally refresh history from server
+                await loadHistoryFromServer();
+            } else {
+                alert('Save failed: ' + (data.error || 'Unknown error'));
+            }
+        } catch (err) {
+            alert('Failed to save document: ' + err);
         }
-
-        localStorage.setItem('historyDocs', JSON.stringify(history));
-        renderHistory();
     });
 
     // Render history in sidebar
-    function renderHistory() {
-        let history = JSON.parse(localStorage.getItem('historyDocs') || '[]');
+    function renderHistory(docs = []) {
         // Group by date
         const groups = {};
-        history.forEach(doc => {
-            const dateKey = getDateString(new Date(doc.date));
+        docs.forEach(doc => {
+            const dateObj = new Date(doc.created_at || doc.timestamp || doc.date || Date.now());
+            const dateKey = getDateString(dateObj);
             if (!groups[dateKey]) groups[dateKey] = [];
-            groups[dateKey].push(doc);
+            groups[dateKey].push({ ...doc, date: dateObj });
         });
 
         historyList.innerHTML = '';
-        Object.keys(groups).forEach(dateKey => {
-            // Create group container
+
+        // Sort date keys by latest date first
+        const sortedDateKeys = Object.keys(groups).sort((a, b) => {
+            // Parse the first doc's date in each group for sorting
+            const aDate = groups[a][0].date;
+            const bDate = groups[b][0].date;
+            return bDate - aDate; // Descending order
+        });
+
+        sortedDateKeys.forEach(dateKey => {
             const groupDiv = document.createElement('div');
             groupDiv.className = 'history-date-group';
 
-            // Create collapsible header
             const header = document.createElement('div');
             header.className = 'date-header collapsible-header';
             header.innerHTML = `<span class="collapse-arrow">&#9660;</span> ${dateKey}`;
             groupDiv.appendChild(header);
 
-            // Create items container
             const itemsContainer = document.createElement('div');
             itemsContainer.className = 'history-items-container';
 
-            groups[dateKey].forEach(doc => {
+            // Sort docs in group by created_at descending (latest first)
+            groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
                 const firstLine = doc.content.split('\n')[0].slice(0, 40);
-                const created = new Date(doc.date);
-                const createdStr = `${created.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })} ${created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                let lastUpdateStr = '';
-                if (doc.lastUpdate && doc.lastUpdate !== doc.date) {
-                    const lastUpdate = new Date(doc.lastUpdate);
-                    lastUpdateStr = `<span class="history-item-lastupdate" style="color:#999;font-size:11px;">Last update: ${lastUpdate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })} ${lastUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
-                }
+                const created = new Date(doc.created_at || doc.date || Date.now());
+                const updated = doc.updated_at ? new Date(doc.updated_at) : created;
+                const createdStr = created.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
@@ -333,51 +327,71 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="history-item-details">
                         <span class="history-item-name">${doc.filename}</span>
                         <span class="history-item-time">Created: ${createdStr}</span>
+                        <span class="history-item-time">Last update: ${updatedStr}</span>
                         <span class="history-item-preview">${firstLine}</span>
-                        ${lastUpdateStr}
                     </div>
-                    <button class="history-delete-btn" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="history-item-actions">
+                        <button class="edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
                 `;
-                // Click to load document
+
+                // Load document on click
                 item.querySelector('.history-item-details').onclick = () => {
                     filenameInput.value = doc.filename;
                     input.value = doc.content;
                 };
-                // Click to delete document
-                item.querySelector('.history-delete-btn').onclick = (e) => {
+
+                // Edit button
+                item.querySelector('.edit-btn').onclick = (e) => {
                     e.stopPropagation();
-                    if (confirm('Are you sure you want to delete this file?')) {
-                        // Remove from history and update storage
-                        history = history.filter(d => d.id !== doc.id);
-                        localStorage.setItem('historyDocs', JSON.stringify(history));
-                        renderHistory();
+                    filenameInput.value = doc.filename;
+                    input.value = doc.content;
+                    input.focus();
+                };
+
+                // Delete button
+                item.querySelector('.delete-btn').onclick = async (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete "${doc.filename}"?`)) {
+                        await fetch('/api/delete_document', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ filename: doc.filename })
+                        });
                         showNotification('Document deleted.');
+                        await loadHistoryFromServer();
                     }
                 };
+
                 itemsContainer.appendChild(item);
             });
 
             groupDiv.appendChild(itemsContainer);
 
-            // Collapse/expand logic
             header.addEventListener('click', function() {
                 itemsContainer.classList.toggle('collapsed');
                 const arrow = header.querySelector('.collapse-arrow');
-                if (itemsContainer.classList.contains('collapsed')) {
-                    arrow.innerHTML = '&#9654;'; // right arrow
-                } else {
-                    arrow.innerHTML = '&#9660;'; // down arrow
-                }
+                arrow.innerHTML = itemsContainer.classList.contains('collapsed') ? '&#9654;' : '&#9660;';
             });
 
             historyList.appendChild(groupDiv);
         });
     }
 
+    // Load history from server
+    async function loadHistoryFromServer() {
+        try {
+            const resp = await fetch('/api/get_documents');
+            const data = await resp.json();
+            renderHistory(data.documents);
+        } catch (err) {
+            console.error('Failed to load history:', err);
+        }
+    }
+
     // Initial render
-    renderHistory();
+    loadHistoryFromServer();
 
     // Close modal handlers
     [closeNewFile, cancelNewFile].forEach(btn => {
