@@ -56,7 +56,7 @@ body {
     width: 100%;
     font-size: 1.2em;
     padding: 8px;
-    margin-top: 6px;
+    margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     min-height: 70px;
@@ -71,6 +71,7 @@ body {
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     width: 70%;
+    margin-top: 10px;
     height: calc(100vh - 85px); /* Increased margin to account for header + padding */
     margin: 55px auto 20px; /* Added bottom margin */
     box-sizing: border-box; /* Add this to include padding in width calculation */
@@ -160,7 +161,7 @@ body {
     background-color: var(--brand-color-2);
     color: var(--brand-color-1);
     width: 100%;
-    height: 45px; /* Reduced height */
+    height: 60px; /* Reduced height */
     position: fixed;
     top: 0;
     left: 0;
