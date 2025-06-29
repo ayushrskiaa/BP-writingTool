@@ -33,7 +33,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='MyApp',
+    name='BP-writing tool',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
