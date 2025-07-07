@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +8,17 @@
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
     <header class="header-frame">
         <div class="header-content">
             <div class="header-left">
-                <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo" class="bihar-police-logo-header">
+                <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo"
+                    class="bihar-police-logo-header">
                 <div class="bihar-police-title">
                     <span class="bihar-police-hindi">बिहार पुलिस</span>
                     <span class="bihar-police-english">Bihar Police</span>
@@ -22,15 +26,20 @@
                 <!-- Switch Button -->
                 <div class="switch-wrapper">
                     <button class="switch-btn">
-                        <img src="{{ url_for('static', filename='images/switch.png') }}" alt="Switch" class="switch-icon">
+                        <img src="{{ url_for('static', filename='images/switch.png') }}" alt="Switch"
+                            class="switch-icon">
                     </button>
                 </div>
 
                 <!-- Template Controls -->
                 <div class="template-filter-wrapper">
-                    <div class="template-filter">
+                    <div class="template-filter" id="templateDropdown">
                         <i class="fas fa-chevron-down"></i>
                         <span class="filter-text">Letter</span>
+                        <div class="dropdown-content">
+                            <a href="#" data-template="letter">Letter</a>
+                            <a href="#" data-template="diary">Diary</a>
+                        </div>
                     </div>
                     <button class="add-template-btn">
                         <div class="plus-icon">
@@ -80,13 +89,82 @@
     </div>
 
     <div class="main-content">
-        <div class="editor-wrapper">
-            <!-- <label for="hinglish-input" style="font-weight:600;">Hinglish Input (Devanagari output will appear as you type):</label> -->
-            <textarea id="hinglish-input" 
-                      placeholder="यहाँ Hinglish में टाइप करें..."
-                      autocomplete="off" 
-                      autofocus></textarea>
+        <!-- Letter Editor (default) -->
+        <div class="editor-wrapper editor-letter">
+            <textarea id="hinglish-input" placeholder="यहाँ Hinglish में टाइप करें..." autocomplete="off"
+                autofocus></textarea>
             <div id="suggestions" class="suggestions-box"></div>
+        </div>
+        <!-- Diary Editor (hidden by default) -->
+        <div class="editor-wrapper editor-diary" style="display:none;">
+            <div class="format-form" id="firFormat">
+                <div id="firExportLayout" class="fir-export-layout">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            अनुसूची 47, प्रपत्र संख्या 120 अ<br>
+                            आ0 ह0 प्रपत्र संख्या 30 अ
+                        </div>
+                        <div style="text-align:right;">
+                            केस दैनिकी सं.
+                            <input class="fir-input" data-field="case_diary_no" style="width:110px;">
+                            <br>
+                            (नियम-
+                            <input class="fir-input" data-field="rule_no" style="width:110px;">
+                            )
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                        <div>
+                            <label>विशेष रिपोर्ट केस सं.</label>
+                            <input class="fir-input" data-field="special_report_no" style="width:110px; margin-right:24px;">
+                            <label>थाना</label>
+                            <input class="fir-input" data-field="thana" style="width:110px; margin-right:24px;">
+                            <label>जिला</label>
+                            <input class="fir-input" data-field="district" style="width:110px;">
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; text-align:center;">
+                        <span>बनाम</span>
+                        <input class="fir-input" data-field="against_1" style="width:110px; margin:0 8px;">
+                        <span style="margin:0 10px;">/</span>
+                        <input class="fir-input" data-field="against_2" style="width:110px; margin:0 8px;">
+                    </div>
+                    <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap:24px;">
+                        <div>
+                            <label>प्रथम इत्तिला रिपोर्ट सं.</label>
+                            <input class="fir-input" data-field="fir_number" style="width:110px;">
+                        </div>
+                        <div>
+                            <label>तिथि</label>
+                            <input class="fir-input" data-field="fir_date" type="date" style="width:110px;">
+                        </div>
+                        <div>
+                            <label>घटना की तिथि और स्थान</label>
+                            <input class="fir-input" data-field="event_date_place" style="width:110px;">
+                        </div>
+                        <div>
+                            <label>धाराः</label>
+                            <input class="fir-input" data-field="sections" style="width:110px;">
+                        </div>
+                    </div>
+                    <table class="fir-table" style="width:100%; margin-top:20px; border-collapse:collapse;">
+                        <tr>
+                            <td style="width:50%; border:1px solid #000; vertical-align:top; padding:8px;">
+                                <b>किन तिथि को (समय सहित )
+                                     कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</b>
+                                <textarea class="fir-input hinglish-input" data-field="left_box"
+                                    style="width:98%;min-height:300px;max-height:300px;resize:none;margin-top:8px;overflow-y:auto;line-height:1.5;white-space:pre-wrap;"></textarea>
+                            </td>
+                            <td style="border:1px solid #000; vertical-align:top; padding:8px;">
+                                <b>अन्वेषण का अभिलेख</b><br>
+                                <div>(01)</div>
+                                <textarea class="fir-input hinglish-input" data-field="right_box"
+                                    style="width:98%;min-height:300px;max-height:300px;resize:none;margin-top:8px;overflow-y:auto;line-height:1.5;white-space:pre-wrap;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <div class="modal-overlay" id="previewModal">
@@ -112,7 +190,7 @@
                 <h3>History</h3>
             </div>
             <div class="history-list"></div>
-            
+
             <!-- Keep the language toggle section -->
             <div class="sidebar-footer">
                 <div class="language-toggle">
@@ -125,12 +203,15 @@
             </div>
         </div>
     </div>
+    </div>
 
-    <footer class="footer-bihar-police">
-        <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo" class="bihar-police-logo-footer">
+    <footer class="footer-bihar-police">    <footer class="footer-bihar-police">
+        <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo"ilename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo"
+            class="bihar-police-logo-footer">
         <span>Powered by Bihar Police</span>
     </footer>
 
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>

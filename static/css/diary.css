@@ -1,0 +1,91 @@
+body {
+    background: #f9f6f2;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+}
+.editor-wrapper {
+    background: #fffbe7;
+    border: 2px solid #e0ca40;
+}
+#hinglish-input {
+    background: #fffde7;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 18px;
+    min-height: 400px;
+    border: 1px solid #e0ca40;
+    border-radius: 8px;
+    padding: 20px;
+}
+.header-frame, .footer-bihar-police {
+    background: #e0ca40;
+}
+.filter-text {
+    font-weight: bold;
+    color: #0a225d;
+}
+.template-filter {
+    position: relative;
+    cursor: pointer;
+}
+.template-filter .dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    top: 36px;
+    left: 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.template-filter:hover .dropdown-content {
+    display: block;
+}
+.template-filter .dropdown-content a {
+    color: #0a225d;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+}
+.template-filter .dropdown-content a:hover {
+    background: #f5f7fa;
+}
+.format-form {
+    background: #fffbe7;
+    border: 2px solid #e0ca40;
+    border-radius: 10px;
+    padding: 32px 24px;
+    margin: 32px auto;
+    max-width: 900px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.fir-input {
+    font-family: inherit;
+    font-size: 15px;
+    border: 1px solid #e0ca40;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin: 0 2px;
+    background: #fffde7;
+}
+.fir-table td {
+    background: #fff;
+}
+textarea.fir-input {
+    font-size: 15px;
+    min-height: 40px;
+    resize: vertical;
+}
+.fir-export-layout {
+    font-size: 16px;
+    color: #222;
+}
+@media (max-width: 700px) {
+    .format-form {
+        padding: 12px 2px;
+    }
+    .fir-export-layout {
+        font-size: 13px;
+    }
+}

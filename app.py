@@ -136,7 +136,7 @@ class FlaskAppGUI:
             style.configure(f'{btn_style}.TButton', 
                             background=self.colors[color], 
                             foreground='white',
-                            font=(font_family, 11, 'bold'),
+                            font=(font_family, 14, 'bold'),
                             borderwidth=0, relief='flat',
                             padding=(10, 8))
             style.map(f'{btn_style}.TButton',
@@ -358,6 +358,10 @@ def delete_document():
 def get_documents():
     docs = db.all()
     return jsonify({'documents': docs})
+
+@app.route('/diary')
+def diary():
+    return render_template('diary.html')
 
 if __name__ == '__main__':
     gui = FlaskAppGUI()

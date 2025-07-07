@@ -244,7 +244,37 @@ body {
     gap: 8px;
     border: 1px black solid;
     border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+}
 
+.template-filter .dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    top: 36px;
+    left: 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.template-filter:hover .dropdown-content {
+    display: block;
+}
+
+.template-filter .dropdown-content a {
+    color: #0a225d;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+}
+
+.template-filter .dropdown-content a:hover {
+    background: #f5f7fa;
 }
 
 /* Language Toggle */
@@ -774,6 +804,20 @@ body {
 }
 .edit-btn:hover {
     color: #4a90e2;
+}
+
+.editor-diary {
+    background: #fffbe7;
+    border: 2px solid #e0ca40;
+}
+#diary-input {
+    background: #fffde7;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 18px;
+    min-height: 400px;
+    border: 1px solid #e0ca40;
+    border-radius: 8px;
+    padding: 20px;
 }
 
 @media print {
