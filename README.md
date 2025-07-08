@@ -2,7 +2,7 @@
 **BP Writing Tool** is a modern, cross-platform desktop application that makes writing in Hindi (Devanagari script) fast, accurate, and accessible. Simply type in Hinglish (Romanized Hindi), and the tool instantly transliterates your text into Hindi script using advanced language models. Whether you're a student, teacher, professional, or content creator, BP Writing Tool helps you write, organize, and export Hindi documents with ease—all while keeping your data private and offline.
 
 ---
-![alt text](image.png)
+![alt text](doc/image.png)
 
 ## ℹ️ What is Bihar Police Writing Tool?
 
