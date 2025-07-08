@@ -11,7 +11,7 @@ from flask import Flask, render_template, request, jsonify
 from werkzeug.serving import make_server
 import queue
 import socket
-# from hindi_xlit import HindiTransliterator
+
 from tinydb import TinyDB, Query
 
 # Get the application path - works both in dev and PyInstaller bundle
@@ -25,21 +25,7 @@ def get_app_path():
 
 # Initialize hindi_xlit with proper model path
 app_path = get_app_path()
-# transliterator = HindiTransliterator()
 
-# Cache for transliterations
-# transliteration_cache = {}
-# def cached_transliterate(text):
-#     if text in transliteration_cache:
-#         return transliteration_cache[text]
-#     result = transliterator.transliterate(text)
-#     transliteration_cache[text] = result
-#     # Keep cache size manageable
-#     if len(transliteration_cache) > 1000:
-#         # Remove oldest entries
-#         for k in list(transliteration_cache.keys())[:100]:
-#             transliteration_cache.pop(k)
-#     return result
 
 # Configure logging to only use console
 def setup_logging():
@@ -304,34 +290,7 @@ class FlaskAppGUI:
 def index():
     return render_template('index.html')
 
-# @app.route('/api/transliterate', methods=['POST'])
-# def api_transliterate():
-#     data = request.get_json()
-#     word = data.get('word', '')
-#     suggestions = []
-#     if word:
-#         result = cached_transliterate(word)
-#         # If result is a list, it's already giving us variations
-#         if isinstance(result, list):
-#             suggestions = result[:5]  # Take up to 5 suggestions
-#         else:
-#             suggestions = [result]  # Single suggestion
-                    
-#     return jsonify({'suggestions': suggestions[:5]})
 
-# @app.route('/api/transliterate_text', methods=['POST'])
-# def api_transliterate_text():
-#     data = request.get_json()
-#     text = data.get('text', '')
-#     if not text:
-#         return jsonify({'result': ''})
-    
-#     # Let the hindi_xlit handle the full text
-#     result = cached_transliterate(text)
-#     if isinstance(result, list):
-#         result = result[0] if result else ''  # Take first suggestion if multiple
-    
-#     return jsonify({'result': result})
 
 @app.route('/api/save_document', methods=['POST'])
 def save_document():
