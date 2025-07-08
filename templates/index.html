@@ -23,15 +23,12 @@
                     <span class="bihar-police-hindi">बिहार पुलिस</span>
                     <span class="bihar-police-english">Bihar Police</span>
                 </div>
-                <!-- Switch Button -->
                 <div class="switch-wrapper">
-                    <button class="switch-btn">
+                    <button class="switch-btn" title="Switch Editor">
                         <img src="{{ url_for('static', filename='images/switch.png') }}" alt="Switch"
                             class="switch-icon">
                     </button>
                 </div>
-
-                <!-- Template Controls -->
                 <div class="template-filter-wrapper">
                     <div class="template-filter" id="templateDropdown">
                         <i class="fas fa-chevron-down"></i>
@@ -41,15 +38,13 @@
                             <a href="#" data-template="diary">Diary</a>
                         </div>
                     </div>
-                    <button class="add-template-btn">
+                    <button class="add-template-btn" title="New Document">
                         <div class="plus-icon">
                             <i class="fas fa-plus"></i>
                         </div>
                     </button>
                 </div>
             </div>
-
-            <!-- Right section -->
             <div class="header-right">
                 <div class="filename-wrapper">
                     <input type="text" class="filename-input" placeholder="Enter file name...">
@@ -97,69 +92,76 @@
         </div>
         <!-- Diary Editor (hidden by default) -->
         <div class="editor-wrapper editor-diary" style="display:none;">
-            <div class="format-form" id="firFormat">
-                <div id="firExportLayout" class="fir-export-layout">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            अनुसूची 47, प्रपत्र संख्या 120 अ<br>
-                            आ0 ह0 प्रपत्र संख्या 30 अ
-                        </div>
-                        <div style="text-align:right;">
-                            केस दैनिकी सं.
-                            <input class="fir-input" data-field="case_diary_no" style="width:110px;">
-                            <br>
+            <div id="firExportLayout" class="fir-export-layout">
+                <div class="diary-header-row">
+                    <div class="diary-header-left">
+                        <div>अनुसूची 47, प्रपत्र संख्या 120 अ</div>
+                        <div>आ0 ह0 प्रपत्र संख्या 30 अ</div>
+                    </div>
+                    <div class="diary-header-center">
+                        <label class="diary-label">केस दैनिकी सं.</label>
+                        <input class="fir-input" data-field="case_diary_no" style="width:200px;" placeholder="संख्या">
+                        <div class="diary-rule">
                             (नियम-
-                            <input class="fir-input" data-field="rule_no" style="width:110px;">
+                            <input class="fir-input" data-field="rule_no" style="width:200px;" placeholder="164">
                             )
                         </div>
                     </div>
-                    <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                        <div>
-                            <label>विशेष रिपोर्ट केस सं.</label>
-                            <input class="fir-input" data-field="special_report_no" style="width:110px; margin-right:24px;">
-                            <label>थाना</label>
-                            <input class="fir-input" data-field="thana" style="width:110px; margin-right:24px;">
-                            <label>जिला</label>
-                            <input class="fir-input" data-field="district" style="width:110px;">
-                        </div>
+                </div>
+                <div class="diary-info-row">
+                    <div>
+                        <label class="diary-label">विशेष रिपोर्ट केस सं.</label>
+                        <input class="fir-input" data-field="special_report_no" style="width:200px;" placeholder="संख्या">
                     </div>
-                    <div style="margin-top: 10px; text-align:center;">
-                        <span>बनाम</span>
-                        <input class="fir-input" data-field="against_1" style="width:110px; margin:0 8px;">
-                        <span style="margin:0 10px;">/</span>
-                        <input class="fir-input" data-field="against_2" style="width:110px; margin:0 8px;">
+                    <div>
+                        <label class="diary-label">थाना</label>
+                        <input class="fir-input" data-field="thana" style="width:200px;" placeholder="थाना">
                     </div>
-                    <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap:24px;">
-                        <div>
-                            <label>प्रथम इत्तिला रिपोर्ट सं.</label>
-                            <input class="fir-input" data-field="fir_number" style="width:110px;">
-                        </div>
-                        <div>
-                            <label>तिथि</label>
-                            <input class="fir-input" data-field="fir_date" type="date" style="width:110px;">
-                        </div>
-                        <div>
-                            <label>घटना की तिथि और स्थान</label>
-                            <input class="fir-input" data-field="event_date_place" style="width:110px;">
-                        </div>
-                        <div>
-                            <label>धाराः</label>
-                            <input class="fir-input" data-field="sections" style="width:110px;">
-                        </div>
+                    <div>
+                        <label class="diary-label">जिला</label>
+                        <input class="fir-input" data-field="district" style="width:200px;" placeholder="जिला">
                     </div>
-                    <table class="fir-table" style="width:100%; margin-top:20px; border-collapse:collapse;">
+                </div>
+                <div class="diary-banam-row">
+                    <span class="diary-label">बनाम</span>
+                    <input class="fir-input" data-field="against_1" style="width:200px; margin:0 8px;" placeholder="शिकायतकर्ता">
+                    <span style="margin:0 10px;">/</span>
+                    <input class="fir-input" data-field="against_2" style="width:200px; margin:0 8px;" placeholder="आरोपी">
+                </div>
+                <div class="diary-fields-row">
+                    <div>
+                        <label class="diary-label">प्रथम इत्तिला रिपोर्ट सं.</label>
+                        <input class="fir-input" data-field="fir_number" style="width:200px;" placeholder="संख्या">
+                    </div>
+                    <div>
+                        <label class="diary-label">तिथि</label>
+                        <input class="fir-input" data-field="fir_date" type="date" style="width:200px;">
+                    </div>
+                    <div>
+                        <label class="diary-label">घटना की तिथि और स्थान</label>
+                        <input class="fir-input" data-field="event_date_place" style="width:200px;" placeholder="तिथि/स्थान">
+                    </div>
+                    <div>
+                        <label class="diary-label">धाराः</label>
+                        <input class="fir-input" data-field="sections" style="width:200px;" placeholder="धारा">
+                    </div>
+                </div>
+                <div class="diary-table-wrapper">
+                    <table class="fir-table">
                         <tr>
-                            <td style="width:50%; border:1px solid #000; vertical-align:top; padding:8px;">
-                                <b>किन तिथि को (समय सहित )
-                                     कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</b>
-                                <textarea class="fir-input hinglish-input" data-field="left_box"
-                                    style="width:98%;min-height:300px;max-height:300px;resize:none;margin-top:8px;overflow-y:auto;line-height:1.5;white-space:pre-wrap;"></textarea>
+                            <td>
+                                <b>किन तिथि को (समय सहित )<br>
+                                कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</b>
+                                <textarea class="fir-input hinglish-input"
+                                    data-field="left_box"
+                                    placeholder="यहाँ विवरण लिखें..."></textarea>
                             </td>
-                            <td style="border:1px solid #000; vertical-align:top; padding:8px;">
+                            <td>
                                 <b>अन्वेषण का अभिलेख</b><br>
                                 <div>(01)</div>
-                                <textarea class="fir-input hinglish-input" data-field="right_box"
-                                    style="width:98%;min-height:300px;max-height:300px;resize:none;margin-top:8px;overflow-y:auto;line-height:1.5;white-space:pre-wrap;"></textarea>
+                                <textarea class="fir-input hinglish-input"
+                                    data-field="right_box"
+                                    placeholder="यहाँ विवरण लिखें..."></textarea>
                             </td>
                         </tr>
                     </table>

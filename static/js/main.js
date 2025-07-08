@@ -466,23 +466,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // --- PAGINATION LOGIC ---
             // Adjust this limit for your print size/font
-            const CHARS_PER_PAGE = 500; // For testing, force more pages
+            const CHARS_PER_PAGE = 500; // First page
+            const CHARS_PER_PAGE_SECONDARY = 900; // Subsequent pages
 
-            // Split both left and right into pages of equal length
-            function paginateColumns(left, right, limit) {
+            function paginateColumns(left, right, limitFirst, limitRest) {
                 const leftPages = [];
                 const rightPages = [];
                 let i = 0, j = 0;
+                let first = true;
                 while (i < left.length || j < right.length) {
+                    const limit = first ? limitFirst : limitRest;
                     leftPages.push(left.slice(i, i + limit));
                     rightPages.push(right.slice(j, j + limit));
                     i += limit;
                     j += limit;
+                    first = false;
                 }
                 return [leftPages, rightPages];
             }
 
-            const [leftPages, rightPages] = paginateColumns(get('left_box'), get('right_box'), CHARS_PER_PAGE);
+            const [leftPages, rightPages] = paginateColumns(
+                get('left_box'),
+                get('right_box'),
+                CHARS_PER_PAGE,
+                CHARS_PER_PAGE_SECONDARY
+            );
             const maxPages = leftPages.length;
 
             // Header HTML (repeat on every page)
@@ -509,8 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             &nbsp;
                         </div>
                     </div>
-                    
-                    
                     <div style="text-align:right; margin-top: 2px;">
                         <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${get('against_1')}</span>
                         <span style="margin:0 10px;">बनाम</span>
@@ -522,22 +528,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span style="display:inline-block; min-width:100px; border-bottom:1px dotted #333;">${get('special_report_no')}</span>
                         </div>
                     </div>
-                    <div style="margin-top: 12px;">
-                            <span>थाना</span>
-                            <span style="display:inline-block; min-width:80px; border-bottom:1px dotted #333;">${get('thana')}</span>
-                            <span style="margin-left:20px;">जिला</span>
-                            <span style="display:inline-block; min-width:80px; border-bottom:1px dotted #333;">${get('district')}</span>
-                    
-                        <span>प्रथम इत्तिला रिपोर्ट सं.</span>
-                        <span style="display:inline-block; min-width:60px; border-bottom:1px dotted #333;">${get('fir_number')}</span>
-                        <span style="margin-left:20px;">तिथि</span>
-                        <span style="display:inline-block; min-width:100px; border-bottom:1px dotted #333;">${get('fir_date')}</span>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <span>घटना की तिथि और स्थान</span>
-                        <span style="display:inline-block; min-width:220px; border-bottom:1px dotted #333;">${get('event_date_place')}</span>
-                        <span style="margin-left:20px;">धाराः</span>
-                        <span style="display:inline-block; min-width:180px; border-bottom:1px dotted #333;">${get('sections')}</span>
+                    <div style="margin-top: 12px; font-size:15px;">
+                        थाना&nbsp;<b>${get('thana') || '....................'}</b>&nbsp;&nbsp;
+                        जिला&nbsp;<b>${get('district') || '....................'}</b>&nbsp;&nbsp;
+                        प्रथम इत्तिला रिपोर्ट सं.&nbsp;<b>${get('fir_number') || '....................'}</b>&nbsp;&nbsp;
+                        तिथि&nbsp;<b>${get('fir_date') || '....................'}</b>&nbsp;&nbsp;
+                        घटना की तिथि और स्थान&nbsp;<b>${get('event_date_place') || '....................................................'}</b>&nbsp;&nbsp;
+                        धाराः&nbsp;<b>${get('sections') || '....................................................'}</b>
                     </div>
                     <div style="margin-top:12px; border-top:1px solid #333;"></div>
                 </div>
@@ -545,35 +542,32 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Table HTML for each page
-            function getTable(left, right) {
+            function getTable(left, right, showHeader = false) {
                 return `
                     <table style="width:100%;margin-top:20px;border-collapse:collapse;table-layout:fixed;">
+                        ${showHeader ? `
                         <tr>
-                            <td style="width:50%;border:1px solid #000;vertical-align:top;padding:8px;">
+                            <td style="width:32%;border-top:1px solid #000;border-bottom:1px solid #000;border-left:none;border-right:1px solid #000;vertical-align:top;padding:8px;">
                                 <b>किन तिथि को (समय सहित )<br>कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</b>
                             </td>
-                            <td style="border:1px solid #000;vertical-align:top;padding:8px;">
+                            <td style="width:68%;border-top:1px solid #000;border-bottom:1px solid #000;border-left:none;border-right:none;vertical-align:top;padding:8px;">
                                 <b>अन्वेषण का अभिलेख</b><br>
                                 <div>(01)</div>
                             </td>
                         </tr>
+                        ` : ''}
                         <tr>
-                            <td colspan="2" style="padding:0;">
-                                <div style="border-bottom:1px solid #000;width:100%;"></div>
-                                <div style="border-bottom:1px solid #000;width:100%;"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width:50%;border:1px solid #000;vertical-align:top;padding:8px;">
+                            <td style="width:32%;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:1px solid #000;vertical-align:top;padding:8px;">
                                 <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${left || ''}</div>
                             </td>
-                            <td style="border:1px solid #000;vertical-align:top;padding:8px;">
+                            <td style="width:68
+                            %;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:none;vertical-align:top;padding:8px;">
                                 <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${right || ''}</div>
                             </td>
                         </tr>
                     </table>
-                </div>
-                <div style="page-break-after:always"></div>
+                    </div>
+                    <div style="page-break-after:always"></div>
                 `;
             }
 
@@ -581,9 +575,9 @@ document.addEventListener('DOMContentLoaded', function () {
             let pagesHtml = '';
             for (let i = 0; i < maxPages; i++) {
                 if (i === 0) {
-                    pagesHtml += getHeader(get) + getTable(leftPages[i], rightPages[i]);
+                    pagesHtml += getHeader(get) + getTable(leftPages[i], rightPages[i], true);
                 } else {
-                    pagesHtml += getTable(leftPages[i], rightPages[i]);
+                    pagesHtml += getTable(leftPages[i], rightPages[i], false);
                 }
             }
             content = pagesHtml;
@@ -880,3 +874,5 @@ function syncDiaryTextareaHeights() {
     // Set both to the max
     left.style.height = right.style.height = maxHeight + 'px';
 }
+
+
