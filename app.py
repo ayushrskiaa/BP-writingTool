@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from src.launcher import FlaskAppGUI
-from src.logger import logger
 from tinydb import TinyDB, Query
 
 # Get the application path - works both in dev and PyInstaller bundle
@@ -16,12 +15,7 @@ def get_app_path():
         # If run from Python interpreter
         return os.path.dirname(os.path.abspath(__file__))
 
-# Initialize hindi_xlit with proper model path
 app_path = get_app_path()
-
-# Log startup information
-logger.info("=" * 50)
-logger.info("Application Starting")
 
 # Initialize Flask app with correct template and static folders
 app = Flask(__name__, 

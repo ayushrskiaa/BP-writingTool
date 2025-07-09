@@ -1,12 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import get_package_paths
 import os
 import sys
-
-# Get the path to the hindi_xlit package
-# pkg_path = get_package_paths('hindi_xlit')[0]
-# model_data = (os.path.join(pkg_path, 'hindi_xlit'), 'models')
 
 a = Analysis(
     ['app.py'],
@@ -15,15 +10,9 @@ a = Analysis(
     datas=[
         ('templates', 'templates'),  # Include Flask templates
         ('static', 'static'),       # Include static files
-        # (model_data),              # Include hindi_xlit model data
     ],
     hiddenimports=['flask', 'werkzeug', 'tkinter'],
-    hookspath=['.'],
-    hooksconfig={},
-    runtime_hooks=[],
-    excludes=[],
-    noarchive=False,
-    optimize=0,
+    optimize=2,
 )
 pyz = PYZ(a.pure)
 
