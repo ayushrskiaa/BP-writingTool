@@ -10,7 +10,7 @@ import sys
 
 a = Analysis(
     ['app.py'],
-    pathex=[],
+    pathex=['src'],  # Add src directory to Python path
     binaries=[],
     datas=[
         ('templates', 'templates'),  # Include Flask templates
