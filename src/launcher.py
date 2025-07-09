@@ -1,7 +1,9 @@
 import sys
+import os
 import threading
 import webbrowser
 import tkinter as tk
+from PIL import Image, ImageTk
 
 from tkinter import messagebox, ttk
 from datetime import datetime
@@ -16,7 +18,7 @@ class FlaskAppGUI:
     def __init__(self, app):
         self.app = app
         self.root = tk.Tk()
-        self.root.title("Flask Application Controller")
+        self.root.title("Bihar Police Writing Tool Launcher")
         self.root.geometry("450x550")
         self.root.minsize(450, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
@@ -29,6 +31,9 @@ class FlaskAppGUI:
         
         self.create_widgets()
         self.check_status_queue()
+        
+        # Auto-start the server when app launches
+        self.root.after(1000, self.auto_start_server)  # Start after 1 second
 
     def setup_styles(self):
         self.colors = {
@@ -76,39 +81,38 @@ class FlaskAppGUI:
         main_frame.pack(fill='both', expand=True)
         
         # --- Header ---
-        header = ttk.Label(main_frame, text="🚀 Flask Application Controller", style='Header.TLabel')
+        header = ttk.Label(main_frame, text="✍️ Bihar Police Writing Tool", style='Header.TLabel')
         header.pack(pady=(0, 5))
-        subheader = ttk.Label(main_frame, text="Manage your Flask web server with ease", style='SubHeader.TLabel')
+        subheader = ttk.Label(main_frame, text="Write Diary and Application in Hindi", style='SubHeader.TLabel')
         subheader.pack(pady=(0, 20))
+
+        # --- Logo ---
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'images', 'bihar-police-logo.png')
+        if os.path.exists(logo_path):
+            logo_img = Image.open(logo_path)
+            logo_img = logo_img.resize((64, 70), Image.LANCZOS)  # Resize as needed
+            self.logo_photo = ImageTk.PhotoImage(logo_img)
+            logo_label = tk.Label(main_frame, image=self.logo_photo, bg=self.colors['bg'])
+            logo_label.pack(pady=(0, 10))
 
         # --- Status Card ---
         status_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
         status_card.pack(fill='x', pady=10)
         
-        ttk.Label(status_card, text="Server Status", font=("Helvetica", 12, 'bold')).pack()
-        self.status_label = ttk.Label(status_card, text="● Stopped", foreground=self.colors['danger'], style='Status.TLabel')
+        ttk.Label(status_card, text="Application Status", font=("Helvetica", 12, 'bold')).pack()
+        self.status_label = ttk.Label(status_card, text="● Starting...", foreground=self.colors['warning'], style='Status.TLabel')
         self.status_label.pack(pady=5)
-        ttk.Label(status_card, text="Port: 8080", style='SubHeader.TLabel').pack()
 
-        # --- Controls Card ---
-        controls_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
-        controls_card.pack(fill='x', pady=10)
-        ttk.Label(controls_card, text="Server Controls", font=("Helvetica", 12, 'bold')).pack(pady=(0, 15))
-        
-        self.start_button = ttk.Button(controls_card, text="▶ Start Server", style='Success.TButton', command=self.start_server)
-        self.start_button.pack(fill='x', pady=4)
-        
-        self.browser_button = ttk.Button(controls_card, text="🌐 Open Browser", style='Info.TButton', command=self.open_browser, state='disabled')
+        # --- Browser Button ---
+        browser_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
+        browser_card.pack(fill='x', pady=10)        
+        self.browser_button = ttk.Button(browser_card, text="🌐 Open Browser", style='Info.TButton', command=self.open_browser, state='disabled')
         self.browser_button.pack(fill='x', pady=4)
-
-        self.stop_button = ttk.Button(controls_card, text="⏹ Stop Server", style='Danger.TButton', command=self.stop_server, state='disabled')
-        self.stop_button.pack(fill='x', pady=4)
         
-        # Bind cursor events to all buttons
+        # Bind cursor events to button
         cursor_name = "pointinghand" if sys.platform == "darwin" else "hand2"
-        for button in [self.start_button, self.browser_button, self.stop_button]:
-            button.bind("<Enter>", lambda e, b=button: b.winfo_toplevel().config(cursor=cursor_name))
-            button.bind("<Leave>", lambda e, b=button: b.winfo_toplevel().config(cursor=""))
+        self.browser_button.bind("<Enter>", lambda e: self.root.config(cursor=cursor_name))
+        self.browser_button.bind("<Leave>", lambda e: self.root.config(cursor=""))
 
         # --- Activity Log ---
         log_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
@@ -138,28 +142,24 @@ class FlaskAppGUI:
         icons = {'running': '●', 'stopped': '●', 'starting': '⟳', 'stopping': '⟳'}
         self.status_label.config(text=f"{icons.get(status, '●')} {status.title()}", foreground=self.colors[color_key])
         
-    def start_server(self):
-        if self.server_running: return
-        if not check_port_available(8080):
-            messagebox.showerror("Port Error", "Port 8080 is already in use.")
-            return
-
-        # Disable button immediately
-        self.start_button.config(text="⟳ Starting...")
-        self.start_button.state(['disabled'])
-        self.log_message("Starting server...")
+    def auto_start_server(self):
+        """Automatically start the server when the app launches"""
+        self.log_message("Starting server automatically...")
         self.update_status('starting', 'warning')
+        
+        if not check_port_available(8080):
+            self.log_message("❌ Port 8080 is already in use.")
+            self.update_status('stopped', 'danger')
+            messagebox.showerror("Port Error", "Port 8080 is already in use. Please close any other applications using this port.")
+            return
 
         try:
             # Start the server in the background
             threading.Thread(target=self.run_flask_server, daemon=True).start()
         except Exception as e:
-            # If thread creation fails, immediately revert the UI
-            self.log_message(f"❌ Failed to start thread: {e}")
+            self.log_message(f"❌ Failed to start server: {e}")
             self.update_status('stopped', 'danger')
-            self.start_button.config(text="▶ Start Server")
-            self.start_button.state(['!disabled'])
-            messagebox.showerror("Error", f"Failed to start server thread:\n{e}")
+            messagebox.showerror("Error", f"Failed to start server:\n{e}")
 
     def run_flask_server(self):
         try:
@@ -169,23 +169,6 @@ class FlaskAppGUI:
         except Exception as e:
             logger.error(f"Flask server error: {e}")
             self.status_queue.put(("error", e))
-
-    def stop_server(self):
-        if not self.server_running or not self.flask_server: return
-
-        # Disable button immediately
-        self.stop_button.config(text="⟳ Stopping...")
-        self.stop_button.state(['disabled'])
-        self.browser_button.state(['disabled'])
-        self.log_message("Stopping server...")
-        self.update_status('stopping', 'warning')
-        
-        try:
-            # Shutdown in the background
-            threading.Thread(target=self.flask_server.shutdown, daemon=True).start()
-        finally:
-            # This will run immediately, handing off the rest to the queue checker
-            self.status_queue.put("stopped")
 
     def open_browser(self):
         self.log_message("Opening browser...")
@@ -198,22 +181,20 @@ class FlaskAppGUI:
                 self.server_running = True
                 self.log_message("✅ Server is running.")
                 self.update_status('running', 'success')
-                self.start_button.config(text="▶ Server Running")
-                self.start_button.state(['disabled'])
                 self.browser_button.state(['!disabled'])
-                self.stop_button.state(['!disabled'])
+                
+                # Auto-open browser after a short delay
+                self.root.after(2000, self.open_browser)
+                
             elif message == "stopped":
                 self.server_running = False
                 self.flask_server = None
                 self.log_message("✅ Server stopped.")
                 self.update_status('stopped', 'danger')
-                self.start_button.config(text="▶ Start Server")
-                self.start_button.state(['!disabled'])
                 self.browser_button.state(['disabled'])
-                self.stop_button.config(text="⏹ Stop Server")
-                self.stop_button.state(['disabled'])
             elif isinstance(message, tuple) and message[0] == "error":
                 self.log_message(f"❌ Server error: {message[1]}")
+                self.update_status('stopped', 'danger')
                 messagebox.showerror("Server Error", f"The server failed to start:\n{message[1]}")
         except queue.Empty:
             pass
@@ -224,5 +205,9 @@ class FlaskAppGUI:
         if messagebox.askokcancel("Quit Application", "Are you sure you want to quit?"):
             if self.server_running and self.flask_server:
                 self.log_message("Stopping server before quitting...")
+                self.update_status('stopping', 'warning')
                 threading.Thread(target=self.flask_server.shutdown, daemon=True).start()
-            self.root.destroy()
+                # Wait a bit for server to shutdown gracefully
+                self.root.after(1000, self.root.destroy)
+            else:
+                self.root.destroy()
