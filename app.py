@@ -4,7 +4,9 @@ import sys
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from src.launcher import FlaskAppGUI
-from tinydb import TinyDB, Query
+from tinydb import Query
+from src.db_handler import initialize_database
+from src.utils import app_name
 
 # Get the application path - works both in dev and PyInstaller bundle
 def get_app_path():
@@ -18,12 +20,11 @@ def get_app_path():
 app_path = get_app_path()
 
 # Initialize Flask app with correct template and static folders
-app = Flask(__name__, 
+app = Flask(app_name, 
            template_folder=os.path.join(app_path, 'templates'),
            static_folder=os.path.join(app_path, 'static'))
 
-# Initialize TinyDB
-db = TinyDB('db.json')
+db = initialize_database()
 Document = Query()
 
 # --- Flask Routes ---
