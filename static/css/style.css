@@ -936,14 +936,37 @@ body {
 
 .history-item {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.history-item-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.history-item-actions button {
+    background: #fff;
+    border: 1px solid #0a225d;
+    color: #0a225d;
+    border-radius: 4px;
+    padding: 2px 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    width: 100%;
-    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.history-item-actions button:hover {
+    background: #e0ca40;
+    color: #000;
 }
 
 .history-item:hover {
@@ -954,14 +977,6 @@ body {
     color: var(--brand-color-1);
     font-size: 16px;
     min-width: 16px;
-}
-
-.history-item-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-width: 0;
 }
 
 .history-item-name {

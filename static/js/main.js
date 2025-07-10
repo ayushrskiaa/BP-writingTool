@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
     saveBtn.addEventListener('click', async function () {
         const filename = filenameInput.value.trim() || 'Untitled';
         let content = '';
-        if (getActiveTemplate() === 'letter') {
+        let type = getActiveTemplate();
+        if (type === 'letter') {
             content = `<pre style="
                 font-family: 'Noto Sans Devanagari', Arial, sans-serif;
                 font-size: 16px;
@@ -68,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!content) return alert('Cannot save empty document!');
 
         try {
-            const type = getActiveTemplate();
             await fetch('/api/save_document', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -96,10 +96,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Sort date keys by latest date first
         const sortedDateKeys = Object.keys(groups).sort((a, b) => {
-            // Parse the first doc's date in each group for sorting
             const aDate = groups[a][0].date;
             const bDate = groups[b][0].date;
-            return bDate - aDate; // Descending order
+            return bDate - aDate;
         });
 
         sortedDateKeys.forEach(dateKey => {
@@ -114,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const itemsContainer = document.createElement('div');
             itemsContainer.className = 'history-items-container';
 
-            // Sort docs in group by created_at descending (latest first)
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
                 const firstLine = doc.content.split('\n')[0].slice(0, 40);
                 const created = new Date(doc.created_at || doc.date || Date.now());
@@ -126,11 +124,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.className = 'history-item';
                 item.innerHTML = `
                     <i class="fas fa-file-alt"></i>
-                    <div class="history-item-details">
-                        <span class="history-item-name">${doc.filename}</span>
+                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px;">
+                        <span class="history-item-name" style="color:#0a225d;font-weight:500;">${doc.filename}</span>
                         <span class="history-item-time">Created: ${createdStr}</span>
                         <span class="history-item-time">Last update: ${updatedStr}</span>
-                        <span class="history-item-preview">${firstLine}</span>
+                        <span class="history-item-preview" style="color:#444;">${firstLine}</span>
                     </div>
                     <div class="history-item-actions">
                         <button class="edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
@@ -138,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 `;
 
-                // Load document on click (history item)
+                // Load document on click (whole item)
                 item.querySelector('.history-item-details').onclick = () => {
                     filenameInput.value = doc.filename;
                     if (doc.type === 'diary') {
@@ -146,31 +144,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.editor-diary').style.display = '';
                         document.querySelector('.template-filter .filter-text').textContent = 'Diary';
                         setDiaryContent(doc.content);
+                        // Focus first diary field
+                        document.querySelector('.editor-diary textarea, .editor-diary input')?.focus();
                     } else {
                         document.querySelector('.editor-letter').style.display = '';
                         document.querySelector('.editor-diary').style.display = 'none';
                         document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        input.value = doc.content;
+                        // FIX: Only set plain text, not HTML
+                        const tempDiv = document.createElement('div');
+tempDiv.innerHTML = doc.content;
+input.value = tempDiv.textContent || tempDiv.innerText || '';
                         input.focus();
                     }
                 };
 
-                // Edit button
+                // Edit button (same as above for now)
                 item.querySelector('.edit-btn').onclick = (e) => {
                     e.stopPropagation();
-                    filenameInput.value = doc.filename;
-                    if (doc.type === 'diary') {
-                        document.querySelector('.editor-letter').style.display = 'none';
-                        document.querySelector('.editor-diary').style.display = '';
-                        document.querySelector('.template-filter .filter-text').textContent = 'Diary';
-                        setDiaryContent(doc.content);
-                    } else {
-                        document.querySelector('.editor-letter').style.display = '';
-                        document.querySelector('.editor-diary').style.display = 'none';
-                        document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        input.value = doc.content;
-                        input.focus();
-                    }
+                    item.querySelector('.history-item-details').onclick();
                 };
 
                 // Delete button
@@ -602,8 +593,7 @@ function syncDiaryTextareaHeights() {
     // Find the max height
     const maxHeight = Math.max(left.scrollHeight, right.scrollHeight);
 
-    // Set both to the max
-    left.style.height = right.style.height = maxHeight + 'px';
-}
-
+    // Set both to the max height
+    left.style.height = `${maxHeight}px`;    left.style.height = right.style.height = maxHeight + 'px';
+    right.style.height = `${maxHeight}px`;}
 
