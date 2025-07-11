@@ -1,4 +1,3 @@
-// static/js/templates.js
 export const diaryExportTemplates = {
     diaryHeader: (data) => `
         <div style="font-family: 'Noto Sans Devanagari', Arial, sans-serif; font-size: 15px; max-width: 900px; margin:auto; margin-bottom: 8px;">
@@ -71,4 +70,19 @@ export const diaryExportTemplates = {
             </tr>
         </table>
     `
+};
+
+export const letterExportTemplates = {
+    letterHeader: (data) => `
+    <pre style="
+        font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        border: none;
+        white-space: pre-wrap;
+        word-break: break-word;
+    ">${data.letter_content}</pre>
+`
 };

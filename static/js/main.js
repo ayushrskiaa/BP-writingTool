@@ -1,4 +1,4 @@
-import { diaryExportTemplates } from './templates.js';
+import { diaryExportTemplates, letterExportTemplates } from './export_templates.js';
 
 const input = document.getElementById('hinglish-input');
 
@@ -232,16 +232,7 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
     exportBtn.addEventListener('click', async function () {
         let content = '';
         if (getActiveTemplate() === 'letter') {
-            content = `<pre style="
-                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                font-size: 18px;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-                border: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-            ">${input.value}</pre>`;
+            content = letterExportTemplates.letterHeader({ letter_content: input.value });
         } else {
             const container = document.getElementById('firExportLayout');
             const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
