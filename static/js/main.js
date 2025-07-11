@@ -1,4 +1,4 @@
-import { templates } from './templates.js';
+import { diaryExportTemplates } from './templates.js';
 
 const input = document.getElementById('hinglish-input');
 
@@ -277,15 +277,24 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
 
             // Header HTML (repeat on every page)
             function getHeader(get) {
-                return templates.diaryHeader({
+                return diaryExportTemplates.diaryHeader({
                     case_diary_no: get('case_diary_no'),
-                    rule_no: get('rule_no')
+                    rule_no: get('rule_no'),
+                    special_report_no: get('special_report_no'),
+                    thana: get('thana'),
+                    district: get('district'),
+                    against_1: get('against_1'),
+                    against_2: get('against_2'),
+                    fir_number: get('fir_number'),
+                    fir_date: get('fir_date'),
+                    event_date_place: get('event_date_place'),
+                    sections: get('sections'),
                 });
             }
 
             // Table HTML for each page
             function getTable(left, right, showHeader = false) {
-                return templates.diaryTable({ left, right, showHeader });
+                return diaryExportTemplates.diaryTable({ showHeader: showHeader, left_box: left, right_box: right });
             }
 
             // Build all pages

@@ -1,5 +1,5 @@
 // static/js/templates.js
-export const templates = {
+export const diaryExportTemplates = {
     diaryHeader: (data) => `
         <div style="font-family: 'Noto Sans Devanagari', Arial, sans-serif; font-size: 15px; max-width: 900px; margin:auto; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -24,9 +24,9 @@ export const templates = {
             </div>
             
             <div style="text-align:right; margin-top: 2px;">
-                <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${data.against_1 || '....................'}</span>
+                <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${data.against_1}</span>
                 <span style="margin:0 10px;">बनाम</span>
-                <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${data.against_2 || '....................'}</span>
+                <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${data.against_2}</span>
             </div>
             
             <div style="display: flex; justify-content: flex-end; margin-top: 2px;">
@@ -45,7 +45,6 @@ export const templates = {
                 धाराः&nbsp;<b>${data.sections || '................................................'}</b>
             </div>
             
-            <div style="margin-top:12px; border-top:1px solid #333;"></div>
         </div>
                 `,
 
@@ -64,10 +63,10 @@ export const templates = {
             ` : ''}
             <tr>
                 <td style="width:32%;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:1px solid #000;vertical-align:top;padding:8px;">
-                    <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${data.left || ''}</div>
+                    <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${data.left_box || ''}</div>
                 </td>
                 <td style="width:68%;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:none;vertical-align:top;padding:8px;">
-                    <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${data.right || ''}</div>
+                    <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${data.right_box || ''}</div>
                 </td>
             </tr>
         </table>
