@@ -26,6 +26,8 @@ def initialize_database():
             db_path = get_database_path()
         
         logger.info(f"Database location: {db_path}")
-        return TinyDB(db_path)
+        return TinyDB(db_path, sort_keys=True, indent=4, separators=(',', ': '))
     except Exception as e:
         logger.error(f"Error initializing database: {e}")
+
+db = initialize_database()

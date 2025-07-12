@@ -1,11 +1,10 @@
 import os
 import sys
 
-from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from src.launcher import FlaskAppGUI
-from tinydb import Query
-from src.db_handler import initialize_database
+from src.letter.utils import get_all_letters, create_letter, update_letter, delete_letter
+from src.diary.utils import get_all_diary, create_diary, update_diary, delete_diary
 from src.utils import app_name
 
 # Get the application path - works both in dev and PyInstaller bundle
@@ -24,43 +23,56 @@ app = Flask(app_name,
            template_folder=os.path.join(app_path, 'templates'),
            static_folder=os.path.join(app_path, 'static'))
 
-db = initialize_database()
-Document = Query()
-
 # --- Flask Routes ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/save_document', methods=['POST'])
-def save_document():
+@app.route('/api/create_document/<template_type>', methods=['POST'])
+def create_document(template_type):
+    # remove whitespace and convert to lowercase
+    template_type = template_type.strip().lower()
     data = request.get_json()
-    filename = data.get('filename')
-    content = data.get('content')
-    now = datetime.now().isoformat()
-    # Check if document exists
-    existing = db.get(Document.filename == filename)
-    if existing:
-        db.update({'content': content, 'updated_at': now}, Document.filename == filename)
+    if template_type == 'letter':
+        doc_id = create_letter(data)
+    elif template_type == 'diary':
+        doc_id = create_diary(data)
+    return jsonify({'doc_id': doc_id})
+    
+@app.route('/api/update_document/<template_type>/<doc_id>', methods=['PUT'])
+def update_document(template_type, doc_id):
+    # remove whitespace and convert to lowercase
+    template_type = template_type.strip().lower()
+    data = request.get_json()
+    if template_type == 'letter':
+        update_letter(doc_id, data)
+    elif template_type == 'diary':
+        update_diary(doc_id, data)
+    return jsonify({'success': True})
+
+
+@app.route('/api/delete_document/<template_type>/<doc_id>', methods=['DELETE'])
+def delete_document(template_type, doc_id):
+    # remove whitespace and convert to lowercase
+    template_type = template_type.strip().lower()
+    if template_type == 'letter':
+        delete_letter(doc_id)
+    elif template_type == 'diary':
+        delete_diary(doc_id)
+    return jsonify({'success': True})
+
+@app.route('/api/get_documents/<template_type>', methods=['GET'])
+def get_documents(template_type):
+    # remove whitespace and convert to lowercase
+    template_type = template_type.strip().lower()
+    if template_type == 'letter':
+        docs = get_all_letters()
+    elif template_type == 'diary':
+        docs = get_all_diary()
     else:
-        db.insert({'filename': filename, 'content': content, 'created_at': now, 'updated_at': now})
-    return jsonify({'success': True})
-
-@app.route('/api/delete_document', methods=['POST'])
-def delete_document():
-    data = request.get_json()
-    filename = data.get('filename')
-    db.remove(Document.filename == filename)
-    return jsonify({'success': True})
-
-@app.route('/api/get_documents', methods=['GET'])
-def get_documents():
-    docs = db.all()
+        docs = []
     return jsonify({'documents': docs})
 
-@app.route('/diary')
-def diary():
-    return render_template('diary.html')
 
 if __name__ == '__main__':
     gui = FlaskAppGUI(app)
