@@ -2,18 +2,6 @@ import { diaryExportTemplates, letterExportTemplates } from './export_templates.
 
 const input = document.getElementById('hinglish-input');
 
-const STORAGE_KEY = 'biharPolice_autosave';
-
-
-
-input.addEventListener('input', function () {
-    // Add auto-save
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(saveToLocalStorage, AUTOSAVE_DELAY);
-});
-
-
-
 // Wait for DOM to load before adding event listeners
 document.addEventListener('DOMContentLoaded', function () {
     const addTemplateBtn = document.querySelector('.add-template-btn');
@@ -451,36 +439,6 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         syncDiaryTextareaHeights();
     }
 });
-
-let autoSaveTimer;
-const AUTOSAVE_DELAY = 1000; // Save after 1 second of inactivity
-
-// Auto-save functionality
-function saveToLocalStorage() {
-    const contentToSave = {
-        mainInput: input.value,
-        timestamp: new Date().getTime()
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(contentToSave));
-}
-
-// Restore saved content
-function restoreSavedContent() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const { mainInput, timestamp } = JSON.parse(saved);
-            input.value = mainInput;
-
-            // Show restoration message
-            const timeDiff = Math.round((new Date().getTime() - timestamp) / 60000);
-            const message = `पिछला कार्य पुनर्स्थापित किया गया (${timeDiff} मिनट पहले का)`;
-            showNotification(message);
-        }
-    } catch (error) {
-        console.error('Error restoring saved content:', error);
-    }
-}
 
 // Show notification message
 function showNotification(message) {
