@@ -34,7 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getActiveTemplate() {
-        return document.querySelector('.editor-letter').style.display !== 'none' ? 'letter' : 'diary';
+        // Use the filter text as the source of truth
+        const filterText = document.querySelector('.template-filter .filter-text')?.textContent?.toLowerCase();
+        console.log("filterText", filterText);
+        return filterText === 'diary' ? 'diary' : 'letter';
     }
 
     // Save document to localStorage
@@ -56,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({ filename, content })
             });
             showNotification('Document saved!');
-            await loadHistoryFromServer();
         } catch (err) {
             alert('Failed to save document: ' + err);
         }
@@ -141,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             headers: { 'Content-Type': 'application/json' },
                         });
                         showNotification('Document deleted.');
-                        await loadHistoryFromServer();
                     }
                 };
 
@@ -170,9 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Failed to load history:', err);
         }
     }
-
-    // Initial render
-    loadHistoryFromServer();
 
     // Close modal handlers
     [closeNewFile, cancelNewFile].forEach(btn => {
@@ -335,6 +333,11 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('active');
         sidebar.classList.toggle('open');
         mainContent.classList.toggle('shifted');
+        
+        // Load history when sidebar is opened
+        if (isToggled) {
+            loadHistoryFromServer();
+        }
     });
 
     // Close sidebar when clicking outside
