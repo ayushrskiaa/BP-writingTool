@@ -1,7 +1,7 @@
 :root {
-    --brand-color-1: #0a225d;   /* Bihar Police Navy Blue */
-    --brand-color-2: #e0ca40;   /* Bihar Police Gold */
-    --brand-color-3: #fff;      /* White */
+    --brand-color-1: rgba(5, 35, 97, 1);
+    --brand-color-2: rgba(224, 202, 64, 1);
+    --brand-color-3: #fff;
 }
 body {
     background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
@@ -179,14 +179,15 @@ body {
 
 /* Header Styles */
 .header-frame {
-    background: var(--brand-color-1, #0a225d);
-    color: #fff;
-    box-shadow: 0 2px 8px #0002;
-    border-bottom: 3px solid var(--brand-color-2, #e0ca40);
+    background-color: var(--brand-color-2);
+    color: var(--brand-color-1);
     width: 100%;
-    position: sticky;
+    height: 60px; /* Reduced height */
+    position: fixed;
     top: 0;
+    left: 0;
     z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .header-content {
     display: flex;
@@ -339,23 +340,15 @@ body {
 
 /* Footer */
 .footer-bihar-police {
-    background: #1a237e;
-    color: #fff;
     text-align: center;
-    padding: 18px 0 12px 0;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    margin-top: 40px;
-    border-top: 3px solid #1976d2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 18px;
+    padding: 12px 0;
+    background: var(--brand-color-2);
+    color: var(--brand-color-1);
 }
 .bihar-police-logo-footer {
-    height: 36px;
-    margin-right: 10px;
+    height: 28px;
     vertical-align: middle;
+    margin-right: 8px;
 }
 
 /* Modern Diary Card */
@@ -624,12 +617,6 @@ body {
     background-color: rgba(5, 35, 97, 0.05);
 }
 
-/* Add these CSS variables if not already present */
-:root {
-    --brand-color-1: rgba(5, 35, 97, 1);
-    --brand-color-2: rgba(224, 202, 64, 1);
-}
-
 /* Filename Input Styles */
 .filename-wrapper {
     height: 36px; /* Reduced height */
@@ -885,6 +872,7 @@ body {
     gap: 10px;
     padding: 8px 0;
     border-bottom: 1px solid #f0f0f0;
+    align-items: center;
 }
 
 .history-item-details {
@@ -896,10 +884,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.history-item:hover .history-item-actions {
+    opacity: 1;
 }
 
 .history-item-actions button {
-    background: #fff;
     border: none;
     border-radius: 4px;
     padding: 2px 6px;
@@ -998,18 +991,6 @@ body {
     height: 38px;
     margin-right: 18px;
     vertical-align: middle;
-}
-
-.footer-bihar-police {
-    text-align: center;
-    padding: 12px 0;
-    background: var(--brand-color-2);
-    color: var(--brand-color-1);
-}
-.bihar-police-logo-footer {
-    height: 28px;
-    vertical-align: middle;
-    margin-right: 8px;
 }
 
 .bihar-police-title {
