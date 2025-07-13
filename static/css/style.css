@@ -126,36 +126,6 @@ body {
     margin-top: 5%;
 }
 
-/* .suggestions-box {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 4px 0;
-}
-
-.suggestion {
-    padding: 6px 12px;
-    cursor: pointer;
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    font-size: 1.1em;
-    border-bottom: 1px solid #f0f0f0;
-    transition: all 0.2s ease;
-}
-
-.suggestion:last-child {
-    border-bottom: none;
-}
-
-.suggestion:hover {
-    background: #f8fafd;
-    color: #4a90e2;
-} */
-
 .button-group {
     margin-top: 18px;
     text-align: right;
@@ -177,98 +147,86 @@ body {
     color: var(--brand-color-1);
 }
 
-/* Header Styles */
-.header-frame {
-    background-color: var(--brand-color-2);
-    color: var(--brand-color-1);
-    width: 100%;
-    height: 60px; /* Reduced height */
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 24px;
-}
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-.bihar-police-logo-header {
-    height: 48px;
-    margin-right: 10px;
-}
 .bihar-police-title {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-right: 18px;
+    margin-left: 10px;
+    margin-right: 20px;
     line-height: 1.1;
 }
+
 .bihar-police-hindi {
     font-family: 'Noto Sans Devanagari', sans-serif;
-    font-size: 1.25em;
+    font-size: 1.15em;
     font-weight: 700;
-    color: var(--brand-color-2, #e0ca40);
+    color: var(--brand-color-1, #0a225d);
     letter-spacing: 1px;
 }
+
 .bihar-police-english {
     font-family: 'Roboto', sans-serif;
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 500;
-    color: #fff;
+    color: var(--brand-color-1, #0a225d);
     letter-spacing: 0.5px;
     opacity: 0.85;
 }
-.switch-wrapper {
-    margin-right: 10px;
-}
+
 .switch-btn {
-    background: #fff;
+    background: none;
     border: none;
-    border-radius: 50%;
-    padding: 6px;
+    padding: 0;
+    border-radius: 8px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
     box-shadow: 0 1px 4px #0001;
-    transition: box-shadow 0.2s;
+    height: 40px;
+    width: 40px;
+}
+
+.switch-btn:hover {
+    background: #f5f7fa;
+    box-shadow: 0 2px 8px #1976d220;
+}
+
+.switch-icon {
+    font-size: 22px;
+    color: var(--brand-color-1);
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.switch-btn:hover {
-    box-shadow: 0 2px 8px #1976d220;
-}
-.switch-icon {
-    height: 24px;
-    width: 24px;
-}
+
 .template-filter-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    height: 36px; 
 }
+
 .template-filter {
     background: #fff;
     color: var(--brand-color-1, #0a225d);
-    border-radius: 8px;
-    padding: 4px 14px;
+    height: 36px; /* Reduced height */
+    padding: 0 16px;
     font-size: 1em;
     font-weight: 500;
     cursor: pointer;
-    border: none;
+    border: 1px black solid;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     position: relative;
 }
+
 .template-filter .dropdown-content {
     display: none;
     position: absolute;
@@ -303,23 +261,25 @@ body {
     color: var(--brand-color-1, #0a225d);
     font-size: 18px;
 }
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
+
 .filename-wrapper {
     margin-right: 10px;
 }
+
 .filename-input {
-    border: none;
-    border-radius: 6px;
-    padding: 7px 14px;
-    font-size: 1rem;
-    background: #e8eaf6;
-    color: #222;
+    height: 36px; /* Reduced height */
     width: 180px;
+    padding: 0 12px;
+    border: 1px solid var(--brand-color-1);
+    border-radius: 8px;
+    font-family: "Roboto-Medium", Helvetica;
+    font-size: 16px;
+    color: var(--brand-color-1);
+    background: #e8eaf6;
+    background-color: transparent;
+    transition: all 0.3s ease;
 }
+
 .action-buttons .action-btn {
     background: var(--brand-color-2, #e0ca40);
     color: var(--brand-color-1, #0a225d);
@@ -464,11 +424,7 @@ body {
     margin: 0 auto;
     padding: 0 16px;
 }
-/* .plus-icon{
-    
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.1);
-} */
+
 .add-template-btn{
     display: flex;
     align-items: center;
@@ -484,71 +440,8 @@ body {
     gap: 24px;
 }
 
-/* Switch Button Styles */
-.switch-wrapper {
-    margin-right: 20px;
-}
-
-.switch-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
-.switch-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
 .switch-btn:hover {
     transform: scale(1.1);
-}
-
-.switch-btn.active .switch-icon {
-    transform: rotate(180deg);
-}
-
-/* Template Filter Styles */
-.template-filter-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    height: 36px; /* Reduced height */
-}
-
-.template-filter {
-    height: 36px; /* Reduced height */
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px black solid;
-    border-radius: 8px;
-    position: relative;
-    cursor: pointer;
-}
-
-.template-filter .dropdown-content {
-    display: none;
-    position: absolute;
-    background: #fff;
-    min-width: 120px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 100;
-    top: 36px;
-    left: 0;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.template-filter:hover .dropdown-content {
-    display: block;
 }
 
 .template-filter .dropdown-content a {
@@ -620,19 +513,6 @@ body {
 /* Filename Input Styles */
 .filename-wrapper {
     height: 36px; /* Reduced height */
-}
-
-.filename-input {
-    height: 36px; /* Reduced height */
-    width: 180px;
-    padding: 0 12px;
-    border: 1px solid var(--brand-color-1);
-    border-radius: 8px;
-    font-family: "Roboto-Medium", Helvetica;
-    font-size: 16px;
-    color: var(--brand-color-1);
-    background-color: transparent;
-    transition: all 0.3s ease;
 }
 
 .filename-input:focus {
@@ -991,29 +871,6 @@ body {
     height: 38px;
     margin-right: 18px;
     vertical-align: middle;
-}
-
-.bihar-police-title {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
-    line-height: 1.1;
-}
-.bihar-police-hindi {
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    font-size: 1.15em;
-    font-weight: 700;
-    color: var(--brand-color-1, #0a225d);
-    letter-spacing: 1px;
-}
-.bihar-police-english {
-    font-family: 'Roboto', sans-serif;
-    font-size: 0.95em;
-    font-weight: 500;
-    color: var(--brand-color-1, #0a225d);
-    letter-spacing: 0.5px;
 }
 
 .editor-diary {

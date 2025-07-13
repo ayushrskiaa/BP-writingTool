@@ -335,10 +335,6 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('active');
         sidebar.classList.toggle('open');
         mainContent.classList.toggle('shifted');
-
-        // Rotate switch icon when sidebar is open
-        const switchIcon = this.querySelector('.switch-icon');
-        switchIcon.style.transform = isToggled ? 'rotate(180deg)' : 'rotate(0)';
     });
 
     // Close sidebar when clicking outside
@@ -350,7 +346,6 @@ document.addEventListener('DOMContentLoaded', function () {
             switchBtn.classList.remove('active');
             sidebar.classList.remove('open');
             mainContent.classList.remove('shifted');
-            switchBtn.querySelector('.switch-icon').style.transform = 'rotate(0)';
         }
     });
 
