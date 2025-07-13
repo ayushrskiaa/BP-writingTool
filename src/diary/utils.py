@@ -19,7 +19,8 @@ def get_all_diary():
         doc_dict = {**doc, '_id': str(doc.doc_id)}
         content = doc_dict.get('content')
         if content:
-            doc_dict['content'] = content[:50]
+            doc_dict['content'] = content
+            # doc_dict['content'] = content[:50]
         result.append(doc_dict)
     return result
 

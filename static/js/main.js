@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const filenameInput = document.querySelector('.filename-input');
     const historyList = document.querySelector('.history-list');
 
+    // Global variable to track current document ID
+    let currentDocumentId = null;
+
     // Helper to get today's date string
     function getDateString(date) {
         const today = new Date();
@@ -36,29 +39,48 @@ document.addEventListener('DOMContentLoaded', function () {
     function getActiveTemplate() {
         // Use the filter text as the source of truth
         const filterText = document.querySelector('.template-filter .filter-text')?.textContent?.toLowerCase();
-        console.log("filterText", filterText);
         return filterText === 'diary' ? 'diary' : 'letter';
     }
 
-    // Save document to localStorage
+    // Save/Update document
     saveBtn.addEventListener('click', async function () {
         const filename = filenameInput.value.trim() || 'Untitled';
         let content = '';
         let type = getActiveTemplate();
+        
         if (type === 'letter') {
             content = input.value;
         } else {
             content = getDiaryContent();
         }
+        
         if (!content) return alert('Cannot save empty document!');
 
         try {
-            await fetch(`/create_document/${type}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename, content })
-            });
-            showNotification('Document saved!');
+            if (currentDocumentId) {
+                // Update existing document
+                const response = await fetch(`/update_document/${type}/${currentDocumentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update document');
+                showNotification('Document updated!');
+            } else {
+                // Create new document if none exists
+                const response = await fetch(`/create_document/${type}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to create document');
+                
+                const data = await response.json();
+                currentDocumentId = data.doc_id;
+                showNotification('Document created!');
+            }
         } catch (err) {
             alert('Failed to save document: ' + err);
         }
@@ -69,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Group by date
         const groups = {};
         docs.forEach(doc => {
-            const dateObj = new Date(doc.created_at || doc.timestamp || doc.date || Date.now());
+            const dateObj = new Date(doc.created_at);
             const dateKey = getDateString(dateObj);
             if (!groups[dateKey]) groups[dateKey] = [];
             groups[dateKey].push({ ...doc, date: dateObj });
@@ -98,8 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
                 const firstLine = doc.content;
-                const created = new Date(doc.created_at || doc.date || Date.now());
-                const updated = doc.updated_at ? new Date(doc.updated_at) : created;
+                const updated = new Date(doc.updated_at);
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const item = document.createElement('div');
@@ -118,7 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Load document on click (whole item)
                 item.querySelector('.history-item-details').onclick = () => {
                     filenameInput.value = doc.filename;
-                    if (doc.type === 'diary') {
+                    currentDocumentId = doc._id; // Set current document ID
+                    
+                    if (getActiveTemplate() === 'diary') {
                         document.querySelector('.editor-letter').style.display = 'none';
                         document.querySelector('.editor-diary').style.display = '';
                         document.querySelector('.template-filter .filter-text').textContent = 'Diary';
@@ -138,11 +161,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
                     if (confirm(`Delete "${doc.filename}"?`)) {
-                        await fetch(`/delete_document/${doc.type}/${doc.doc_id}`, {
+                        await fetch(`/delete_document/${getActiveTemplate()}/${doc._id}`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
                         });
                         showNotification('Document deleted.');
+                        loadHistoryFromServer();
                     }
                 };
 
@@ -178,17 +202,6 @@ document.addEventListener('DOMContentLoaded', function () {
             newFileModal.style.display = 'none';
             newFileName.value = '';
         });
-    });
-
-    // Create new file handler
-    createNewFile.addEventListener('click', function () {
-        const fileName = newFileName.value.trim();
-        if (fileName) {
-            filenameInput.value = fileName;
-            newFileModal.style.display = 'none';
-            document.getElementById('hinglish-input').value = ''; // Clear existing content
-            document.getElementById('hinglish-input').focus();
-        }
     });
 
     // Update the export button handler
@@ -306,20 +319,36 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     });
 
-    // Add New Doc logic (clear the correct editor)
-    createNewFile.addEventListener('click', function () {
+    // Create new document via API
+    createNewFile.addEventListener('click', async function () {
         const fileName = newFileName.value.trim();
-        if (fileName) {
+        if (!fileName) return;
+        
+        try {
+            // Create empty document via API
+            const type = getActiveTemplate();
+            const response = await fetch(`/create_document/${type}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    filename: fileName, 
+                    content: ''
+                })
+            });
+            
+            if (!response.ok) throw new Error('Failed to create document');
+            
+            const data = await response.json();
+            currentDocumentId = data.doc_id; // Store the document ID
             filenameInput.value = fileName;
             newFileModal.style.display = 'none';
-            if (getActiveTemplate() === 'letter') {
-                input.value = '';
-                input.focus();
-            } else {
-                // Clear all FIR Diary fields
-                const container = document.getElementById('firExportLayout');
-                container.querySelectorAll('input, textarea').forEach(el => el.value = '');
-            }
+            
+            // Clear the appropriate editor
+            clearCurrentDocument(true);
+            
+            showNotification('New document created!');
+        } catch (err) {
+            alert('Failed to create document: ' + err);
         }
     });
 
@@ -367,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const template = this.getAttribute('data-template');
+            
             // Toggle editor visibility
             document.querySelector('.editor-letter').style.display = (template === 'letter') ? '' : 'none';
             document.querySelector('.editor-diary').style.display = (template === 'diary') ? '' : 'none';
@@ -389,6 +419,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Initial sync
         syncDiaryTextareaHeights();
+    }
+
+    // Clear current document ID when starting fresh
+    function clearCurrentDocument(preserveFilename = false) {
+        if (!preserveFilename) {
+            currentDocumentId = null;
+            filenameInput.value = '';
+        }
+        if (getActiveTemplate() === 'letter') {
+            input.value = '';
+        } else {
+            const container = document.getElementById('firExportLayout');
+            container.querySelectorAll('input, textarea').forEach(el => el.value = '');
+        }
     }
 });
 
