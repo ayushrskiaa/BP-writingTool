@@ -2,18 +2,6 @@ import { diaryExportTemplates, letterExportTemplates } from './export_templates.
 
 const input = document.getElementById('hinglish-input');
 
-const STORAGE_KEY = 'biharPolice_autosave';
-
-
-
-input.addEventListener('input', function () {
-    // Add auto-save
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(saveToLocalStorage, AUTOSAVE_DELAY);
-});
-
-
-
 // Wait for DOM to load before adding event listeners
 document.addEventListener('DOMContentLoaded', function () {
     const addTemplateBtn = document.querySelector('.add-template-btn');
@@ -26,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveBtn = document.getElementById('saveBtn');
     const filenameInput = document.querySelector('.filename-input');
     const historyList = document.querySelector('.history-list');
+
+    // Global variable to track current document ID
+    let currentDocumentId = null;
 
     // Helper to get today's date string
     function getDateString(date) {
@@ -46,38 +37,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getActiveTemplate() {
-        return document.querySelector('.editor-letter').style.display !== 'none' ? 'letter' : 'diary';
+        // Use the filter text as the source of truth
+        const filterText = document.querySelector('.template-filter .filter-text')?.textContent?.toLowerCase();
+        return filterText === 'diary' ? 'diary' : 'letter';
     }
 
-    // Save document to localStorage
+    // Save/Update document
     saveBtn.addEventListener('click', async function () {
         const filename = filenameInput.value.trim() || 'Untitled';
         let content = '';
         let type = getActiveTemplate();
+        
         if (type === 'letter') {
-            content = `<pre style="
-                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                font-size: 16px;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-                border: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-            ">${input.value}</pre>`;
+            content = input.value;
         } else {
             content = getDiaryContent();
         }
+        
         if (!content) return alert('Cannot save empty document!');
 
         try {
-            await fetch('/api/save_document', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename, content, type })
-            });
-            showNotification('Document saved!');
-            await loadHistoryFromServer();
+            if (currentDocumentId) {
+                // Update existing document
+                const response = await fetch(`/update_document/${type}/${currentDocumentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update document');
+                showNotification('Document updated!');
+            } else {
+                // Create new document if none exists
+                const response = await fetch(`/create_document/${type}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to create document');
+                
+                const data = await response.json();
+                currentDocumentId = data.doc_id;
+                showNotification('Document created!');
+            }
         } catch (err) {
             alert('Failed to save document: ' + err);
         }
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Group by date
         const groups = {};
         docs.forEach(doc => {
-            const dateObj = new Date(doc.created_at || doc.timestamp || doc.date || Date.now());
+            const dateObj = new Date(doc.created_at);
             const dateKey = getDateString(dateObj);
             if (!groups[dateKey]) groups[dateKey] = [];
             groups[dateKey].push({ ...doc, date: dateObj });
@@ -116,24 +119,19 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsContainer.className = 'history-items-container';
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                const firstLine = doc.content.split('\n')[0].slice(0, 40);
-                const created = new Date(doc.created_at || doc.date || Date.now());
-                const updated = doc.updated_at ? new Date(doc.updated_at) : created;
-                const createdStr = created.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const firstLine = doc.content;
+                const updated = new Date(doc.updated_at);
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
-                    <i class="fas fa-file-alt"></i>
-                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px;">
+                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px; display: flex; flex-direction: column; gap: 2px;">
                         <span class="history-item-name" style="color:#0a225d;font-weight:500;">${doc.filename}</span>
-                        <span class="history-item-time">Created: ${createdStr}</span>
-                        <span class="history-item-time">Last update: ${updatedStr}</span>
+                        <span class="history-item-time">${updatedStr}</span>
                         <span class="history-item-preview" style="color:#444;">${firstLine}</span>
                     </div>
                     <div class="history-item-actions">
-                        <button class="edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
                         <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -141,7 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Load document on click (whole item)
                 item.querySelector('.history-item-details').onclick = () => {
                     filenameInput.value = doc.filename;
-                    if (doc.type === 'diary') {
+                    currentDocumentId = doc._id; // Set current document ID
+                    
+                    if (getActiveTemplate() === 'diary') {
                         document.querySelector('.editor-letter').style.display = 'none';
                         document.querySelector('.editor-diary').style.display = '';
                         document.querySelector('.template-filter .filter-text').textContent = 'Diary';
@@ -152,31 +152,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.editor-letter').style.display = '';
                         document.querySelector('.editor-diary').style.display = 'none';
                         document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        // FIX: Only set plain text, not HTML
-                        const tempDiv = document.createElement('div');
-tempDiv.innerHTML = doc.content;
-input.value = tempDiv.textContent || tempDiv.innerText || '';
+                        input.value = doc.content;
                         input.focus();
                     }
-                };
-
-                // Edit button (same as above for now)
-                item.querySelector('.edit-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    item.querySelector('.history-item-details').onclick();
                 };
 
                 // Delete button
                 item.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
                     if (confirm(`Delete "${doc.filename}"?`)) {
-                        await fetch('/api/delete_document', {
-                            method: 'POST',
+                        await fetch(`/delete_document/${getActiveTemplate()}/${doc._id}`, {
+                            method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ filename: doc.filename })
                         });
                         showNotification('Document deleted.');
-                        await loadHistoryFromServer();
+                        loadHistoryFromServer();
                     }
                 };
 
@@ -198,7 +188,7 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
     // Load history from server
     async function loadHistoryFromServer() {
         try {
-            const resp = await fetch('/api/get_documents');
+            const resp = await fetch(`/get_documents/${getActiveTemplate()}`);
             const data = await resp.json();
             renderHistory(data.documents);
         } catch (err) {
@@ -206,26 +196,12 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         }
     }
 
-    // Initial render
-    loadHistoryFromServer();
-
     // Close modal handlers
     [closeNewFile, cancelNewFile].forEach(btn => {
         btn.addEventListener('click', function () {
             newFileModal.style.display = 'none';
             newFileName.value = '';
         });
-    });
-
-    // Create new file handler
-    createNewFile.addEventListener('click', function () {
-        const fileName = newFileName.value.trim();
-        if (fileName) {
-            filenameInput.value = fileName;
-            newFileModal.style.display = 'none';
-            document.getElementById('hinglish-input').value = ''; // Clear existing content
-            document.getElementById('hinglish-input').focus();
-        }
     });
 
     // Update the export button handler
@@ -343,20 +319,36 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         };
     });
 
-    // Add New Doc logic (clear the correct editor)
-    createNewFile.addEventListener('click', function () {
+    // Create new document via API
+    createNewFile.addEventListener('click', async function () {
         const fileName = newFileName.value.trim();
-        if (fileName) {
+        if (!fileName) return;
+        
+        try {
+            // Create empty document via API
+            const type = getActiveTemplate();
+            const response = await fetch(`/create_document/${type}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    filename: fileName, 
+                    content: ''
+                })
+            });
+            
+            if (!response.ok) throw new Error('Failed to create document');
+            
+            const data = await response.json();
+            currentDocumentId = data.doc_id; // Store the document ID
             filenameInput.value = fileName;
             newFileModal.style.display = 'none';
-            if (getActiveTemplate() === 'letter') {
-                input.value = '';
-                input.focus();
-            } else {
-                // Clear all FIR Diary fields
-                const container = document.getElementById('firExportLayout');
-                container.querySelectorAll('input, textarea').forEach(el => el.value = '');
-            }
+            
+            // Clear the appropriate editor
+            clearCurrentDocument(true);
+            
+            showNotification('New document created!');
+        } catch (err) {
+            alert('Failed to create document: ' + err);
         }
     });
 
@@ -370,10 +362,11 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         this.classList.toggle('active');
         sidebar.classList.toggle('open');
         mainContent.classList.toggle('shifted');
-
-        // Rotate switch icon when sidebar is open
-        const switchIcon = this.querySelector('.switch-icon');
-        switchIcon.style.transform = isToggled ? 'rotate(180deg)' : 'rotate(0)';
+        
+        // Load history when sidebar is opened
+        if (isToggled) {
+            loadHistoryFromServer();
+        }
     });
 
     // Close sidebar when clicking outside
@@ -385,32 +378,8 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
             switchBtn.classList.remove('active');
             sidebar.classList.remove('open');
             mainContent.classList.remove('shifted');
-            switchBtn.querySelector('.switch-icon').style.transform = 'rotate(0)';
         }
     });
-
-    // Language toggle functionality
-    const langToggleBtn = document.querySelector('.lang-toggle-btn');
-    let isHindi = false;
-
-    langToggleBtn.addEventListener('click', function () {
-        isHindi = !isHindi;
-        this.classList.toggle('active');
-
-        // Toggle the icon
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-toggle-on');
-        icon.classList.toggle('fa-toggle-off');
-
-        // Update textarea placeholder based on language
-        const textarea = document.getElementById('hinglish-input');
-        textarea.placeholder = isHindi ?
-            "यहाँ हिंदी में टाइप करें..." :
-            "यहाँ Hinglish में टाइप करें...";
-
-
-    });
-
 
 
     function updateLogoBg() {
@@ -427,6 +396,7 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const template = this.getAttribute('data-template');
+            
             // Toggle editor visibility
             document.querySelector('.editor-letter').style.display = (template === 'letter') ? '' : 'none';
             document.querySelector('.editor-diary').style.display = (template === 'diary') ? '' : 'none';
@@ -450,37 +420,21 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         // Initial sync
         syncDiaryTextareaHeights();
     }
-});
 
-let autoSaveTimer;
-const AUTOSAVE_DELAY = 1000; // Save after 1 second of inactivity
-
-// Auto-save functionality
-function saveToLocalStorage() {
-    const contentToSave = {
-        mainInput: input.value,
-        timestamp: new Date().getTime()
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(contentToSave));
-}
-
-// Restore saved content
-function restoreSavedContent() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const { mainInput, timestamp } = JSON.parse(saved);
-            input.value = mainInput;
-
-            // Show restoration message
-            const timeDiff = Math.round((new Date().getTime() - timestamp) / 60000);
-            const message = `पिछला कार्य पुनर्स्थापित किया गया (${timeDiff} मिनट पहले का)`;
-            showNotification(message);
+    // Clear current document ID when starting fresh
+    function clearCurrentDocument(preserveFilename = false) {
+        if (!preserveFilename) {
+            currentDocumentId = null;
+            filenameInput.value = '';
         }
-    } catch (error) {
-        console.error('Error restoring saved content:', error);
+        if (getActiveTemplate() === 'letter') {
+            input.value = '';
+        } else {
+            const container = document.getElementById('firExportLayout');
+            container.querySelectorAll('input, textarea').forEach(el => el.value = '');
+        }
     }
-}
+});
 
 // Show notification message
 function showNotification(message) {
@@ -531,6 +485,7 @@ function syncDiaryTextareaHeights() {
     const maxHeight = Math.max(left.scrollHeight, right.scrollHeight);
 
     // Set both to the max height
-    left.style.height = `${maxHeight}px`;    left.style.height = right.style.height = maxHeight + 'px';
-    right.style.height = `${maxHeight}px`;}
+    left.style.height = `${maxHeight}px`;
+    right.style.height = `${maxHeight}px`;
+}
 

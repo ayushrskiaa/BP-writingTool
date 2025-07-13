@@ -23,12 +23,9 @@
                     <span class="bihar-police-hindi">बिहार पुलिस</span>
                     <span class="bihar-police-english">Bihar Police</span>
                 </div>
-                <div class="switch-wrapper">
-                    <button class="switch-btn" title="Switch Editor">
-                        <img src="{{ url_for('static', filename='images/switch.png') }}" alt="Switch"
-                            class="switch-icon">
-                    </button>
-                </div>
+                <button class="switch-btn" title="Show History">
+                    <i class="fas fa-history switch-icon"></i>
+                </button>
                 <div class="template-filter-wrapper">
                     <div class="template-filter" id="templateDropdown">
                         <i class="fas fa-chevron-down"></i>
@@ -192,17 +189,6 @@
                 <h3>History</h3>
             </div>
             <div class="history-list"></div>
-
-            <!-- Keep the language toggle section -->
-            <div class="sidebar-footer">
-                <div class="language-toggle">
-                    <span class="lang-text">हिंदी</span>
-                    <button class="lang-toggle-btn">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <span class="lang-text">Hinglish</span>
-                </div>
-            </div>
         </div>
     </div>
     </div>

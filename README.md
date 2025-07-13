@@ -173,7 +173,11 @@ pip install -r requirements.txt
 
 ---
 
+## API Documentation
 
+See [doc/api_contracts.md](doc/api_contracts.md) for the full API contract and usage examples.
+
+---
 
 ## 📄 License
 
