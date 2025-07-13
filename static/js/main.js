@@ -95,24 +95,20 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsContainer.className = 'history-items-container';
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                const firstLine = doc.content.split('\n')[0].slice(0, 40);
+                const firstLine = doc.content;
                 const created = new Date(doc.created_at || doc.date || Date.now());
                 const updated = doc.updated_at ? new Date(doc.updated_at) : created;
-                const createdStr = created.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
-                    <i class="fas fa-file-alt"></i>
-                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px;">
+                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px; display: flex; flex-direction: column; gap: 2px;">
                         <span class="history-item-name" style="color:#0a225d;font-weight:500;">${doc.filename}</span>
-                        <span class="history-item-time">Created: ${createdStr}</span>
-                        <span class="history-item-time">Last update: ${updatedStr}</span>
+                        <span class="history-item-time">${updatedStr}</span>
                         <span class="history-item-preview" style="color:#444;">${firstLine}</span>
                     </div>
                     <div class="history-item-actions">
-                        <button class="edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
                         <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -134,12 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         input.value = doc.content;
                         input.focus();
                     }
-                };
-
-                // Edit button (same as above for now)
-                item.querySelector('.edit-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    item.querySelector('.history-item-details').onclick();
                 };
 
                 // Delete button

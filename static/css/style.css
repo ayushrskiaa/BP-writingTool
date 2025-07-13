@@ -900,8 +900,7 @@ body {
 
 .history-item-actions button {
     background: #fff;
-    border: 1px solid #0a225d;
-    color: #0a225d;
+    border: none;
     border-radius: 4px;
     padding: 2px 6px;
     cursor: pointer;
@@ -910,8 +909,7 @@ body {
 }
 
 .history-item-actions button:hover {
-    background: #e0ca40;
-    color: #000;
+    background: #ff9b7c;
 }
 
 .history-item:hover {
@@ -1035,28 +1033,6 @@ body {
     font-weight: 500;
     color: var(--brand-color-1, #0a225d);
     letter-spacing: 0.5px;
-}
-
-.history-item-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-left: 8px;
-}
-.history-item-actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #888;
-    font-size: 1.1em;
-    padding: 2px 4px;
-    transition: color 0.2s;
-}
-.history-item-actions button:hover {
-    color: #e74c3c;
-}
-.edit-btn:hover {
-    color: #4a90e2;
 }
 
 .editor-diary {
