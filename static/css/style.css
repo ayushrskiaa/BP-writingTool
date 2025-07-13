@@ -570,34 +570,6 @@ body {
     background: #f5f7fa;
 }
 
-/* Language Toggle */
-.language-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 50%;
-    margin-top: 50%;
-}
-
-.lang-text {
-    font-family: "Roboto-Medium", Helvetica;
-    font-size: 14px;
-    color: var(--brand-color-1);
-}
-
-.lang-toggle-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font-size: 24px;
-    color: var(--brand-color-1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
 /* Preview Text */
 .preview-text {
     font-family: "Inter-Regular", Helvetica;
@@ -781,33 +753,6 @@ body {
     background: #fff;
     margin-top: auto;
     box-sizing: border-box; /* Include padding in width */
-}
-
-.language-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 70%;
-    margin-top: 370px;
-}
-
-.lang-text {
-    font-family: "Roboto-Medium", Helvetica;
-    font-size: 14px;
-    color: var(--brand-color-1);
-}
-
-.lang-toggle-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font-size: 24px;
-    color: var(--brand-color-1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
 }
 
 /* Preview Modal Styles */

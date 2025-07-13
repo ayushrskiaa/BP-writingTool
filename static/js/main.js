@@ -43,26 +43,17 @@ document.addEventListener('DOMContentLoaded', function () {
         let content = '';
         let type = getActiveTemplate();
         if (type === 'letter') {
-            content = `<pre style="
-                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                font-size: 16px;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-                border: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-            ">${input.value}</pre>`;
+            content = input.value;
         } else {
             content = getDiaryContent();
         }
         if (!content) return alert('Cannot save empty document!');
 
         try {
-            await fetch('/api/save_document', {
+            await fetch(`/create_document/${type}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename, content, type })
+                body: JSON.stringify({ filename, content })
             });
             showNotification('Document saved!');
             await loadHistoryFromServer();
@@ -140,10 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.editor-letter').style.display = '';
                         document.querySelector('.editor-diary').style.display = 'none';
                         document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        // FIX: Only set plain text, not HTML
-                        const tempDiv = document.createElement('div');
-tempDiv.innerHTML = doc.content;
-input.value = tempDiv.textContent || tempDiv.innerText || '';
+                        input.value = doc.content;
                         input.focus();
                     }
                 };
@@ -158,10 +146,9 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
                 item.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
                     if (confirm(`Delete "${doc.filename}"?`)) {
-                        await fetch('/api/delete_document', {
-                            method: 'POST',
+                        await fetch(`/delete_document/${doc.type}/${doc.doc_id}`, {
+                            method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ filename: doc.filename })
                         });
                         showNotification('Document deleted.');
                         await loadHistoryFromServer();
@@ -186,7 +173,7 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
     // Load history from server
     async function loadHistoryFromServer() {
         try {
-            const resp = await fetch('/api/get_documents');
+            const resp = await fetch(`/get_documents/${getActiveTemplate()}`);
             const data = await resp.json();
             renderHistory(data.documents);
         } catch (err) {
@@ -377,29 +364,6 @@ input.value = tempDiv.textContent || tempDiv.innerText || '';
         }
     });
 
-    // Language toggle functionality
-    const langToggleBtn = document.querySelector('.lang-toggle-btn');
-    let isHindi = false;
-
-    langToggleBtn.addEventListener('click', function () {
-        isHindi = !isHindi;
-        this.classList.toggle('active');
-
-        // Toggle the icon
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-toggle-on');
-        icon.classList.toggle('fa-toggle-off');
-
-        // Update textarea placeholder based on language
-        const textarea = document.getElementById('hinglish-input');
-        textarea.placeholder = isHindi ?
-            "यहाँ हिंदी में टाइप करें..." :
-            "यहाँ Hinglish में टाइप करें...";
-
-
-    });
-
-
 
     function updateLogoBg() {
         if (input.value.trim() === '') {
@@ -489,6 +453,7 @@ function syncDiaryTextareaHeights() {
     const maxHeight = Math.max(left.scrollHeight, right.scrollHeight);
 
     // Set both to the max height
-    left.style.height = `${maxHeight}px`;    left.style.height = right.style.height = maxHeight + 'px';
-    right.style.height = `${maxHeight}px`;}
+    left.style.height = `${maxHeight}px`;
+    right.style.height = `${maxHeight}px`;
+}
 
