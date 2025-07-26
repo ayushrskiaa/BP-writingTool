@@ -10,7 +10,7 @@ from datetime import datetime
 from werkzeug.serving import make_server
 import queue
 
-from src.utils import check_port_available
+from src.utils import check_port_available, kill_process_on_port
 from src.logger import logger
 
 
@@ -147,12 +147,24 @@ class FlaskAppGUI:
         self.log_message("Starting server automatically...")
         self.update_status('starting', 'warning')
         
+        # Check if port is in use and kill any existing process
         if not check_port_available(8080):
-            self.log_message("❌ Port 8080 is already in use.")
-            self.update_status('stopped', 'danger')
-            messagebox.showerror("Port Error", "Port 8080 is already in use. Please close any other applications using this port.")
-            return
+            self.log_message("⚠️ Port 8080 is in use. Attempting to kill existing process...")
+            if kill_process_on_port(8080):
+                self.log_message("✅ Successfully killed process on port 8080.")
+                # Wait a moment for the port to be released
+                self.root.after(1000, self._start_server_after_kill)
+                return
+            else:
+                self.log_message("❌ Failed to kill process on port 8080.")
+                self.update_status('stopped', 'danger')
+                messagebox.showerror("Port Error", "Port 8080 is already in use and could not be freed. Please close any other applications using this port.")
+                return
 
+        self._start_server_after_kill()
+
+    def _start_server_after_kill(self):
+        """Start the server after ensuring port is available"""
         try:
             # Start the server in the background
             threading.Thread(target=self.run_flask_server, daemon=True).start()

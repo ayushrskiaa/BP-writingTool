@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
             content = dataManager.getLetterContent();
         } else {
             content = dataManager.getDiaryContent();
-            console.log("content", content);
         }
         
         if (!content) return alert('Cannot save empty document!');

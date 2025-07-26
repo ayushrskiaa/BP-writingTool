@@ -1,9 +1,58 @@
 import socket
 import os
 import sys
+import subprocess
+import platform
 from pathlib import Path
 
 app_name = "BiharPoliceWritingTool"
+
+def kill_process_on_port(port):
+    """
+    Kill any process running on the specified port.
+    
+    Args:
+        port (int): The port number to check and kill processes on
+        
+    Returns:
+        bool: True if process was killed or no process was found, False if failed
+    """
+    try:
+        if platform.system() == "Windows":
+            # Windows: Use netstat to find process and taskkill to kill it
+            cmd = f'netstat -ano | findstr :{port}'
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            if result.returncode == 0 and result.stdout.strip():
+                # Extract PID from netstat output
+                lines = result.stdout.strip().split('\n')
+                for line in lines:
+                    if f':{port}' in line and 'LISTENING' in line:
+                        parts = line.split()
+                        if len(parts) >= 5:
+                            pid = parts[-1]
+                            # Kill the process
+                            kill_cmd = f'taskkill /PID {pid} /F'
+                            subprocess.run(kill_cmd, shell=True, capture_output=True)
+                            return True
+        else:
+            # Unix-like systems (macOS, Linux): Use lsof and kill
+            cmd = f'lsof -ti:{port}'
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            if result.returncode == 0 and result.stdout.strip():
+                pids = result.stdout.strip().split('\n')
+                for pid in pids:
+                    if pid.strip():
+                        # Kill the process
+                        kill_cmd = f'kill -9 {pid.strip()}'
+                        subprocess.run(kill_cmd, shell=True, capture_output=True)
+                return True
+        
+        return True  # No process found or successfully killed
+    except Exception as e:
+        print(f"Error killing process on port {port}: {e}")
+        return False
 
 def check_port_available(port):
     try:
