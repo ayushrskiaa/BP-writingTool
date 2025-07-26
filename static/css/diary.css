@@ -5,6 +5,7 @@ body {
 .editor-wrapper {
     background: #fffbe7;
     border: 2px solid #e0ca40;
+    resize: vertical;
 }
 .editor-wrapper.editor-diary,
 #diaryExportLayout {
