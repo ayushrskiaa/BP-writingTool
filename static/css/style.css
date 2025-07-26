@@ -81,32 +81,30 @@ body {
 }
 
 .editor-wrapper.editor-letter {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    width: 90vw !important;
-    height: 90vh !important;
-    margin: 5vh 5vw 10vh 5vw !important;
-    padding: 0 !important;
-    max-width: none !important;
-    max-height: none !important;
+    background: #fff;
+    border: 2px solid #0700d3;
+    width: 220mm;           /* A4 width */
+    min-height: 297mm;      /* A4 height */
+    max-width: 95vw;
+    margin: 100px auto 20px auto;
+    box-shadow: 0 2px 16px #4a90e220;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    overflow: visible;
+    resize: vertical;       /* Allow vertical resizing */
+    display: block;
 }
 
 #hinglish-input {
-    width: 100%;
+    width: 210mm;
     height: 600px;
-    min-height: 600px;
+    min-height: 1080px;
     max-height: 600px;
     padding: 20px;
     border: 1px solid var(--brand-color-1);
     border-radius: 8px;
     font-size: 16px;
     line-height: 1.5;
-    resize: none;
+    resize: vertical;
     font-family: 'Noto Sans Devanagari', sans-serif;
     box-sizing: border-box;
 }
@@ -885,6 +883,8 @@ body {
     width: 90%;
     margin-top: 100px;
     box-shadow: #4a90e2;
+    resize: vertical;
+    height: auto;
 }
 #diary-input {
     background: #fffde7;
