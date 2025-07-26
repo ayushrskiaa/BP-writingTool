@@ -89,7 +89,7 @@
         </div>
         <!-- Diary Editor (hidden by default) -->
         <div class="editor-wrapper editor-diary" style="display:none;">
-            <div id="firExportLayout" class="fir-export-layout">
+            <div id="diaryExportLayout" class="fir-export-layout">
                 <div class="diary-header-row">
                     <div class="diary-header-left">
                         <div>अनुसूची 47, प्रपत्र संख्या 120 अ</div>
@@ -147,8 +147,7 @@
                     <table class="fir-table">
                         <tr>
                             <td>
-                                <b>किन तिथि को (समय सहित )<br>
-                                कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</b>
+                                <b>किन तिथि को (समय सहित) कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया|</b>
                                 <textarea class="fir-input hinglish-input"
                                     data-field="left_box"
                                     placeholder="यहाँ विवरण लिखें..."></textarea>
@@ -163,21 +162,6 @@
                         </tr>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="previewModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>पूर्वावलोकन (Preview)</h3>
-                <button class="close-btn" id="closePreview">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="preview-page" id="previewContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancelPreview" class="modal-btn btn-secondary">बंद करें (Close)</button>
-                <button id="confirmExport" class="modal-btn btn-primary"><span>डाउनलोड करें (Download)</span></button>
             </div>
         </div>
     </div>
