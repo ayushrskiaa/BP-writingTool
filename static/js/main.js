@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (type === 'letter') {
             content = dataManager.getLetterContent();
         } else {
-            content = JSON.stringify(dataManager.getDiaryContent());
+            content = dataManager.getDiaryContent();
+            console.log("content", content);
         }
         
         if (!content) return alert('Cannot save empty document!');
@@ -148,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.template-filter .filter-text').textContent = 'Diary';
                         let diaryData;
                         try {
-                            console.log("doc.content", doc.content);
                             diaryData = typeof doc.content === 'string' ? JSON.parse(doc.content) : doc.content;
                         } catch {
                             diaryData = {};

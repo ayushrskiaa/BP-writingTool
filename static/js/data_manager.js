@@ -12,6 +12,7 @@ export class DataManager {
         inputs.forEach(input => {
             data[input.name] = input.value || '';
         });
+        console.log("data", data);
         return data;
     }
 
