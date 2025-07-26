@@ -117,15 +117,6 @@ body {
     box-shadow: 0 0 0 2px rgba(5, 35, 97, 0.1);
 }
 
-#hinglish-input.bg-logo {
-    background: url('/static/images/bihar-police-logo.svg') center center no-repeat;
-    background-size: 220px auto;
-    background-color: #fff;
-    opacity: 1;
-    background-blend-mode: lighten;
-    margin-top: 5%;
-}
-
 .button-group {
     margin-top: 18px;
     text-align: right;
@@ -400,6 +391,21 @@ body {
     padding: 8px;
     font-size: 15px;
     background: #fff;
+}
+
+.fir-table td:first-child {
+    width: 25%;
+}
+
+.fir-table td:last-child {
+    width: 75%;
+}
+
+.fir-table th:first-child {
+    width: 25%;
+}
+.fir-table th:last-child {
+    width: 75%;
 }
 
 /* Header Styles */

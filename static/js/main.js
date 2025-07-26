@@ -1,4 +1,5 @@
-import { diaryExportTemplates, letterExportTemplates } from './export_templates.js';
+import { ExportManager } from './export_manager.js';
+import { DataManager } from './data_manager.js';
 
 const input = document.getElementById('hinglish-input');
 
@@ -49,9 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let type = getActiveTemplate();
         
         if (type === 'letter') {
-            content = input.value;
+            content = dataManager.getLetterContent();
         } else {
-            content = getDiaryContent();
+            content = JSON.stringify(dataManager.getDiaryContent());
         }
         
         if (!content) return alert('Cannot save empty document!');
@@ -145,14 +146,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.editor-letter').style.display = 'none';
                         document.querySelector('.editor-diary').style.display = '';
                         document.querySelector('.template-filter .filter-text').textContent = 'Diary';
-                        setDiaryContent(doc.content);
+                        let diaryData;
+                        try {
+                            console.log("doc.content", doc.content);
+                            diaryData = typeof doc.content === 'string' ? JSON.parse(doc.content) : doc.content;
+                        } catch {
+                            diaryData = {};
+                        }
+                        dataManager.setDiaryContent(diaryData);
                         // Focus first diary field
                         document.querySelector('.editor-diary textarea, .editor-diary input')?.focus();
                     } else {
                         document.querySelector('.editor-letter').style.display = '';
                         document.querySelector('.editor-diary').style.display = 'none';
                         document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        input.value = doc.content;
+                        dataManager.setLetterContent(doc.content);
                         input.focus();
                     }
                 };
@@ -204,119 +212,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Update the export button handler
+    // Initialize Managers
+    const exportManager = new ExportManager();
+    const dataManager = new DataManager();
+
+    // Export button handler - now much cleaner!
     exportBtn.addEventListener('click', async function () {
-        let content = '';
-        if (getActiveTemplate() === 'letter') {
-            content = letterExportTemplates.letterHeader({ letter_content: input.value });
-        } else {
-            const container = document.getElementById('firExportLayout');
-            const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
-
-            // --- PAGINATION LOGIC ---
-            // Adjust this limit for your print size/font
-            const CHARS_PER_PAGE = 500; // First page
-            const CHARS_PER_PAGE_SECONDARY = 900; // Subsequent pages
-
-            function paginateColumns(left, right, limitFirst, limitRest) {
-                const leftPages = [];
-                const rightPages = [];
-                let i = 0, j = 0;
-                let first = true;
-                while (i < left.length || j < right.length) {
-                    const limit = first ? limitFirst : limitRest;
-                    leftPages.push(left.slice(i, i + limit));
-                    rightPages.push(right.slice(j, j + limit));
-                    i += limit;
-                    j += limit;
-                    first = false;
-                }
-                return [leftPages, rightPages];
-            }
-
-            const [leftPages, rightPages] = paginateColumns(
-                get('left_box'),
-                get('right_box'),
-                CHARS_PER_PAGE,
-                CHARS_PER_PAGE_SECONDARY
-            );
-            const maxPages = leftPages.length;
-
-            // Header HTML (repeat on every page)
-            function getHeader(get) {
-                return diaryExportTemplates.diaryHeader({
-                    case_diary_no: get('case_diary_no'),
-                    rule_no: get('rule_no'),
-                    special_report_no: get('special_report_no'),
-                    thana: get('thana'),
-                    district: get('district'),
-                    against_1: get('against_1'),
-                    against_2: get('against_2'),
-                    fir_number: get('fir_number'),
-                    fir_date: get('fir_date'),
-                    event_date_place: get('event_date_place'),
-                    sections: get('sections'),
-                });
-            }
-
-            // Table HTML for each page
-            function getTable(left, right, showHeader = false) {
-                return diaryExportTemplates.diaryTable({ showHeader: showHeader, left_box: left, right_box: right });
-            }
-
-            // Build all pages
-            let pagesHtml = '';
-            for (let i = 0; i < maxPages; i++) {
-                if (i === 0) {
-                    pagesHtml += getHeader(get) + getTable(leftPages[i], rightPages[i], true);
-                } else {
-                    pagesHtml += getTable(leftPages[i], rightPages[i], false);
-                }
-            }
-            content = pagesHtml;
-        }
-        if (!content) return alert('Cannot export empty document!');
-
-        // Open print window with the formatted content
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Print Document</title>
-                <style>
-                    @media print {
-                        body { margin: 20mm 15mm 20mm 15mm; }
-                    }
-                    body {
-                        margin: 20mm 15mm 20mm 15mm;
-                        background: #fff;
-                    }
-                    pre {
-                        font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                        font-size: 18px;
-                        margin: 0;
-                        padding: 0;
-                        background: #fff;
-                        border: none;
-                        white-space: pre-wrap;
-                        word-break: break-word;
-                    }
-                </style>
-            </head>
-            <body>
-                ${content}
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.onload = function () {
-            printWindow.print();
-            printWindow.onafterprint = function () {
-                printWindow.close();
-            };
-        };
+        const template = getActiveTemplate();
+        await exportManager.handleExport(template);
     });
 
     // Create new document via API
@@ -381,17 +284,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
-    function updateLogoBg() {
-        if (input.value.trim() === '') {
-            input.classList.add('bg-logo');
-        } else {
-            input.classList.remove('bg-logo');
-        }
-    }
-    updateLogoBg();
-    input.addEventListener('input', updateLogoBg);
-
     document.querySelectorAll('.template-filter .dropdown-content a').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
@@ -427,12 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
             currentDocumentId = null;
             filenameInput.value = '';
         }
-        if (getActiveTemplate() === 'letter') {
-            input.value = '';
-        } else {
-            const container = document.getElementById('firExportLayout');
-            container.querySelectorAll('input, textarea').forEach(el => el.value = '');
-        }
+        dataManager.clearFormData(getActiveTemplate());
     }
 });
 
@@ -448,28 +335,7 @@ function showNotification(message) {
         setTimeout(() => document.body.removeChild(messageDiv), 500);
     }, 2000);
 }
-// Serialize all FIR Diary fields into a string for saving/exporting
-function getDiaryContent() {
-    const container = document.getElementById('firExportLayout');
-    const inputs = container.querySelectorAll('input, textarea');
-    let content = '';
-    inputs.forEach(input => {
-        const label = input.closest('td')?.querySelector('b')?.innerText || input.dataset.field || '';
-        content += (label ? label + ': ' : '') + (input.value || '') + '\n';
-    });
-    return content.trim();
-}
 
-// Restore content to the FIR Diary fields (if you want to support editing)
-function setDiaryContent(content) {
-    const container = document.getElementById('firExportLayout');
-    const inputs = container.querySelectorAll('input, textarea');
-    // This assumes content is a string with lines in the same order as fields
-    const lines = content.split('\n');
-    inputs.forEach((input, i) => {
-        input.value = lines[i] ? lines[i].replace(/^.*?:\s*/, '') : '';
-    });
-}
 
 // Sync heights of diary textareas
 function syncDiaryTextareaHeights() {

@@ -7,7 +7,7 @@ body {
     border: 2px solid #e0ca40;
 }
 .editor-wrapper.editor-diary,
-#firExportLayout {
+#diaryExportLayout {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -100,9 +100,7 @@ body {
     max-width: 100%;
     font-size: 1.1em;
 }
-.fir-table td {
-    background: #fff;
-}
+
 textarea.fir-input {
     font-size: 15px;
     min-height: 80px;
