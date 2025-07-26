@@ -150,10 +150,6 @@ export const pagedExportTemplates = {
                     border-top: 1px solid #000 !important;
                 }
 
-                .entry-number {
-                    font-size: 12px;
-                }
-
                 .content-area {
                     white-space: pre-wrap;
                     word-break: break-word;
@@ -251,7 +247,7 @@ export const pagedExportTemplates = {
             ${data.showHeader ? `
             <tr class="table-header">
                 <th class="left-column">किन तिथि को (समय सहित )<br>कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</th>
-                <th class="right-column">अन्वेषण का अभिलेख<br><span class="entry-number">(01)</span></th>
+                <th class="right-column">अन्वेषण का अभिलेख</th>
             </tr>
             ` : ''}
             <tr>

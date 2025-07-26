@@ -7,22 +7,20 @@ export class DataManager {
     // Get diary content for saving
     getDiaryContent() {
         const container = document.getElementById('diaryExportLayout');
-        const inputs = container.querySelectorAll('input[name], textarea[name]');
+        const inputs = container.querySelectorAll('input[data-field], textarea[data-field]');
         const data = {};
         inputs.forEach(input => {
-            data[input.name] = input.value || '';
+            data[input.getAttribute('data-field')] = input.value || '';
         });
-        console.log("data", data);
         return data;
     }
 
     // Set diary content for loading
     setDiaryContent(data) {
-        console.log("data", data);
         const container = document.getElementById('diaryExportLayout');
-        const inputs = container.querySelectorAll('input[name], textarea[name]');
+        const inputs = container.querySelectorAll('input[data-field], textarea[data-field]');
         inputs.forEach(input => {
-            const key = input.name;
+            const key = input.getAttribute('data-field');
             if (data && data.hasOwnProperty(key)) {
                 input.value = data[key];
             } else {
