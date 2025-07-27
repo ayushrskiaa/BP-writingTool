@@ -1,192 +1,199 @@
 # 📝 BP Writing Tool
-**BP Writing Tool** is a modern, cross-platform desktop application that makes writing in Hindi (Devanagari script) fast, accurate, and accessible. Simply type in Hinglish (Romanized Hindi), and the tool instantly transliterates your text into Hindi script using advanced language models. Whether you're a student, teacher, professional, or content creator, BP Writing Tool helps you write, organize, and export Hindi documents with ease—all while keeping your data private and offline.
+
+[![Build Status](https://github.com/ayushrskiaa/BP-writingTool/workflows/Build%20and%20Release%20Application/badge.svg)](https://github.com/ayushrskiaa/BP-writingTool/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey.svg)](https://github.com/ayushrskiaa/BP-writingTool/releases)
+
+**BP Writing Tool** is a specialized desktop application developed specifically for the **Bihar Police** to facilitate Hindi document creation and management. This tool enables officers and staff to write in Hindi (Devanagari script) efficiently by typing in Hinglish (Romanized Hindi), with instant transliteration to Hindi script using advanced language models.
+
+![BP Writing Tool Interface](doc/image.png)
+
+## ✨ Features
+
+- 🚀 **Instant Transliteration** - Type in Hinglish, see Hindi output in real-time
+- 📄 **Document Management** - Create, edit, save, and delete multiple documents
+- 📚 **History Sidebar** - Browse and manage your document history, grouped by date
+- 📤 **Export & Print** - Download or print your Hindi documents in styled format
+- 💻 **Cross-Platform** - Available for Windows and macOS as standalone apps
+- 🔒 **Local Data Storage** - All documents stored locally on device
+- 🌐 **Extension Integration** - Enhanced input via Chrome extensions (requires internet)
+- 🎯 **User-Friendly** - Clean interface with Tkinter-based GUI controller
+
+## 🚀 Quick Start
+
+### Download Latest Release
+
+Visit our [Releases page](https://github.com/ayushrskiaa/BP-writingTool/releases) to download the latest version for your platform:
+- **Windows**: Download `BP-writing tool.exe`
+- **macOS**: Download `BP-writing-tool-macos.zip`, extract, and drag `MyApp.app` to Applications
+
+### Prerequisites for Full Functionality
+
+**Browser Requirement:** Use Google Chrome browser to access the required extensions.
+
+To use the application at its full potential, install these Chrome browser extensions:
+
+1. **[Google Input Tools](https://chromewebstore.google.com/detail/google-input-tools/mclkkofklkfljcocdinagocijmpgbhab?hl=en-US&utm_source=ext_sidebar)** - Provides virtual keyboards for over 90 languages, full IMEs for over 30 scripts, and handwriting input for over 40 languages. Enables enhanced Hindi input and transliteration.
+
+2. **[Voice In - Speech-To-Text Dictation](https://chromewebstore.google.com/detail/voice-in-speech-to-text-d/pjnefijmagpdjfhhkpljicbbpicelgko?hl=en-US&utm_source=ext_sidebar)** - Enables voice typing in 50+ languages with real-time speech-to-text transcription. Works on 10k+ websites and supports 40+ languages.
+
+**Note:** These extensions require internet connectivity to function, while your document data remains stored locally on your device for privacy and security.
+
+## 🔧 Configuration
+
+The application uses a local TinyDB database (`db.json`) that is automatically created on first run. All documents and settings are stored locally on your device, ensuring complete privacy and data security.
+
+**Data Privacy:** Your documents are never transmitted over the internet and remain stored locally on your device. The Chrome extensions mentioned above require internet connectivity for their functionality, but they do not access your document data.
+
+## 📖 API Documentation
+
+See [doc/api_contracts.md](doc/api_contracts.md) for the full API contract and usage examples.
+
+## 🐛 Issues and Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/ayushrskiaa/BP-writingTool/issues) page for existing solutions
+2. Create a new issue with detailed information about your problem
+3. Include your operating system, Python version, and any error messages
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-![alt text](doc/image.png)
 
-## ℹ️ What is Bihar Police Writing Tool?
+## 👨‍💻 For Developers
 
-BP Writing Tool is designed for anyone who wants to write in Hindi without needing to know the Devanagari keyboard layout. By leveraging transliteration, you can type phonetically in English letters and see your words appear in Hindi. The application provides a clean interface for creating, editing, saving, and exporting documents, and it works seamlessly on both Windows and macOS.
+### Prerequisites
 
----
-## 🛡️ Purpose and Audience
+- Python 3.11 or higher
+- pip (Python package installer)
 
-This project is specially developed for the **Bihar Police** to make writing in Hindi easier, faster, and more accessible in a fully digitalized format. It is designed to streamline the process of creating official documents, reports, and communications in Hindi without the need for a Devanagari keyboard or specialized training.
+### Installation from Source
 
-**Key benefits for Bihar Police:**
-- **No Internet Required:** The application works entirely offline, ensuring data privacy and security. There is no dependency on the internet or any third-party service.
-- **Digital Transformation:** Enables officers and staff to create, manage, and export Hindi documents digitally, reducing paperwork and manual errors.
-- **User-Friendly:** Anyone can type in Hinglish (Romanized Hindi), and the tool will instantly convert it to accurate Hindi script.
-- **Data Privacy:** All documents are stored locally on the user's machine, eliminating risks associated with cloud storage or external applications.
+```bash
+# Clone the repository
+git clone https://github.com/ayushrskiaa/BP-writingTool.git
+cd BP-writingTool
 
-By adopting BP Writing Tool, the Bihar Police can modernize their documentation workflow, improve efficiency, and ensure that sensitive information remains secure and offline.
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
----
-## ✨ Key Features
+# Install dependencies
+pip install -r requirements.txt
 
-- **Instant Transliteration:** Type in Hinglish, see Hindi output in real time.
-- **Document Management:** Create, edit, save, and delete multiple documents.
-- **History Sidebar:** Browse and manage your document history, grouped by date.
-- **Export & Print:** Download or print your Hindi documents in a styled format.
-- **Cross-Platform:** Available for Windows and macOS as a standalone app.
-- **Offline & Private:** All data is stored locally in a lightweight database (`db.json`).
-- **No Python Needed:** End users don’t need Python installed—just run the packaged app.
-- **GUI Controller:** A Tkinter-based GUI lets you start and stop the server easily (when packaged).
+# Run the application
+python app.py
+```
 
----
+The app will be available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
-## 🚀 Typical Use Cases
-
-- **Academic Writing:** Essays, assignments, and study notes in Hindi.
-- **Professional Documents:** Letters, reports, and business proposals.
-- **Creative Writing:** Stories, poems, and articles in your native language.
-- **Content Creation:** Social media posts, blogs, and more.
-
----
-
-## 🏗️ Technology Stack
-
-- **Frontend:** HTML, CSS, JavaScript (served via Flask)
-- **Backend:** Python (Flask)
-- **Transliteration:** [hindi-xlit](https://pypi.org/project/hindi-xlit/)
-- **Database:** TinyDB (local JSON storage)
-- **Packaging:** PyInstaller for standalone executables
-
----
-
-## 📦 Project Structure
+### Project Structure
 
 ```
 BP-writingTool/
 ├── app.py                  # Main Flask application
-├── db.json                 # TinyDB database (auto-created)
 ├── requirements.txt        # Python dependencies
-├── Makefile                # Build and management commands
-├── MyApp.spec              # PyInstaller spec for packaging
-├── app.spec                # Alternate PyInstaller spec
-├── hook-hindi_xlit.py      # PyInstaller hook for hindi-xlit
-├── static/
-│   ├── app.js
-│   ├── style.css
-│   ├── css/
-│   ├── images/
-│   └── js/
-├── templates/
-│   └── index.html
-└── README.md
+├── Makefile               # Build and management commands
+├── MyApp.spec             # PyInstaller spec for packaging
+├── src/                   # Source code
+│   ├── launcher.py        # Tkinter GUI launcher
+│   ├── routers.py         # Flask routes
+│   ├── utils.py           # Utility functions
+│   ├── db_handler.py      # Database operations
+│   └── diary/             # Diary-related modules
+├── static/                # Static assets
+│   ├── app.js             # Main JavaScript
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript modules
+│   └── images/            # Images and icons
+├── templates/             # HTML templates
+│   └── index.html         # Main template
+└── .github/workflows/     # GitHub Actions
+    ├── main.yml           # Build and release workflow
+    └── cleanup-keep-n.yml # Cleanup workflow
 ```
 
----
-
-## 🛠️ Getting Started (For Developers)
-
-### 1. Clone the Repository
+### Building Standalone Applications
 
 ```bash
-git clone <your-repository-url>
-cd BP-writingTool/BP-writingTool
-```
+# Install PyInstaller
+pip install pyinstaller
 
-### 2. Create and Activate a Virtual Environment
+# Build for current platform
+make build
 
-**On Windows:**
-```bash
-python -m venv venv
-.\venv\Scripts\activate
-```
-
-**On macOS/Linux:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-**Using pip:**
-```bash
-pip install -r requirements.txt
-```
-
-**Or using the Makefile (macOS/Linux):**
-```bash
-make install
-```
-
----
-
-## 🚀 Running the Application
-
-**From Source:**
-```bash
-python app.py
-```
-or
-```bash
-make run
-```
-
-- The app will be available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
----
-
-## 📦 Building the Standalone Application
-
-The app is bundled using **PyInstaller**. Use the provided spec file and Makefile.
-
-### On Windows
-
-```bash
+# Or manually
 pyinstaller MyApp.spec
 ```
-- The executable will be in the `dist/` folder as `MyApp.exe`.
 
-### On macOS
+The executables will be in the `dist/` folder.
 
-```bash
-make build
-```
-- The app bundle will be in `dist/MyApp.app`.
-
----
-
-## 🧹 Cleaning Build Artifacts
-
-To remove build folders and caches:
+### Available Make Commands
 
 ```bash
-make clean
+make install    # Install dependencies
+make build      # Build standalone application
+make run        # Run from source
+make clean      # Clean build artifacts
+make help       # Show all commands
 ```
 
+### Technology Stack
+
+- **Frontend**: HTML, CSS, JavaScript (served via Flask)
+- **Backend**: Python (Flask)
+- **Transliteration**: [hindi-xlit](https://pypi.org/project/hindi-xlit/)
+- **Database**: TinyDB (local JSON storage)
+- **Packaging**: PyInstaller for standalone executables
+- **CI/CD**: GitHub Actions for automated builds and releases
+
+### Requirements
+
+- **flask==3.1.1** - Web framework for the backend server
+- **tinydb==4.8.2** - Lightweight, document-oriented database
+- **pillow==11.3.0** - Python Imaging Library for image processing
+
+## 🤝 Contributing
+
+This project is developed specifically for the Bihar Police but is open source to encourage community contributions and improvements. While the primary audience is law enforcement personnel in Bihar, we welcome contributions from developers who can help enhance the tool's functionality and usability.
+
+Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+### How to Contribute
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow PEP 8 style guidelines
+- Add tests for new features
+- Update documentation as needed
+- Ensure the application builds successfully
+
+## 🙏 Acknowledgments
+
+- [Flask](https://flask.palletsprojects.com/) - Web framework
+- [hindi-xlit](https://pypi.org/project/hindi-xlit/) - Transliteration engine
+- [TinyDB](https://tinydb.readthedocs.io/) - Lightweight database
+- [PyInstaller](https://pyinstaller.org/) - Application packaging
+
+## 📊 Project Status
+
+- ✅ **Active Development** - Regular updates and improvements
+- ✅ **Cross-Platform** - Windows and macOS support
+- ✅ **Automated Builds** - GitHub Actions for continuous integration
+- ✅ **Version Management** - Automated releases with versioning
+- ✅ **Bihar Police Specific** - Tailored for law enforcement documentation needs
+- ✅ **Open Source** - Available for community contributions and improvements
+
 ---
 
-## 🧩 Python Packages Used
-
-- **flask**: Web framework for the backend server.
-- **hindi-xlit**: Transliteration engine (Hinglish → Devanagari).
-- **tinydb**: Lightweight, document-oriented database for storing documents.
-
-Install all with:
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## API Documentation
-
-See [doc/api_contracts.md](doc/api_contracts.md) for the full API contract and usage examples.
-
----
-
-## 📄 License
-
-MIT License (or specify your license here).
-
----
-
-## 🙏 Acknowledgements
-
-- [Flask](https://flask.palletsprojects.com/)
-- [hindi-xlit](https://pypi.org/project/hindi-xlit/)
-- [TinyDB](https://tinydb.readthedocs.io/)
+**Made with ❤️ specifically for the Bihar Police to modernize Hindi documentation workflows**
