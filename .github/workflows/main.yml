@@ -134,6 +134,12 @@ jobs:
         
         echo "✅ All build files found successfully!"
         
+    - name: Create macOS app zip
+      run: |
+        echo "Creating zip file for macOS app bundle..."
+        zip -r "BP-writing-tool-macos.zip" "MyApp.app"
+        echo "✅ Created BP-writing-tool-macos.zip"
+        
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
@@ -144,17 +150,17 @@ jobs:
           
           ### Downloads
           - **Windows**: BP-writing tool.exe (executable)
-          - **macOS**: MyApp.app (macOS app bundle)
+          - **macOS**: BP-writing-tool-macos.zip (macOS app bundle)
           
           ### Installation
           - **Windows**: Download and run the .exe file
-          - **macOS**: Download the .app bundle and drag to Applications folder
+          - **macOS**: Download the zip file, extract, and drag MyApp.app to Applications folder
           
           ### Changes
           - Built from commit: ${{ github.sha }}
           - Build date: $(date)
         files: |
           BP-writing tool.exe
-          MyApp.app
+          BP-writing-tool-macos.zip
         draft: false
         prerelease: false 
