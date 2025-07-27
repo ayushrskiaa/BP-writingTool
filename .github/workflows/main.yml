@@ -96,6 +96,17 @@ jobs:
       with:
         name: BP-writing-tool-macos
         
+    - name: Debug - List files
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "All files and directories:"
+        ls -la
+        echo "Windows folder contents:"
+        ls -la BP-writing-tool-windows/ || echo "Windows folder not found"
+        echo "macOS folder contents:"
+        ls -la BP-writing-tool-macos/ || echo "macOS folder not found"
+        
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
