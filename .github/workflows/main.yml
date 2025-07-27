@@ -96,6 +96,44 @@ jobs:
       with:
         name: BP-writing-tool-macos
         
+    - name: Debug - List all files
+      run: |
+        echo "=== Current Directory ==="
+        pwd
+        echo ""
+        echo "=== All Files and Directories ==="
+        ls -la
+        echo ""
+        echo "=== Find all executable files ==="
+        find . -name "*.exe" -o -name "*.app" -o -name "BP-writing*" -o -name "MyApp*" 2>/dev/null || true
+        echo ""
+        echo "=== Check if files exist ==="
+        [ -f "BP-writing tool.exe" ] && echo "✅ BP-writing tool.exe exists" || echo "❌ BP-writing tool.exe not found"
+        [ -f "MyApp.app" ] && echo "✅ MyApp.app exists" || echo "❌ MyApp.app not found"
+        [ -d "MyApp.app" ] && echo "✅ MyApp.app directory exists" || echo "❌ MyApp.app directory not found"
+        
+    - name: Validate build files exist
+      run: |
+        echo "Validating that build files exist before creating release..."
+        
+        # Check for Windows executable
+        if [ ! -f "BP-writing tool.exe" ]; then
+          echo "❌ ERROR: Windows executable 'BP-writing tool.exe' not found!"
+          echo "Available files:"
+          ls -la
+          exit 1
+        fi
+        
+        # Check for macOS app bundle
+        if [ ! -d "MyApp.app" ]; then
+          echo "❌ ERROR: macOS app bundle 'MyApp.app' not found!"
+          echo "Available files:"
+          ls -la
+          exit 1
+        fi
+        
+        echo "✅ All build files found successfully!"
+        
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
