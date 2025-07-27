@@ -34,7 +34,7 @@ jobs:
       id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: BP-writing-tool-windows.exe
+        name: BP-writing-tool-windows
         path: dist/
         retention-days: 30
 
@@ -66,7 +66,7 @@ jobs:
       id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: BP-writing-tool-macos.app
+        name: BP-writing-tool-macos
         path: dist/
         retention-days: 0
 
@@ -74,6 +74,8 @@ jobs:
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main_no_trans'
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -87,12 +89,12 @@ jobs:
     - name: Download Windows artifact
       uses: actions/download-artifact@v4
       with:
-        name: BP-writing-tool-windows.exe
+        name: BP-writing-tool-windows
         
     - name: Download macOS artifact
       uses: actions/download-artifact@v4
       with:
-        name: BP-writing-tool-macos.app
+        name: BP-writing-tool-macos
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -110,9 +112,7 @@ jobs:
           - Built from commit: ${{ github.sha }}
           - Build date: $(date)
         files: |
-          BP-writing-tool-windows.exe
-          BP-writing-tool-macos.app
+          BP-writing-tool-windows/**
+          BP-writing-tool-macos/**
         draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        prerelease: false 
