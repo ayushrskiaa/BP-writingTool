@@ -3,7 +3,7 @@ name: Build and Release Application
 on:
   push:
     branches:
-      - main_no_trans
+      - main
 
 jobs:
   build-windows:
