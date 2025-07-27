@@ -11,12 +11,14 @@ PIP := venv/bin/pip
 all: help
 
 # Install dependencies from requirements.txt
-install: venv/bin/activate
+install: _venv
 	@$(PIP) install -r requirements.txt
+	@$(PIP) install pyinstaller
 	@echo "✅ Dependencies installed successfully."
+	@echo "💡 To activate the virtual environment, run: source venv/bin/activate"
 
 # Create the virtual environment if it doesn't exist
-venv/bin/activate: requirements.txt
+_venv: requirements.txt
 	test -d venv || python3 -m venv venv
 	@echo "Virtual environment is set up."
 

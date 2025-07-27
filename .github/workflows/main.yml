@@ -1,0 +1,167 @@
+name: Build and Release Application
+
+on:
+  push:
+    branches:
+      - main_no_trans
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      artifact-path: ${{ steps.upload.outputs.artifact-path }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: Build application
+      run: |
+        pyinstaller MyApp.spec --noconfirm
+        
+    - name: Upload Windows artifact
+      id: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: BP-writing-tool-windows
+        path: dist/
+        retention-days: 30
+
+  build-macos:
+    runs-on: macos-14
+    outputs:
+      artifact-path: ${{ steps.upload.outputs.artifact-path }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: Build application
+      run: |
+        pyinstaller MyApp.spec --noconfirm
+        
+    - name: Upload macOS artifact
+      id: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: BP-writing-tool-macos
+        path: dist/
+        retention-days: 0
+
+  create-release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main_no_trans'
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Generate version and date
+      id: version
+      run: |
+        echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+        echo "date=$(date)" >> $GITHUB_OUTPUT
+        
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: BP-writing-tool-windows
+        
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: BP-writing-tool-macos
+        
+    - name: Debug - List all files
+      run: |
+        echo "=== Current Directory ==="
+        pwd
+        echo ""
+        echo "=== All Files and Directories ==="
+        ls -la
+        echo ""
+        echo "=== Find all executable files ==="
+        find . -name "*.exe" -o -name "*.app" -o -name "BP-writing*" -o -name "MyApp*" 2>/dev/null || true
+        echo ""
+        echo "=== Check if files exist ==="
+        [ -f "BP-writing tool.exe" ] && echo "✅ BP-writing tool.exe exists" || echo "❌ BP-writing tool.exe not found"
+        [ -f "MyApp.app" ] && echo "✅ MyApp.app exists" || echo "❌ MyApp.app not found"
+        [ -d "MyApp.app" ] && echo "✅ MyApp.app directory exists" || echo "❌ MyApp.app directory not found"
+        
+    - name: Validate build files exist
+      run: |
+        echo "Validating that build files exist before creating release..."
+        
+        # Check for Windows executable
+        if [ ! -f "BP-writing tool.exe" ]; then
+          echo "❌ ERROR: Windows executable 'BP-writing tool.exe' not found!"
+          echo "Available files:"
+          ls -la
+          exit 1
+        fi
+        
+        # Check for macOS app bundle
+        if [ ! -d "MyApp.app" ]; then
+          echo "❌ ERROR: macOS app bundle 'MyApp.app' not found!"
+          echo "Available files:"
+          ls -la
+          exit 1
+        fi
+        
+        echo "✅ All build files found successfully!"
+        
+    - name: Create macOS app zip
+      run: |
+        echo "Creating zip file for macOS app bundle..."
+        zip -r "BP-writing-tool-macos.zip" "MyApp.app"
+        echo "✅ Created BP-writing-tool-macos.zip"
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Release v${{ steps.version.outputs.version }}
+        body: |
+          ## BP Writing Tool v${{ steps.version.outputs.version }}
+          
+          ### Downloads
+          - **Windows**: BP-writing tool.exe (executable)
+          - **macOS**: BP-writing-tool-macos.zip (macOS app bundle)
+          
+          ### Installation
+          - **Windows**: Download and run the .exe file
+          - **macOS**: Download the zip file, extract, and drag MyApp.app to Applications folder
+          
+          ### Changes
+          - Built from commit: ${{ github.sha }}
+          - Build date: ${{ steps.version.outputs.date }}
+        files: |
+          BP-writing tool.exe
+          BP-writing-tool-macos.zip
+        draft: false
+        prerelease: false 
