@@ -1,16 +1,15 @@
-name: Build and Package Application
+name: Build and Release Application
 
 on:
   push:
     branches:
       - main_no_trans
-  pull_request:
-    branches:
-      - main_no_trans
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
+    outputs:
+      artifact-path: ${{ steps.upload.outputs.artifact-path }}
     
     steps:
     - name: Checkout code
@@ -31,15 +30,89 @@ jobs:
       run: |
         pyinstaller MyApp.spec --noconfirm
         
-    - name: Upload build artifacts
+    - name: Upload Windows artifact
+      id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: BP-writing-tool-windows
+        name: BP-writing-tool-windows.exe
         path: dist/
         retention-days: 30
+
+  build-macos:
+    runs-on: macos-latest
+    outputs:
+      artifact-path: ${{ steps.upload.outputs.artifact-path }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
         
-    - name: Create release info
+    - name: Install dependencies
       run: |
-        echo "Build completed successfully!"
-        echo "Executable available in dist/ folder"
-        echo "Download the artifact 'BP-writing-tool-windows' to get the built application" 
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: Build application
+      run: |
+        pyinstaller MyApp.spec --noconfirm
+        
+    - name: Upload macOS artifact
+      id: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: BP-writing-tool-macos.app
+        path: dist/
+        retention-days: 0
+
+  create-release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main_no_trans'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Generate version
+      id: version
+      run: |
+        echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+        
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: BP-writing-tool-windows.exe
+        
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: BP-writing-tool-macos.app
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Release v${{ steps.version.outputs.version }}
+        body: |
+          ## BP Writing Tool v${{ steps.version.outputs.version }}
+          
+          ### Downloads
+          - **Windows**: BP-writing-tool-windows.exe
+          - **macOS**: BP-writing-tool-macos.app
+          
+          ### Changes
+          - Built from commit: ${{ github.sha }}
+          - Build date: $(date)
+        files: |
+          BP-writing-tool-windows.exe
+          BP-writing-tool-macos.app
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
