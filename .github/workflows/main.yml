@@ -73,7 +73,7 @@ jobs:
   create-release:
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main_no_trans'
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
     
