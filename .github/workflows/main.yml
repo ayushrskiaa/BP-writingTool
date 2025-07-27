@@ -39,7 +39,7 @@ jobs:
         retention-days: 30
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       artifact-path: ${{ steps.upload.outputs.artifact-path }}
     
@@ -96,17 +96,6 @@ jobs:
       with:
         name: BP-writing-tool-macos
         
-    - name: Debug - List files
-      run: |
-        echo "Current directory:"
-        pwd
-        echo "All files and directories:"
-        ls -la
-        echo "Windows folder contents:"
-        ls -la BP-writing-tool-windows/ || echo "Windows folder not found"
-        echo "macOS folder contents:"
-        ls -la BP-writing-tool-macos/ || echo "macOS folder not found"
-        
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
@@ -116,14 +105,14 @@ jobs:
           ## BP Writing Tool v${{ steps.version.outputs.version }}
           
           ### Downloads
-          - **Windows**: BP-writing-tool-windows.exe
-          - **macOS**: BP-writing-tool-macos.app
+          - **Windows**: BP-writing tool.exe
+          - **macOS**: MyApp.app (macOS app bundle)
           
           ### Changes
           - Built from commit: ${{ github.sha }}
           - Build date: $(date)
         files: |
-          BP-writing-tool-windows/**
-          BP-writing-tool-macos/**
+          "BP-writing tool.exe"
+          "MyApp.app"
         draft: false
         prerelease: false 
