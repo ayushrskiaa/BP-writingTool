@@ -154,7 +154,7 @@ jobs:
           - Built from commit: ${{ github.sha }}
           - Build date: $(date)
         files: |
-          "BP-writing tool.exe"
-          "MyApp.app/**"
+          BP-writing tool.exe
+          MyApp.app/**
         draft: false
         prerelease: false 
