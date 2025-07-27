@@ -143,14 +143,18 @@ jobs:
           ## BP Writing Tool v${{ steps.version.outputs.version }}
           
           ### Downloads
-          - **Windows**: BP-writing tool.exe
+          - **Windows**: BP-writing tool.exe (executable)
           - **macOS**: MyApp.app (macOS app bundle)
+          
+          ### Installation
+          - **Windows**: Download and run the .exe file
+          - **macOS**: Download the .app bundle and drag to Applications folder
           
           ### Changes
           - Built from commit: ${{ github.sha }}
           - Build date: $(date)
         files: |
           "BP-writing tool.exe"
-          "MyApp.app"
+          "MyApp.app/**"
         draft: false
         prerelease: false 
