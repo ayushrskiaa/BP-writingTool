@@ -17,7 +17,9 @@ export const pagedExportTemplates = {
                     box-sizing: border-box; 
                 }
                 
+                /* Override universal reset for body to allow margins */
                 body {
+                    margin: 7.5vw 5vw 7.5vw 5vw !important; /* Use viewport units as fallback */
                     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
                     line-height: 1.6;
                     color: #000;
@@ -41,8 +43,76 @@ export const pagedExportTemplates = {
                     padding: 20px;
                     font-size: 16px;
                     line-height: 1.8;
-                    white-space: pre-wrap;
                     word-break: break-word;
+                    font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+                }
+
+                /* Rich text formatting styles */
+                .letter-content strong,
+                .letter-content b {
+                    font-weight: bold;
+                }
+
+                .letter-content em,
+                .letter-content i {
+                    font-style: italic;
+                }
+
+                .letter-content u {
+                    text-decoration: underline;
+                }
+
+                .letter-content s,
+                .letter-content strike {
+                    text-decoration: line-through;
+                }
+
+                .letter-content blockquote {
+                    border-left: 4px solid #ccc;
+                    margin: 0 0 1em 0;
+                    padding-left: 1em;
+                    font-style: italic;
+                }
+
+                .letter-content h1,
+                .letter-content h2 {
+                    font-weight: bold;
+                    margin: 1em 0 0.5em 0;
+                }
+
+                .letter-content h1 {
+                    font-size: 1.5em;
+                }
+
+                .letter-content h2 {
+                    font-size: 1.3em;
+                }
+
+                /* Quill size classes */
+                .letter-content .ql-size-small {
+                    font-size: 0.75em;
+                }
+
+                .letter-content .ql-size-large {
+                    font-size: 1.5em;
+                }
+
+                .letter-content .ql-size-huge {
+                    font-size: 2.5em;
+                }
+
+                .letter-content ul,
+                .letter-content ol {
+                    margin: 0.5em 0;
+                    padding-left: 2em;
+                }
+
+                .letter-content li {
+                    margin: 0.2em 0;
+                }
+
+                .letter-content p {
+                    margin: 0.5em 0;
                 }
 
                 /* Diary styles */
@@ -161,8 +231,13 @@ export const pagedExportTemplates = {
                 /* Print-specific optimizations */
                 @media print {
                     body { 
-                        margin: 0; 
+                        margin: 20mm 15mm 20mm 15mm !important; /* Use mm for print */
                         background: #fff;
+                    }
+                    
+                    /* Remove any container margins for print to let @page work */
+                    .page-container {
+                        margin: 0 !important;
                     }
                     
                     /* Let browser handle page breaks naturally */
@@ -177,14 +252,62 @@ export const pagedExportTemplates = {
                     .table-header {
                         page-break-after: avoid;
                     }
+
+                    /* Ensure rich text formatting prints correctly */
+                    .letter-content strong,
+                    .letter-content b {
+                        font-weight: bold !important;
+                    }
+
+                    .letter-content em,
+                    .letter-content i {
+                        font-style: italic !important;
+                    }
+
+                    .letter-content u {
+                        text-decoration: underline !important;
+                    }
+
+                    .letter-content s,
+                    .letter-content strike {
+                        text-decoration: line-through !important;
+                    }
+
+                    .letter-content blockquote {
+                        border-left: 4px solid #ccc !important;
+                        margin: 0 0 1em 0 !important;
+                        padding-left: 1em !important;
+                        font-style: italic !important;
+                    }
+
+                    .letter-content h1,
+                    .letter-content h2 {
+                        font-weight: bold !important;
+                        margin: 1em 0 0.5em 0 !important;
+                    }
+
+                    .letter-content ul,
+                    .letter-content ol {
+                        margin: 0.5em 0 !important;
+                        padding-left: 2em !important;
+                    }
+
+                    /* Quill size classes for print */
+                    .letter-content .ql-size-small {
+                        font-size: 0.75em !important;
+                    }
+
+                    .letter-content .ql-size-large {
+                        font-size: 1.5em !important;
+                    }
+
+                    .letter-content .ql-size-huge {
+                        font-size: 2.5em !important;
+                    }
                 }
 
                 /* Screen preview styles */
                 @media screen {
-                    body {
-                        margin: 20mm 15mm 20mm 15mm;
-                    }
-                    
                     .page-container {
                         border: 1px solid #ccc;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.1);

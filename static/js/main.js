@@ -1,7 +1,7 @@
 import { ExportManager } from './export_manager.js';
 import { DataManager } from './data_manager.js';
 
-const input = document.getElementById('hinglish-input');
+let quillEditor = null;
 
 // Wait for DOM to load before adding event listeners
 document.addEventListener('DOMContentLoaded', function () {
@@ -120,7 +120,12 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsContainer.className = 'history-items-container';
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                const firstLine = doc.content;
+                let firstLine;
+                if (typeof doc.content === 'object' && doc.content !== null && 'right_box' in doc.content) {
+                    firstLine = String(doc.content.right_box || '').slice(0, 50);
+                } else {
+                    firstLine = (typeof doc.content === 'string' ? doc.content : JSON.stringify(doc.content)).slice(0, 50);
+                }
                 const updated = new Date(doc.updated_at);
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
@@ -160,7 +165,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector('.editor-diary').style.display = 'none';
                         document.querySelector('.template-filter .filter-text').textContent = 'Letter';
                         dataManager.setLetterContent(doc.content);
-                        input.focus();
+                        if (quillEditor) {
+                            quillEditor.focus();
+                        }
                     }
                 };
 
@@ -214,8 +221,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize Managers
     const exportManager = new ExportManager();
     const dataManager = new DataManager();
+    
+    // Initialize Quill editor
+    const quillElement = document.getElementById('quill-editor');
+    if (quillElement) {
+        quillEditor = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'यहाँ Hinglish में टाइप करें...',
+            modules: {
+                toolbar: [
+                    ['bold', 'underline', 'strike'],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'header': 1 }, { 'header': 2 }],
+                    ['blockquote'],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'direction': 'rtl' }]
+                ]
+            },
+            formats: [
+                'bold', 'underline', 'strike',
+                'blockquote', 'list', 'header',
+                'indent', 'direction',
+                'size', 'color', 'background', 'align'
+            ]
+        });
+        // Make it globally accessible
+        window.quillEditor = quillEditor;
+    }
 
-    // Export button handler - now much cleaner!
+    // Export button handler
     exportBtn.addEventListener('click', async function () {
         const template = getActiveTemplate();
         await exportManager.handleExport(template);
