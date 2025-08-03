@@ -50,74 +50,98 @@ body {
     color: #333;
 }
 
-.format-selector {
-    margin-bottom: 18px;
-}
-
-#inputBox {
-    width: 100%;
-    font-size: 1.2em;
-    padding: 8px;
-    margin-top: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    min-height: 70px;
-    font-family: 'Roboto', Arial, sans-serif;
-}
 
 .editor-wrapper {
     position: relative;
     background: var(--brand-color-3);
-    border: 2px solid var(--brand-color-1);
     border-radius: 8px;
-    padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     width: 70%;
     margin-top: 10px;
-    height: calc(100vh - 85px); /* Increased margin to account for header + padding */
-    margin: 55px auto 20px; /* Added bottom margin */
-    box-sizing: border-box; /* Add this to include padding in width calculation */
-    overflow: visible; /* Add this to prevent content from overflowing */
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 .editor-wrapper.editor-letter {
     background: #fff;
-    border: 2px solid #0700d3;
-    width: 220mm;           /* A4 width */
+    max-width: 220mm;
     min-height: 297mm;      /* A4 height */
-    max-width: 95vw;
     margin: 100px auto 20px auto;
-    box-shadow: 0 2px 16px #4a90e220;
     box-sizing: border-box;
     overflow: visible;
     resize: vertical;       /* Allow vertical resizing */
     display: block;
 }
 
-#hinglish-input {
-    width: 210mm;
-    height: 600px;
-    min-height: 1080px;
-    max-height: 600px;
-    padding: 20px;
-    border: 1px solid var(--brand-color-1);
-    border-radius: 8px;
+/* Quill Editor Styles */
+#quill-editor {
+    width: 100%;
+    height: 297mm;
+    font-family: 'Noto Sans Devanagari', sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    resize: vertical;
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    overflow: hidden;
+}
+
+.editor-wrapper.editor-diary {
+    background: #fff;
+    width: 250mm;
+    height: 265mm; 
+    margin: 70px auto;
     box-sizing: border-box;
+    padding: 20px;
+    font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-#hinglish-input:focus {
+.fir-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.fir-table th {
+    background: #f8f9fa;
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 700;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+.fir-table th.left-column {
+    width: 25%;
+}
+
+.fir-table th.right-column {
+    width: 75%;
+}
+
+.fir-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+    background: #fff;
+}
+
+.fir-table textarea {
+    min-height: 500px;
+    width: 100%;
+    border: none;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    background: transparent;
+}
+
+.fir-table textarea:focus {
     outline: none;
-    border-color: var(--brand-color-1);
-    box-shadow: 0 0 0 2px rgba(5, 35, 97, 0.1);
-}
-
-.button-group {
-    margin-top: 18px;
-    text-align: right;
 }
 
 #exportBtn {
@@ -310,108 +334,16 @@ body {
     max-width: 900px;
     border: 1px solid #e0e0e0;
 }
-.diary-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 18px;
-}
-.diary-header-left {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.5;
-}
-.diary-header-center {
-    text-align: center;
-}
-.diary-label {
-    font-weight: 500;
-    color: #333;
-    margin-right: 4px;
-}
-.diary-rule {
-    font-size: 14px;
-    margin-top: 4px;
-}
-.diary-info-row, .diary-fields-row {
-    display: flex;
-    gap: 180px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-}
+/* Removed duplicate diary styles - using the ones above */
 
-.diary-info-row > div,
-.diary-fields-row > div {
-    flex: 1 1 180px;
-    min-width: 180px;
-    max-width: 260px;
-    box-sizing: border-box;
-}
-.fir-input {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-}
-
-/* Table columns equal width */
-.fir-table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    background: #f9f9f9;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.fir-table td {
-    width: 50%;
-    vertical-align: top;
-    padding: 14px 10px;
-    border: 1px solid #bdbdbd;
-    box-sizing: border-box;
-}
-
-.fir-table textarea {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    min-height: 200px;
-    /* max-height: 240px; */
-    resize: vertical;
-    margin-top: 8px;
-    overflow-y: auto;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    border-radius: 6px;
-    border: 1px solid #bdbdbd;
-    padding: 8px;
-    font-size: 15px;
-    background: #fff;
-}
-
-.fir-table td:first-child {
-    width: 25%;
-}
-
-.fir-table td:last-child {
-    width: 75%;
-}
-
-.fir-table th:first-child {
-    width: 25%;
-}
-.fir-table th:last-child {
-    width: 75%;
-}
+/* Removed duplicate fir-table rules - using the ones above */
 
 /* Header Styles */
 .header-frame {
     background-color: var(--brand-color-2);
     color: var(--brand-color-1);
     width: 100%;
-    height: 60px; /* Reduced height */
+    height: 60px;
     position: fixed;
     top: 0;
     left: 0;
@@ -429,20 +361,12 @@ body {
     padding: 0 16px;
 }
 
-.add-template-btn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-}
 .header-left, .header-right {
     display: flex;
     align-items: center;
     gap: 24px;
 }
+
 
 .switch-btn:hover {
     transform: scale(1.1);
@@ -476,18 +400,17 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    height: 36px; /* Reduced height */
+    height: 36px;
 }
 
 .action-btn {
-    height: 36px; /* Reduced height */
+    height: 36px;
     padding: 0 16px;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* Action Buttons */
 .action-btn i {
     font-size: 18px;
 }
@@ -508,16 +431,15 @@ body {
     border-radius: 8px;
 }
 
+
+
 /* Hover effects */
 .template-filter:hover,
 .action-btn:hover {
     background-color: rgba(5, 35, 97, 0.05);
 }
 
-/* Filename Input Styles */
-.filename-wrapper {
-    height: 36px; /* Reduced height */
-}
+
 
 .filename-input:focus {
     outline: none;
@@ -877,24 +799,6 @@ body {
     vertical-align: middle;
 }
 
-.editor-diary {
-    background: #ffffff;
-    border: 2px solid #0700d3;
-    width: 90%;
-    margin-top: 100px;
-    box-shadow: #4a90e2;
-    resize: vertical;
-    height: auto;
-}
-#diary-input {
-    background: #fffde7;
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    font-size: 18px;
-    min-height: 400px;
-    border: 1px solid #e0ca40;
-    border-radius: 8px;
-    padding: 20px;
-}
 
 @media print {
     .modal-overlay {
@@ -917,4 +821,43 @@ body {
         border: none;
         padding: 0;
     }
+}
+
+/* Consolidated Diary Form Styles */
+.diary-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.diary-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diary-input-group label {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.diary-input-group input {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 10px;
+    background: #fff;
+}
+
+.diary-input-group span {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.diary-right-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 20px;
 }

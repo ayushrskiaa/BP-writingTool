@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Quill.js CSS -->
+    <link href="{{ url_for('static', filename='css/quill.snow.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -83,81 +85,78 @@
     <div class="main-content">
         <!-- Letter Editor (default) -->
         <div class="editor-wrapper editor-letter">
-            <textarea id="hinglish-input" placeholder="यहाँ Hinglish में टाइप करें..." autocomplete="off"
-                autofocus></textarea>
-            <!-- <div id="suggestions" class="suggestions-box"></div> -->
+            <div id="quill-editor"></div>
         </div>
         <!-- Diary Editor (hidden by default) -->
         <div class="editor-wrapper editor-diary" style="display:none;">
             <div id="diaryExportLayout" class="fir-export-layout">
-                <div class="diary-header-row">
-                    <div class="diary-header-left">
-                        <div>अनुसूची 47, प्रपत्र संख्या 120 अ</div>
-                        <div>आ0 ह0 प्रपत्र संख्या 30 अ</div>
+                <div>
+                    <div class="diary-header-text">अनुसूची 47, प्रपत्र संख्या 120 अ<br>आ0 ह0 प्रपत्र संख्या 30 अ</div>
+                </div>
+
+                <div class="diary-right-container">
+                    <div class="diary-input-group">
+                        <label>केस दैनिकी सं.</label>
+                        <input style="width: 150px;" data-field="case_diary_no" placeholder="संख्या">
                     </div>
-                    <div class="diary-header-center">
-                        <label class="diary-label">केस दैनिकी सं.</label>
-                        <input class="fir-input" data-field="case_diary_no" style="width:200px;" placeholder="संख्या">
-                        <div class="diary-rule">
-                            (नियम-
-                            <input class="fir-input" data-field="rule_no" style="width:200px;" placeholder="164">
-                            )
-                        </div>
+                    <div class="diary-input-group">
+                        <label>नियम</label>
+                        <input style="width: 150px;" data-field="rule_no">
+                    </div>
+                    <div class="diary-input-group">
+                        <input style="width: 150px;" data-field="sections" placeholder="आरोपी">
+                        <span>बनाम</span>
+                        <input style="width: 150px;" data-field="district" placeholder="शिकायतकर्ता">
+                    </div>
+                    <div class="diary-input-group">
+                        <label>विशेष रिपोर्ट केस सं.</label>
+                        <input style="width: 150px;" data-field="special_report_no" placeholder="संख्या">
                     </div>
                 </div>
-                <div class="diary-info-row">
-                    <div>
-                        <label class="diary-label">विशेष रिपोर्ट केस सं.</label>
-                        <input class="fir-input" data-field="special_report_no" style="width:200px;" placeholder="संख्या">
+
+                <div class="diary-input-container">
+                    <div class="diary-input-group">
+                        <label>थाना</label>
+                        <input style="width: 200px;" data-field="thana" placeholder="थाना">
                     </div>
-                    <div>
-                        <label class="diary-label">थाना</label>
-                        <input class="fir-input" data-field="thana" style="width:200px;" placeholder="थाना">
+                    <div class="diary-input-group">
+                        <label>जिला</label>
+                        <input style="width: 110px;" data-field="district" placeholder="जिला">
                     </div>
-                    <div>
-                        <label class="diary-label">जिला</label>
-                        <input class="fir-input" data-field="district" style="width:200px;" placeholder="जिला">
+                    <div class="diary-input-group">
+                        <label>प्रथम इत्तिला रिपोर्ट सं.</label>
+                        <input style="width: 100px;" data-field="fir_number" placeholder="संख्या">
                     </div>
-                </div>
-                <div class="diary-banam-row">
-                    <span class="diary-label">बनाम</span>
-                    <input class="fir-input" data-field="against_1" style="width:200px; margin:0 8px;" placeholder="शिकायतकर्ता">
-                    <span style="margin:0 10px;">/</span>
-                    <input class="fir-input" data-field="against_2" style="width:200px; margin:0 8px;" placeholder="आरोपी">
-                </div>
-                <div class="diary-fields-row">
-                    <div>
-                        <label class="diary-label">प्रथम इत्तिला रिपोर्ट सं.</label>
-                        <input class="fir-input" data-field="fir_number" style="width:200px;" placeholder="संख्या">
+                    <div class="diary-input-group">
+                        <label>तिथि</label>
+                        <input style="width: 120px;" data-field="fir_date" type="date">
                     </div>
-                    <div>
-                        <label class="diary-label">तिथि</label>
-                        <input class="fir-input" data-field="fir_date" type="date" style="width:200px;">
+                    <div class="diary-input-group">
+                        <label>घटना की तिथि और स्थान</label>
+                        <input style="width: 300px;" data-field="event_date_place" placeholder="तिथि/स्थान">
                     </div>
-                    <div>
-                        <label class="diary-label">घटना की तिथि और स्थान</label>
-                        <input class="fir-input" data-field="event_date_place" style="width:200px;" placeholder="तिथि/स्थान">
-                    </div>
-                    <div>
-                        <label class="diary-label">धाराः</label>
-                        <input class="fir-input" data-field="sections" style="width:200px;" placeholder="धारा">
+                    <div class="diary-input-group">
+                        <label>धारा</label>
+                        <input style="width: 355px;" data-field="sections" placeholder="धारा">
                     </div>
                 </div>
+
                 <div class="diary-table-wrapper">
                     <table class="fir-table">
                         <tr class="table-header">
                             <th class="left-column">किन तिथि को (समय सहित) कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया|</th>
-                            <th class="right-column">अन्वेषण का अभिलेख</th>
+                            <th class="right-column">
+                                अन्वेषण का अभिलेख
+                                <input data-field="investigation_record" placeholder="1">
+                            </th>
                         </tr>
                         <tr>
                             <td>
-                                <!-- <b>किन तिथि को (समय सहित) कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया|</b> -->
                                 <textarea class="fir-input hinglish-input"
                                     data-field="left_box"
                                     placeholder="यहाँ विवरण लिखें..."></textarea>
                             </td>
                             <td>
-                                <!-- <b>अन्वेषण का अभिलेख</b> -->
                                 <textarea class="fir-input hinglish-input"
                                     data-field="right_box"
                                     placeholder="यहाँ विवरण लिखें..."></textarea>
@@ -186,7 +185,9 @@
         <span>Powered by Bihar Police</span>
     </footer>
 
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Quill.js JavaScript -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>

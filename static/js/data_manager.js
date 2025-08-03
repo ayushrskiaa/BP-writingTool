@@ -1,7 +1,7 @@
 // Data Manager - Handles form data operations
 export class DataManager {
     constructor() {
-        this.input = document.getElementById('hinglish-input');
+        // No longer need the old input reference since we use Quill for letters
     }
 
     // Get diary content for saving
@@ -31,18 +31,36 @@ export class DataManager {
 
     // Get letter content
     getLetterContent() {
-        return this.input.value.trim();
+        // Get the global quillEditor instance
+        const quillEditor = window.quillEditor;
+        if (quillEditor) {
+            // Return HTML content for rich text
+            return quillEditor.root.innerHTML.trim();
+        }
+        return '';
     }
 
     // Set letter content
     setLetterContent(content) {
-        this.input.value = content;
+        // Get the global quillEditor instance
+        const quillEditor = window.quillEditor;
+        if (quillEditor) {
+            // Check if content is HTML or plain text
+            if (content.includes('<') && content.includes('>')) {
+                quillEditor.root.innerHTML = content;
+            } else {
+                quillEditor.setText(content);
+            }
+        }
     }
 
     // Clear all form data
     clearFormData(template) {
         if (template === 'letter') {
-            this.input.value = '';
+            const quillEditor = window.quillEditor;
+            if (quillEditor) {
+                quillEditor.setText('');
+            }
         } else {
             const container = document.getElementById('diaryExportLayout');
             container.querySelectorAll('input, textarea').forEach(el => el.value = '');

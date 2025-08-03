@@ -9,28 +9,44 @@ export class ExportManager {
 
     // Main export handler
     async handleExport(template) {
-        if (template === 'letter') {
-            this.exportLetter();
-        } else {
-            this.exportDiary();
+        try {
+            if (template === 'letter') {
+                await this.exportLetter();
+            } else {
+                await this.exportDiary();
+            }
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Export failed: ' + error.message);
         }
     }
 
-    // Export letter with CSS Paged Media
-    exportLetter() {
+    // Export letter with proper Quill content handling
+    async exportLetter() {
         const content = this.dataManager.getLetterContent();
         if (!content) {
-            alert('Cannot export empty document!');
-            return;
+            throw new Error('Cannot export empty document!');
         }
 
-        const letterContent = pagedExportTemplates.letterContent({ letter_content: content });
-        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
+        // Get Quill editor instance
+        const quillEditor = window.quillEditor;
+        if (!quillEditor) {
+            throw new Error('Quill editor not found');
+        }
+
+        // Get formatted content from Quill
+        const formattedContent = quillEditor.root.innerHTML;
         
+        // Create letter content with proper HTML handling
+        const letterContent = pagedExportTemplates.letterContent({ 
+            letter_content: formattedContent 
+        });
+        
+        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
         this.openPrintWindow(documentHtml);
     }
 
-    // Export diary with CSS Paged Media
+    // Export diary with CSS Paged Media (unchanged)
     exportDiary() {
         const container = document.getElementById('diaryExportLayout');
         const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
@@ -73,7 +89,47 @@ export class ExportManager {
         this.openPrintWindow(documentHtml);
     }
 
-    // Open print window with formatted content
+    // Export as HTML file (for sharing)
+    async exportLetterHTML() {
+        const quillEditor = window.quillEditor;
+        if (!quillEditor) {
+            throw new Error('Quill editor not found');
+        }
+
+        const formattedContent = quillEditor.root.innerHTML;
+        if (!formattedContent || formattedContent === '<p><br></p>') {
+            throw new Error('Cannot export empty document!');
+        }
+
+        const letterContent = pagedExportTemplates.letterContent({ 
+            letter_content: formattedContent 
+        });
+        
+        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
+        this.downloadHTML(documentHtml, 'letter.html');
+    }
+
+    // Export as plain text (for compatibility)
+    async exportLetterText() {
+        const quillEditor = window.quillEditor;
+        if (!quillEditor) {
+            throw new Error('Quill editor not found');
+        }
+
+        const plainText = quillEditor.getText();
+        if (!plainText.trim()) {
+            throw new Error('Cannot export empty document!');
+        }
+
+        const letterContent = pagedExportTemplates.letterContent({ 
+            letter_content: plainText 
+        });
+        
+        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
+        this.openPrintWindow(documentHtml);
+    }
+
+    // Export Utilities
     openPrintWindow(htmlContent) {
         const printWindow = window.open('', '_blank');
         printWindow.document.write(htmlContent);
@@ -87,5 +143,34 @@ export class ExportManager {
         };
     }
 
+    downloadHTML(htmlContent, filename) {
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
+    // Get Quill content in different formats
+    getQuillContent(format = 'html') {
+        const quillEditor = window.quillEditor;
+        if (!quillEditor) {
+            return '';
+        }
+
+        switch (format) {
+            case 'html':
+                return quillEditor.root.innerHTML;
+            case 'text':
+                return quillEditor.getText();
+            case 'delta':
+                return JSON.stringify(quillEditor.getContents());
+            default:
+                return quillEditor.root.innerHTML;
+        }
+    }
 } 
