@@ -120,7 +120,12 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsContainer.className = 'history-items-container';
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                const firstLine = doc.content;
+                let firstLine;
+                if (typeof doc.content === 'object' && doc.content !== null && 'right_box' in doc.content) {
+                    firstLine = String(doc.content.right_box || '').slice(0, 50);
+                } else {
+                    firstLine = (typeof doc.content === 'string' ? doc.content : JSON.stringify(doc.content)).slice(0, 50);
+                }
                 const updated = new Date(doc.updated_at);
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
