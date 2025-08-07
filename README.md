@@ -7,7 +7,16 @@
 
 **BP Writing Tool** is a specialized desktop application developed specifically for the **Bihar Police** to facilitate Hindi document creation and management. This tool enables officers and staff to write in Hindi (Devanagari script) efficiently by typing in Hinglish (Romanized Hindi), with instant transliteration to Hindi script using advanced language models.
 
-![BP Writing Tool Interface](doc/image.png)
+<table>
+  <tr>
+    <td><img src="image.png" alt="alt text" width="600"/></td>
+    <td><img src="image-1.png" alt="alt text" width="600"/></td>
+  </tr>
+  <tr>
+    <td><img src="image-2.png" alt="alt text" width="600"/></td>
+    <td><img src="image-3.png" alt="alt text" width="600"/></td>
+  </tr>
+</table>
 
 ## ✨ Features
 
