@@ -17,6 +17,10 @@ export const pagedExportTemplates = {
                     box-sizing: border-box; 
                 }
 
+                body {
+                    font-size: 16px;
+                }
+
                 /* Page container - let content flow naturally */
                 .page-container {
                     width: 100%;
@@ -25,7 +29,7 @@ export const pagedExportTemplates = {
 
                 /* Letter styles */
                 .letter-content {
-                    font-size: 16px;
+                    font-size: inherit;
                     line-height: 1.8;
                     word-break: break-word;
                     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
@@ -102,36 +106,44 @@ export const pagedExportTemplates = {
                 /* Diary styles */
                 .diary-header {
                     margin-bottom: 20px;
-                    font-size: 14px;
+                    font-size: inherit;
                     page-break-after: avoid;
                 }
 
                 .header-top {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    margin-bottom: 10px;
+                    display: grid;
+                    grid-template-columns: 1fr auto 1fr;
+                    align-items: start;
+                    margin-bottom: 2em;
                 }
 
                 .header-left {
-                    font-size: 12px;
+                    font-size: inherit;
                     line-height: 1.4;
                     min-width: 120px;
                 }
 
-                .header-center {
+                .diary-header-center {
                     text-align: center;
                     flex: 1;
                 }
 
+                .diary-header-center span {
+                    display: block;
+                }
+
+                .diary-header-center span:first-child {
+                    font-size: 2em;
+                }
+
                 .case-number {
-                    font-size: 16px;
+                    font-size: inherit;
                     font-weight: bold;
                     margin-bottom: 2px;
                 }
 
                 .rule-number {
-                    font-size: 13px;
+                    font-size: inherit;
                 }
 
                 .header-right {
@@ -157,11 +169,11 @@ export const pagedExportTemplates = {
 
                 .special-report {
                     text-align: right;
-                    margin-bottom: 12px;
+                    margin-bottom: 2em;
                 }
 
                 .case-details {
-                    font-size: 14px;
+                    font-size: inherit;
                     line-height: 1.8;
                 }
 
@@ -207,7 +219,7 @@ export const pagedExportTemplates = {
                 .content-area {
                     white-space: pre-wrap;
                     word-break: break-word;
-                    font-size: 14px;
+                    font-size: inherit;
                     line-height: 1.6;
                     min-height: 0; /* Remove fixed height to allow natural flow */
                 }
@@ -316,34 +328,29 @@ export const pagedExportTemplates = {
                     <div>अनुसूची 47, प सं0 120 अ</div>
                     <div>आ0 ह0 प सं0 30 अ</div>
                 </div>
-                <div class="header-center">
-                    <div class="case-number">
-                        केस-दैनिकी सं0
-                        <span class="underline-field">${data.case_diary_no || ''}</span>
-                    </div>
-                    <div class="rule-number">(नियम-${data.rule_no || ''})</div>
+                <div class="diary-header-center">
+                    <span>केस-दैनिकी सं0 <strong class="underline-field">${data.case_diary_no || '....................'}</strong></span>
+                    <span>(नियम- <strong class="underline-field">${data.rule_no || '....................'}</strong>)</span>
                 </div>
-                <div class="header-right"></div>
             </div>
             
             <div class="against-section">
-                <span class="underline-field">${data.against_1 || ''}</span>
+                <span>आरोपी <strong class="underline-field">${data.against_1 || ''}</strong></span>
                 <span class="vs-text">बनाम</span>
-                <span class="underline-field">${data.against_2 || ''}</span>
+                <span>आरोपी <strong class="underline-field">${data.against_2 || ''}</strong></span>
             </div>
             
             <div class="special-report">
-                <span>विशेष रिपोर्ट केस सं.</span>
-                <span class="underline-field">${data.special_report_no || ''}</span>
+                <span>विशेष रिपोर्ट केस सं. <strong class="underline-field">${data.special_report_no || ''}</strong></span>
             </div>
             
             <div class="case-details">
-                <span>थाना <strong>${data.thana || '....................'}</strong></span>
-                <span>जिला <strong>${data.district || '....................'}</strong></span>
-                <span>प्रथम इत्तिला रिपोर्ट सं. <strong>${data.fir_number || '....................'}</strong></span>
-                <span>तिथि <strong>${data.fir_date || '....................'}</strong></span>
-                <span>घटना की तिथि और स्थान <strong>${data.event_date_place || '...............................................'}</strong></span>
-                <span>धाराः <strong>${data.sections || '................................................'}</strong></span>
+                <span>थाना <strong class="underline-field">${data.thana || '....................'}</strong></span>
+                <span>जिला <strong class="underline-field">${data.district || '....................'}</strong></span>
+                <span>प्रथम इत्तिला रिपोर्ट सं. <strong class="underline-field">${data.fir_number || '....................'}</strong></span>
+                <span>तिथि <strong class="underline-field">${data.fir_date || '....................'}</strong></span>
+                <span>घटना की तिथि और स्थान <strong class="underline-field">${data.event_date_place || '...............................................'}</strong></span>
+                <span>धाराः <strong class="underline-field">${data.sections || '................................................'}</strong></span>
             </div>
         </div>
     `,
