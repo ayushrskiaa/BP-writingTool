@@ -18,7 +18,7 @@ export const pagedExportTemplates = {
                 }
 
                 body {
-                    font-size: 14px;
+                    font-size: 16px;
                 }
 
                 /* Page container - let content flow naturally */

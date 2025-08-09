@@ -132,7 +132,7 @@ body {
     box-sizing: border-box;
     padding: 20px;
     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.6;
     color: var(--color-text-primary);
     box-shadow: var(--shadow-medium);
@@ -153,7 +153,7 @@ body {
     text-align: center;
     font-weight: 700;
     border: 1px solid var(--color-border);
-    font-size: 14px;
+    font-size: 16px;
     color: var(--color-text-primary);
 }
 
@@ -907,7 +907,7 @@ body {
     min-height: 480px;
     padding: 8px;
     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.5;
 }
 
