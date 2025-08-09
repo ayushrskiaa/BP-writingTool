@@ -16,21 +16,6 @@ export const pagedExportTemplates = {
                     padding: 0; 
                     box-sizing: border-box; 
                 }
-                
-                /* Override universal reset for body to allow margins */
-                body {
-                    margin: 7.5vw 5vw 7.5vw 5vw !important; /* Use viewport units as fallback */
-                    font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #000;
-                    background: #fff;
-                }
-
-                /* CSS Paged Media - Let browser handle pagination */
-                @page {
-                    size: A4;
-                    margin: 20mm 15mm 20mm 15mm;
-                }
 
                 /* Page container - let content flow naturally */
                 .page-container {
@@ -40,7 +25,6 @@ export const pagedExportTemplates = {
 
                 /* Letter styles */
                 .letter-content {
-                    padding: 20px;
                     font-size: 16px;
                     line-height: 1.8;
                     word-break: break-word;
@@ -231,7 +215,7 @@ export const pagedExportTemplates = {
                 /* Print-specific optimizations */
                 @media print {
                     body { 
-                        margin: 20mm 15mm 20mm 15mm !important; /* Use mm for print */
+                        margin: 10mm 5mm 10mm 5mm !important; /* Use mm for print */
                         background: #fff;
                     }
                     
@@ -370,7 +354,7 @@ export const pagedExportTemplates = {
             ${data.showHeader ? `
             <tr class="table-header">
                 <th class="left-column">किन तिथि को (समय सहित )<br>कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</th>
-                <th class="right-column">अन्वेषण का अभिलेख</th>
+                <th class="right-column">अन्वेषण का अभिलेख ${data.investigation_record || '....................'}</th>
             </tr>
             ` : ''}
             <tr>

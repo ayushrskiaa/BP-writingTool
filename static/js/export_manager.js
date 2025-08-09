@@ -49,6 +49,11 @@ export class ExportManager {
     // Export diary with CSS Paged Media (unchanged)
     exportDiary() {
         const container = document.getElementById('diaryExportLayout');
+
+        // Log all data-field attributes in the container
+        const dataFields = Array.from(container.querySelectorAll('[data-field]')).map(el => el.getAttribute('data-field'));
+        console.log('data-fields in container:', dataFields);
+        
         const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
         
         // Get content from Quill editors if available, otherwise fallback to textareas
@@ -88,13 +93,15 @@ export class ExportManager {
             left_box: leftContent,
             right_box: rightContent
         };
+        console.log("diaryData", diaryData);
 
         // Build content with header and table - let CSS handle pagination
         const diaryContent = pagedExportTemplates.diaryHeader(diaryData) + 
                            pagedExportTemplates.diaryTable({
                                showHeader: true,
                                left_box: leftContent,
-                               right_box: rightContent
+                               right_box: rightContent,
+                               investigation_record: get('investigation_record')
                            });
 
         const documentHtml = pagedExportTemplates.createDocument(diaryContent, 'Diary Export');
