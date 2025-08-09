@@ -51,8 +51,21 @@ export class ExportManager {
         const container = document.getElementById('diaryExportLayout');
         const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
         
-        const leftContent = get('left_box');
-        const rightContent = get('right_box');
+        // Get content from Quill editors if available, otherwise fallback to textareas
+        let leftContent = '';
+        let rightContent = '';
+        
+        if (window.diaryQuillEditors?.leftBox) {
+            leftContent = window.diaryQuillEditors.leftBox.root.innerHTML;
+        } else {
+            leftContent = get('left_box');
+        }
+        
+        if (window.diaryQuillEditors?.rightBox) {
+            rightContent = window.diaryQuillEditors.rightBox.root.innerHTML;
+        } else {
+            rightContent = get('right_box');
+        }
         
         if (!leftContent && !rightContent) {
             alert('Cannot export empty document!');

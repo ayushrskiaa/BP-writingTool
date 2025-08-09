@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                         dataManager.setDiaryContent(diaryData);
                         // Focus first diary field
-                        document.querySelector('.editor-diary textarea, .editor-diary input')?.focus();
+                        // Focus will be handled by Quill editors
                     } else {
                         document.querySelector('.editor-letter').style.display = '';
                         document.querySelector('.editor-diary').style.display = 'none';
@@ -252,6 +252,44 @@ document.addEventListener('DOMContentLoaded', function () {
         window.quillEditor = quillEditor;
     }
 
+    // Initialize Diary Quill editors (bubble theme)
+    let diaryQuillEditors = {
+        leftBox: null,
+        rightBox: null
+    };
+
+    function initializeDiaryQuillEditors() {
+        // Left box editor
+        const leftBoxElement = document.getElementById('quill-left-box');
+        if (leftBoxElement && !diaryQuillEditors.leftBox) {
+            diaryQuillEditors.leftBox = new Quill('#quill-left-box', {
+                theme: 'bubble',
+                placeholder: 'यहाँ Hinglish में टाइप करें...'
+            });
+        }
+
+        // Right box editor  
+        const rightBoxElement = document.getElementById('quill-right-box');
+        if (rightBoxElement && !diaryQuillEditors.rightBox) {
+            diaryQuillEditors.rightBox = new Quill('#quill-right-box', {
+                theme: 'bubble',
+                placeholder: 'यहाँ Hinglish में टाइप करें...'
+            });
+        }
+
+        // Make globally accessible for export
+        window.diaryQuillEditors = diaryQuillEditors;
+
+        // Add height syncing event listeners
+        if (diaryQuillEditors.leftBox && diaryQuillEditors.rightBox) {
+            diaryQuillEditors.leftBox.on('text-change', syncDiaryQuillHeights);
+            diaryQuillEditors.rightBox.on('text-change', syncDiaryQuillHeights);
+            
+            // Initial height sync
+            setTimeout(syncDiaryQuillHeights, 100);
+        }
+    }
+
     // Export button handler
     exportBtn.addEventListener('click', async function () {
         const template = getActiveTemplate();
@@ -328,6 +366,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // Toggle editor visibility
             document.querySelector('.editor-letter').style.display = (template === 'letter') ? '' : 'none';
             document.querySelector('.editor-diary').style.display = (template === 'diary') ? '' : 'none';
+            
+            // Initialize diary Quill editors when diary template is shown
+            if (template === 'diary') {
+                setTimeout(() => {
+                    initializeDiaryQuillEditors();
+                }, 100);
+            }
+            
             // Optionally update dropdown label
             document.querySelector('.template-filter .filter-text').textContent = this.textContent;
         });
@@ -338,16 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newFileName').focus();
     });
 
-    // Sync diary textarea heights
-    const leftTextarea = document.querySelector('textarea[data-field="left_box"]');
-    const rightTextarea = document.querySelector('textarea[data-field="right_box"]');
-    if (leftTextarea && rightTextarea) {
-        leftTextarea.addEventListener('input', syncDiaryTextareaHeights);
-        rightTextarea.addEventListener('input', syncDiaryTextareaHeights);
 
-        // Initial sync
-        syncDiaryTextareaHeights();
-    }
 
     // Clear current document ID when starting fresh
     function clearCurrentDocument(preserveFilename = false) {
@@ -373,21 +410,28 @@ function showNotification(message) {
 }
 
 
-// Sync heights of diary textareas
-function syncDiaryTextareaHeights() {
-    const left = document.querySelector('textarea[data-field="left_box"]');
-    const right = document.querySelector('textarea[data-field="right_box"]');
-    if (!left || !right) return;
+// Sync heights of diary Quill editors
+function syncDiaryQuillHeights() {
+    if (!window.diaryQuillEditors?.leftBox || !window.diaryQuillEditors?.rightBox) return;
+
+    const leftEditor = window.diaryQuillEditors.leftBox.container.querySelector('.ql-editor');
+    const rightEditor = window.diaryQuillEditors.rightBox.container.querySelector('.ql-editor');
+    
+    if (!leftEditor || !rightEditor) return;
 
     // Reset heights to auto to get correct scrollHeight
-    left.style.height = 'auto';
-    right.style.height = 'auto';
+    leftEditor.style.height = 'auto';
+    rightEditor.style.height = 'auto';
 
-    // Find the max height
-    const maxHeight = Math.max(left.scrollHeight, right.scrollHeight);
+    // Find the max height (minimum 480px, no maximum like original textarea)
+    const maxHeight = Math.max(
+        leftEditor.scrollHeight,
+        rightEditor.scrollHeight,
+        480
+    );
 
-    // Set both to the max height
-    left.style.height = `${maxHeight}px`;
-    right.style.height = `${maxHeight}px`;
+    // Set both editors to the max height
+    leftEditor.style.height = `${maxHeight}px`;
+    rightEditor.style.height = `${maxHeight}px`;
 }
 
