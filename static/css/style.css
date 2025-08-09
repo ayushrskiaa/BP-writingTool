@@ -1,10 +1,51 @@
 :root {
-    --brand-color-1: rgba(5, 35, 97, 1);
-    --brand-color-2: rgba(224, 202, 64, 1);
-    --brand-color-3: #fff;
+    /* Primary Brand Colors */
+    --brand-primary: rgba(5, 35, 97, 1);        /* Dark blue - main brand */
+    --brand-secondary: #e0d3b3;   /* Gold/yellow - accent */
+    --brand-white: #fff;                        /* Pure white */
+    
+    /* UI Colors */
+    --color-background: #f9f9f9;               /* Main background */
+    --color-background-gradient: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+    --color-surface-secondary: #f8f9fa;       /* Secondary surfaces */
+    --color-surface-alt: #f5f7fa;             /* Alternative surface */
+    
+    /* Text Colors */
+    --color-text-primary: #333;               /* Main text */
+    --color-text-secondary: #666;             /* Secondary text */
+    --color-text-muted: #999;                 /* Muted/placeholder text */
+    --color-text-brand: var(--brand-primary); /* Brand colored text */
+    
+    /* Border Colors */
+    --color-border: #ddd;                     /* Default borders */
+    --color-border-light: #eee;              /* Light borders */
+    --color-border-lighter: #f0f0f0;         /* Lighter borders */
+    --color-border-medium: #e0e0e0;          /* Medium borders */
+    --color-border-separator: #e8e8e8;       /* Section separators */
+    
+    /* State Colors */
+    --color-success: #4a90e2;                /* Success actions */
+    --color-error: #d32f2f;                  /* Error states */
+    --color-error-hover: #a62828;            /* Error hover */
+    --color-warning: #ff9b7c;                /* Warning states */
+    --color-info: #007bff;                   /* Info states */
+    --color-neutral: #6c757d;                /* Neutral actions */
+    
+    /* Interactive Colors */
+    --color-hover-yellow: #ffe066;           /* Yellow hover states */
+    --color-hover-brand: rgba(5, 35, 97, 0.05); /* Brand hover background */
+    --color-focus: rgba(5, 35, 97, 0.1);     /* Focus states */
+    --color-disabled: rgba(5, 35, 97, 0.5);  /* Disabled states */
+    
+    /* Shadow Colors */
+    --shadow-light: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-medium: 0 2px 8px rgba(0,0,0,0.1);
+    --shadow-strong: 0 2px 12px rgba(0,0,0,0.1);
+    --shadow-popup: 0 4px 16px rgba(0,0,0,0.2);
+    --shadow-overlay: rgba(0,0,0,0.5);
 }
 body {
-    background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+    background: var(--color-background-gradient);
     font-family: 'Noto Sans Devanagari', 'Roboto', Arial, sans-serif;
     min-height: 100vh;
     margin: 0;
@@ -13,9 +54,9 @@ body {
 #container {
     max-width: 1000px;
     margin: 20px auto;
-    background: #fff;
+    background: var(--brand-white);
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-strong);
     padding: 32px;
 }
 
@@ -25,7 +66,7 @@ body {
     justify-content: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #e8e8e8;
+    border-bottom: 2px solid var(--color-border-separator);
 }
 
 .header-logo {
@@ -42,20 +83,20 @@ body {
     font-family: 'Noto Sans Devanagari', sans-serif;
     font-size: 2.5em;
     margin: 0;
-    color: #1a237e;
+    color: var(--color-text-brand);
 }
 
 .logo-text p {
     margin: 0;
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 
 .editor-wrapper {
     position: relative;
-    background: var(--brand-color-3);
+    background: var(--brand-white);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-medium);
     width: 70%;
     margin-top: 10px;
     box-sizing: border-box;
@@ -63,10 +104,10 @@ body {
 }
 
 .editor-wrapper.editor-letter {
-    background: #fff;
+    background: var(--brand-white);
     max-width: 220mm;
     min-height: 297mm;      /* A4 height */
-    margin: 100px auto 20px auto;
+    margin: 70px auto 20px auto;
     box-sizing: border-box;
     overflow: visible;
     resize: vertical;       /* Allow vertical resizing */
@@ -84,34 +125,36 @@ body {
 }
 
 .editor-wrapper.editor-diary {
-    background: #fff;
+    background: var(--brand-white);
     width: 250mm;
-    height: 265mm; 
+    min-height: 265mm; 
     margin: 70px auto;
     box-sizing: border-box;
     padding: 20px;
     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
     font-size: 14px;
     line-height: 1.6;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-medium);
+    overflow: visible;
 }
 
 .fir-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 30px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-light);
+    table-layout: fixed;
 }
 
 .fir-table th {
-    background: #f8f9fa;
+    background: var(--color-surface-secondary);
     padding: 15px 12px;
     text-align: center;
     font-weight: 700;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     font-size: 14px;
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 .fir-table th.left-column {
@@ -122,50 +165,41 @@ body {
     width: 75%;
 }
 
+
+
 .fir-table td {
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     vertical-align: top;
-    background: #fff;
+    background: var(--brand-white);
+    word-wrap: break-word;
 }
 
-.fir-table textarea {
-    min-height: 500px;
-    width: 100%;
-    border: none;
-    resize: vertical;
-    font-family: inherit;
-    font-size: 14px;
-    line-height: 1.6;
-    background: transparent;
-}
 
-.fir-table textarea:focus {
-    outline: none;
-}
 
 #exportBtn {
-    background: #fff;           /* Change from green to white */
-    color: var(--brand-color-1);/* Use your brand color for text/icon */
-    border: 1px solid var(--brand-color-1); /* Optional: add border for visibility */
-    border-radius: 4px;
+    background: var(--brand-white);
+    color: var(--color-text-primary);
+    border: none;
+    border-radius: 6px;
     padding: 8px 18px;
     font-size: 1em;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
 #exportBtn:hover {
-    background: #f0f2f5;        /* Light background on hover */
-    color: var(--brand-color-1);
+    background: var(--color-hover-brand);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
 }
 
 .bihar-police-title {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     line-height: 1.1;
 }
 
@@ -173,7 +207,7 @@ body {
     font-family: 'Noto Sans Devanagari', sans-serif;
     font-size: 1.15em;
     font-weight: 700;
-    color: var(--brand-color-1, #0a225d);
+    color: var(--brand-primary);
     letter-spacing: 1px;
 }
 
@@ -181,13 +215,13 @@ body {
     font-family: 'Roboto', sans-serif;
     font-size: 0.95em;
     font-weight: 500;
-    color: var(--brand-color-1, #0a225d);
+    color: var(--brand-primary);
     letter-spacing: 0.5px;
     opacity: 0.85;
 }
 
 .switch-btn {
-    background: none;
+    background: var(--brand-white);
     border: none;
     padding: 0;
     border-radius: 8px;
@@ -195,20 +229,21 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease;
-    box-shadow: 0 1px 4px #0001;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
     height: 40px;
     width: 40px;
 }
 
 .switch-btn:hover {
-    background: #f5f7fa;
-    box-shadow: 0 2px 8px #1976d220;
+    background: var(--color-hover-brand);
+    box-shadow: var(--shadow-medium);
+    transform: scale(1.05);
 }
 
 .switch-icon {
     font-size: 22px;
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     width: 18px;
     height: 18px;
     object-fit: contain;
@@ -225,27 +260,29 @@ body {
 }
 
 .template-filter {
-    background: #fff;
-    color: var(--brand-color-1, #0a225d);
+    background: var(--brand-white);
+    color: var(--color-text-primary);
     height: 36px; /* Reduced height */
     padding: 0 16px;
     font-size: 1em;
     font-weight: 500;
     cursor: pointer;
-    border: 1px black solid;
+    border: none;
     border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 8px;
     position: relative;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
 .template-filter .dropdown-content {
     display: none;
     position: absolute;
-    background: #fff;
+    background: var(--brand-white);
     min-width: 120px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-medium);
     z-index: 100;
     top: 36px;
     left: 0;
@@ -256,7 +293,7 @@ body {
     display: block;
 }
 .add-template-btn {
-    background: var(--brand-color-2, #e0ca40);
+    background: var(--brand-white);
     border: none;
     border-radius: 50%;
     width: 32px;
@@ -265,74 +302,68 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
 }
 .add-template-btn:hover {
-    background: #ffe066;
+    background: var(--color-hover-brand);
+    box-shadow: var(--shadow-medium);
+    transform: scale(1.08);
 }
 .plus-icon i {
-    color: var(--brand-color-1, #0a225d);
+    color: var(--brand-primary);
     font-size: 18px;
-}
-
-.filename-wrapper {
-    margin-right: 10px;
 }
 
 .filename-input {
     height: 36px; /* Reduced height */
-    width: 180px;
+    width: 200px;
     padding: 0 12px;
-    border: 1px solid var(--brand-color-1);
+    border: 1px solid var(--color-border-light);
     border-radius: 8px;
     font-family: "Roboto-Medium", Helvetica;
     font-size: 16px;
-    color: var(--brand-color-1);
-    background: #e8eaf6;
-    background-color: transparent;
+    color: var(--color-text-primary);
+    background: var(--brand-secondary);
     transition: all 0.3s ease;
 }
 
+.filename-input:focus {
+    outline: none;
+    background: var(--brand-white);
+}
+
 .action-buttons .action-btn {
-    background: var(--brand-color-2, #e0ca40);
-    color: var(--brand-color-1, #0a225d);
+    background: var(--brand-white);
+    color: var(--color-text-primary);
     border: none;
     border-radius: 6px;
     padding: 8px 18px;
     margin-left: 8px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 6px;
 }
 .action-buttons .action-btn:hover {
-    background: #ffe066;
+    background: var(--color-hover-brand);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
 }
 
-/* Footer */
-.footer-bihar-police {
-    text-align: center;
-    padding: 12px 0;
-    background: var(--brand-color-2);
-    color: var(--brand-color-1);
-}
-.bihar-police-logo-footer {
-    height: 28px;
-    vertical-align: middle;
-    margin-right: 8px;
-}
 
 /* Modern Diary Card */
 .modern-diary-card {
-    background: #fff;
+    background: var(--brand-white);
     border-radius: 14px;
-    box-shadow: 0 2px 16px #0002;
+    box-shadow: var(--shadow-strong);
     padding: 32px 24px 24px 24px;
     margin: 32px auto;
     max-width: 900px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border-medium);
 }
 /* Removed duplicate diary styles - using the ones above */
 
@@ -340,15 +371,15 @@ body {
 
 /* Header Styles */
 .header-frame {
-    background-color: var(--brand-color-2);
-    color: var(--brand-color-1);
+    background-color: var(--brand-secondary);
+    color: var(--brand-primary);
     width: 100%;
     height: 60px;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-light);
 }
 
 .header-content {
@@ -361,19 +392,33 @@ body {
     padding: 0 16px;
 }
 
-.header-left, .header-right {
+.header-left, .header-center, .header-right {
     display: flex;
     align-items: center;
-    gap: 24px;
+}
+
+.header-left {
+    flex: 1;
+    gap: 16px;
+}
+
+.header-right {
+    flex: 1;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.header-center {
+    flex: 0 0 auto;
+    justify-content: center;
+    gap: 10px;
 }
 
 
-.switch-btn:hover {
-    transform: scale(1.1);
-}
+
 
 .template-filter .dropdown-content a {
-    color: #0a225d;
+    color: var(--color-text-brand);
     padding: 10px 16px;
     text-decoration: none;
     display: block;
@@ -381,14 +426,14 @@ body {
 }
 
 .template-filter .dropdown-content a:hover {
-    background: #f5f7fa;
+    background: var(--color-surface-alt);
 }
 
 /* Preview Text */
 .preview-text {
     font-family: "Inter-Regular", Helvetica;
     font-size: 24px;
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -422,33 +467,20 @@ body {
 }
 
 .save-btn {
-    color: rgba(5, 35, 97, 1);
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .export-btn {
-    color: #000000;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 
 
 /* Hover effects */
-.template-filter:hover,
-.action-btn:hover {
-    background-color: rgba(5, 35, 97, 0.05);
-}
-
-
-
-.filename-input:focus {
-    outline: none;
-    border-color: var(--brand-color-1);
-    box-shadow: 0 0 0 2px rgba(5, 35, 97, 0.1);
-}
-
-.filename-input::placeholder {
-    color: rgba(5, 35, 97, 0.5);
+.template-filter:hover {
+    background-color: var(--color-hover-brand);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
 }
 
 /* New File Modal Styles */
@@ -465,7 +497,7 @@ body {
 .input-group input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 16px;
 }
@@ -477,15 +509,14 @@ body {
     top: 45px;
     width: 300px;
     height: calc(100vh - 45px);
-    background-color: #fff;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    background-color: var(--brand-white);
+    box-shadow: var(--shadow-medium);
     transition: left 0.3s ease;
     z-index: 900;
     display: flex;
     flex-direction: column;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    background: var(--brand-color-3);
-    border-right: 3px solid var(--brand-color-2);
+    background: var(--brand-white);
 }
 
 .sidebar.open {
@@ -519,17 +550,17 @@ body {
 }
 
 .template-item:hover {
-    background-color: rgba(5, 35, 97, 0.05);
+    background-color: var(--color-hover-brand);
 }
 
 .template-item i {
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     font-size: 16px;
     min-width: 16px; /* Fixed width for icon */
 }
 
 .template-item span {
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     font-family: "Roboto-Medium", Helvetica;
     font-size: 14px;
     white-space: nowrap;
@@ -542,8 +573,8 @@ body {
     position: relative;
     width: 100%;
     padding: 15px 20px;
-    border-top: 1px solid #eee;
-    background: #fff;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--brand-white);
     margin-top: auto;
     box-sizing: border-box; /* Include padding in width */
 }
@@ -556,7 +587,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: var(--shadow-overlay);
     z-index: 1000;
 }
 
@@ -568,14 +599,14 @@ body {
     width: 80%;
     max-width: 800px;
     border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-popup);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--color-border-light);
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
@@ -594,7 +625,7 @@ body {
     overflow-y: auto;
     margin-bottom: 20px;
     padding: 20px;
-    border: 1px solid #eee;
+    border: 1px solid var(--color-border-light);
     border-radius: 4px;
 }
 
@@ -603,7 +634,7 @@ body {
     justify-content: flex-end;
     gap: 10px;
     padding-top: 20px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--color-border-light);
 }
 
 .modal-btn {
@@ -615,12 +646,12 @@ body {
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: var(--color-neutral);
     color: white;
 }
 
 .btn-primary {
-    background: #007bff;
+    background: var(--color-info);
     color: white;
 }
 
@@ -634,11 +665,11 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: #4a90e2;
+    background: var(--color-success);
     color: white;
     padding: 12px 20px;
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-popup);
     z-index: 1000;
     font-size: 0.9em;
     opacity: 1;
@@ -667,7 +698,7 @@ body {
 .date-header {
     font-family: "Roboto-Medium", Helvetica;
     font-size: 13px;
-    color: #666;
+    color: var(--color-text-secondary);
     padding: 0 12px;
     margin-bottom: 4px;
 }
@@ -677,7 +708,7 @@ body {
     align-items: flex-start;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--color-border-lighter);
     align-items: center;
 }
 
@@ -708,21 +739,21 @@ body {
 }
 
 .history-item-actions button:hover {
-    background: #ff9b7c;
+    background: var(--color-warning);
 }
 
 .history-item:hover {
-    background-color: rgba(5, 35, 97, 0.05);
+    background-color: var(--color-hover-brand);
 }
 
 .history-item i {
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     font-size: 16px;
     min-width: 16px;
 }
 
 .history-item-name {
-    color: var(--brand-color-1);
+    color: var(--brand-primary);
     font-family: "Roboto-Medium", Helvetica;
     font-size: 14px;
     white-space: nowrap;
@@ -731,14 +762,14 @@ body {
 }
 
 .history-item-time {
-    color: #666;
+    color: var(--color-text-secondary);
     font-family: "Roboto", Helvetica;
     font-size: 12px;
 }
 
 .history-item-preview {
     display: block;
-    color: #666;
+    color: var(--color-text-secondary);
     font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
@@ -770,7 +801,7 @@ body {
 .history-delete-btn {
     background: none;
     border: none;
-    color: #d32f2f;
+    color: var(--color-error);
     cursor: pointer;
     margin-left: 8px;
     font-size: 18px;
@@ -781,7 +812,7 @@ body {
 }
 
 .history-delete-btn:hover {
-    color: #a62828;
+    color: var(--color-error-hover);
 }
 
 .main-content {
@@ -795,7 +826,7 @@ body {
 
 .bihar-police-logo-header {
     height: 38px;
-    margin-right: 18px;
+    margin-right: 12px;
     vertical-align: middle;
 }
 
@@ -843,10 +874,10 @@ body {
 }
 
 .diary-input-group input {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 6px 10px;
-    background: #fff;
+    background: var(--brand-white);
 }
 
 .diary-input-group span {
@@ -860,4 +891,34 @@ body {
     gap: 15px;
     align-items: flex-end;
     margin-bottom: 20px;
+}
+
+/* Diary Quill Editors */
+.diary-quill-editor {
+    width: 100%;
+    min-width: 0;
+    min-height: 500px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--brand-white);
+}
+
+.diary-quill-editor .ql-editor {
+    min-height: 480px;
+    padding: 8px;
+    font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.diary-quill-editor .ql-editor.ql-blank::before {
+    color: var(--color-text-muted);
+    font-style: italic;
+    left: 12px;
+    right: 12px;
+}
+
+/* Simple fix: Keep bubble toolbar on single line */
+.ql-bubble .ql-toolbar {
+    white-space: nowrap !important;
 }
