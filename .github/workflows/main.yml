@@ -27,15 +27,24 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
+    - name: Verify platform
+      run: |
+        echo "=== Platform Detection ==="
+        python -c "import sys; print(f'Platform: {sys.platform}')"
+        echo "Current directory: $PWD"
+        echo "Python version: $(python --version)"
+        
     - name: Build application
       run: |
         $env:PYTHONPATH = "$env:PYTHONPATH;$PWD"
-        pyinstaller MyApp.spec --noconfirm --clean
+        echo "Building on Windows platform..."
+        echo "Python path: $env:PYTHONPATH"
+        pyinstaller MyApp.spec --noconfirm
         
     - name: Verify Windows build
       run: |
         echo "=== Build Output Verification ==="
-        ls -la dist/
+        Get-ChildItem dist/ -Force
         echo "=== Executable Details ==="
         Get-ChildItem dist/ -Recurse | Where-Object {$_.Extension -eq ".exe"} | ForEach-Object {
           Write-Host "File: $($_.Name)"
@@ -72,10 +81,19 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
+    - name: Verify platform
+      run: |
+        echo "=== Platform Detection ==="
+        python -c "import sys; print(f'Platform: {sys.platform}')"
+        echo "Current directory: $PWD"
+        echo "Python version: $(python --version)"
+        
     - name: Build application
       run: |
         export PYTHONPATH="${PYTHONPATH}:${PWD}"
-        pyinstaller MyApp.spec --noconfirm --clean
+        echo "Building on macOS platform..."
+        echo "Python path: $env:PYTHONPATH"
+        pyinstaller MyApp.spec --noconfirm
         
     - name: Verify macOS build
       run: |
