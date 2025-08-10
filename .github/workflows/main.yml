@@ -30,7 +30,19 @@ jobs:
     - name: Build application
       run: |
         $env:PYTHONPATH = "$env:PYTHONPATH;$PWD"
-        pyinstaller MyApp.spec --noconfirm
+        pyinstaller MyApp.spec --noconfirm --clean
+        
+    - name: Verify Windows build
+      run: |
+        echo "=== Build Output Verification ==="
+        ls -la dist/
+        echo "=== Executable Details ==="
+        Get-ChildItem dist/ -Recurse | Where-Object {$_.Extension -eq ".exe"} | ForEach-Object {
+          Write-Host "File: $($_.Name)"
+          Write-Host "Size: $($_.Length) bytes"
+          Write-Host "Created: $($_.CreationTime)"
+          Write-Host "---"
+        }
         
     - name: Upload Windows artifact
       id: upload
@@ -63,7 +75,16 @@ jobs:
     - name: Build application
       run: |
         export PYTHONPATH="${PYTHONPATH}:${PWD}"
-        pyinstaller MyApp.spec --noconfirm
+        pyinstaller MyApp.spec --noconfirm --clean
+        
+    - name: Verify macOS build
+      run: |
+        echo "=== Build Output Verification ==="
+        ls -la dist/
+        echo "=== App Bundle Details ==="
+        find dist/ -name "*.app" -type d -exec ls -la {} \;
+        echo "=== Executable Details ==="
+        find dist/ -name "Bihar-Police-Notebook" -type f -exec ls -la {} \;
         
     - name: Upload macOS artifact
       id: upload
