@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='BP-writing tool',
+    name='Bihar Police Notebook',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,22 +35,23 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='static/images/bihar-police-logo.ico'
+    icon='static/images/logo.png'
 )
 
 # Add macOS app bundle
 if sys.platform == 'darwin':
     app = BUNDLE(
         exe,
-        name='MyApp.app',
+        name='Bihar-Police-Notebook.app',
         bundle_identifier=None,
         info_plist={
-            'CFBundleName': 'MyApp',
-            'CFBundleDisplayName': 'MyApp',
+            'CFBundleName': 'Bihar Police Notebook',
+            'CFBundleDisplayName': 'Bihar Police Notebook',
             'CFBundleVersion': '1.0.0',
             'CFBundleShortVersionString': '1.0.0',
             'NSHighResolutionCapable': True,
             'LSBackgroundOnly': False,
             'LSUIElement': False,
         },
+        icon='static/images/logo.png'
     )
