@@ -27,22 +27,22 @@ if sys.platform == 'win32':
         a.datas,
         [],
         name='Bihar-Police-Notebook-Windows',
-        console=False,
-        icon='static/images/logo.png',
+        debug=False,
+        bootloader_ignore_signals=False,
         strip=True,
         upx=True,
         upx_exclude=[],
         runtime_tmpdir=None,
-        debug=False,
-        bootloader_ignore_signals=False,
+        console=False,
         disable_windowed_traceback=False,
         argv_emulation=False,
         target_arch=None,
         codesign_identity=None,
-        entitlements_file=None
+        entitlements_file=None,
+        icon='static/images/logo.png'
     )
 elif sys.platform == 'darwin':
-    # macOS build
+    # macOS build - using working parameters from reference
     exe = EXE(
         pyz,
         a.scripts,
@@ -50,30 +50,33 @@ elif sys.platform == 'darwin':
         a.datas,
         [],
         name='Bihar-Police-Notebook',
-        console=False,
-        icon='static/images/logo.png',
-        strip=True,
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
         upx=True,
         upx_exclude=[],
         runtime_tmpdir=None,
-        debug=False,
-        bootloader_ignore_signals=False,
+        console=False,
         disable_windowed_traceback=False,
         argv_emulation=False,
         target_arch=None,
         codesign_identity=None,
-        entitlements_file=None
+        entitlements_file=None,
+        icon='static/images/logo.png'
     )
     
     app = BUNDLE(
         exe,
         name='Bihar-Police-Notebook.app',
+        bundle_identifier=None,
         info_plist={
             'CFBundleName': 'Bihar Police Notebook',
             'CFBundleDisplayName': 'Bihar Police Notebook',
             'CFBundleVersion': __version__,
             'CFBundleShortVersionString': __version__,
             'NSHighResolutionCapable': True,
+            'LSBackgroundOnly': False,
+            'LSUIElement': False,
         },
         icon='static/images/logo.png'
     )
