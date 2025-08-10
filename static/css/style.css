@@ -1,6 +1,6 @@
 :root {
     /* Primary Brand Colors */
-    --brand-primary: rgba(5, 35, 97, 1);        /* Dark blue - main brand */
+    --brand-primary: #010080;        /* Dark blue - main brand */
     --brand-secondary: #e0d3b3;   /* Gold/yellow - accent */
     --brand-white: #fff;                        /* Pure white */
     
@@ -24,9 +24,7 @@
     --color-border-separator: #e8e8e8;       /* Section separators */
     
     /* State Colors */
-    --color-success: #4a90e2;                /* Success actions */
-    --color-error: #d32f2f;                  /* Error states */
-    --color-error-hover: #a62828;            /* Error hover */
+    --color-error: #fe0100;                  /* Error states */
     --color-warning: #ff9b7c;                /* Warning states */
     --color-info: #007bff;                   /* Info states */
     --color-neutral: #6c757d;                /* Neutral actions */
@@ -132,7 +130,7 @@ body {
     box-sizing: border-box;
     padding: 20px;
     font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.6;
     color: var(--color-text-primary);
     box-shadow: var(--shadow-medium);
@@ -153,7 +151,7 @@ body {
     text-align: center;
     font-weight: 700;
     border: 1px solid var(--color-border);
-    font-size: 16px;
+    font-size: 14px;
     color: var(--color-text-primary);
 }
 
@@ -365,11 +363,7 @@ body {
     max-width: 900px;
     border: 1px solid var(--color-border-medium);
 }
-/* Removed duplicate diary styles - using the ones above */
 
-/* Removed duplicate fir-table rules - using the ones above */
-
-/* Header Styles */
 .header-frame {
     background-color: var(--brand-secondary);
     color: var(--brand-primary);
@@ -380,6 +374,8 @@ body {
     left: 0;
     z-index: 1000;
     box-shadow: var(--shadow-light);
+    border-top: 3px solid var(--color-error);
+    border-bottom: 3px solid var(--brand-primary);
 }
 
 .header-content {
@@ -665,7 +661,7 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: var(--color-success);
+    background: var(--color-info);
     color: white;
     padding: 12px 20px;
     border-radius: 4px;
@@ -699,7 +695,6 @@ body {
     font-family: "Roboto-Medium", Helvetica;
     font-size: 13px;
     color: var(--color-text-secondary);
-    padding: 0 12px;
     margin-bottom: 4px;
 }
 
@@ -707,14 +702,22 @@ body {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    padding: 8px 0;
     border-bottom: 1px solid var(--color-border-lighter);
     align-items: center;
+    border-radius: 10px;
 }
 
 .history-item-details {
     flex: 1;
     min-width: 0;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.history-item:hover .history-item-actions {
+    opacity: 1;
 }
 
 .history-item-actions {
@@ -722,20 +725,17 @@ body {
     flex-direction: column;
     gap: 4px;
     opacity: 0;
+    margin-right: 8px;
     transition: opacity 0.2s ease;
-}
-
-.history-item:hover .history-item-actions {
-    opacity: 1;
 }
 
 .history-item-actions button {
     border: none;
+    background: none;
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin-bottom: 2px;
 }
 
 .history-item-actions button:hover {
@@ -743,19 +743,14 @@ body {
 }
 
 .history-item:hover {
-    background-color: var(--color-hover-brand);
-}
-
-.history-item i {
-    color: var(--brand-primary);
-    font-size: 16px;
-    min-width: 16px;
+    background-color: var(--brand-secondary);
 }
 
 .history-item-name {
     color: var(--brand-primary);
     font-family: "Roboto-Medium", Helvetica;
     font-size: 14px;
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -767,14 +762,12 @@ body {
     font-size: 12px;
 }
 
-.history-item-preview {
+.history-item-description {
     display: block;
-    color: var(--color-text-secondary);
+    color: #444;
     font-size: 12px;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 2px;
+    margin-top: 5px;
 }
 
 .collapsible-header {
@@ -796,23 +789,6 @@ body {
 
 .history-items-container.collapsed {
     display: none;
-}
-
-.history-delete-btn {
-    background: none;
-    border: none;
-    color: var(--color-error);
-    cursor: pointer;
-    margin-left: 8px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-}
-
-.history-delete-btn:hover {
-    color: var(--color-error-hover);
 }
 
 .main-content {

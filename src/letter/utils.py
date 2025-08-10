@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.db_handler import db
+import re
 
 table = db.table('letter')
 
@@ -19,13 +20,12 @@ def get_all_letters():
         doc_dict = {**doc, '_id': str(doc.doc_id)}
         content = doc_dict.get('content')
         if content:
-            doc_dict['content'] = content
-            # doc_dict['content'] = content[:50]
+            # remove all html tags and replace with space
+            doc_dict['content'] = re.sub('<[^<]+?>', ' ', content)[:100]
         result.append(doc_dict)
     return result
 
 def create_letter(data):
-    # add created_at and updated_at
     current_datetime = datetime.now().isoformat()
     data['created_at'] = current_datetime
     data['updated_at'] = current_datetime

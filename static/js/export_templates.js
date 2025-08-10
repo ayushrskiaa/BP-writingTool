@@ -133,7 +133,7 @@ export const pagedExportTemplates = {
                 }
 
                 .diary-header-center span:first-child {
-                    font-size: 2em;
+                    font-size: 1.5em;
                 }
 
                 .case-number {
@@ -196,12 +196,12 @@ export const pagedExportTemplates = {
                 }
 
                 .left-column {
-                    width: 25%;
+                    width: 28%;
                     border-right: 1px solid #000 !important;
                 }
 
                 .right-column {
-                    width: 75%;
+                    width: 72%;
                 }
 
                 .table-header th {
@@ -329,8 +329,8 @@ export const pagedExportTemplates = {
                     <div>आ0 ह0 प सं0 30 अ</div>
                 </div>
                 <div class="diary-header-center">
-                    <span>केस-दैनिकी सं0 <strong class="underline-field">${data.case_diary_no || '....................'}</strong></span>
-                    <span>(नियम- <strong class="underline-field">${data.rule_no || '....................'}</strong>)</span>
+                    <span>केस-दैनिकी सं0 <strong class="underline-field">${data.case_diary_no || ''}</strong></span>
+                    <span>(नियम- <strong class="underline-field">${data.rule_no || ''}</strong>)</span>
                 </div>
             </div>
             
@@ -345,12 +345,12 @@ export const pagedExportTemplates = {
             </div>
             
             <div class="case-details">
-                <span>थाना <strong class="underline-field">${data.thana || '....................'}</strong></span>
-                <span>जिला <strong class="underline-field">${data.district || '....................'}</strong></span>
-                <span>प्रथम इत्तिला रिपोर्ट सं. <strong class="underline-field">${data.fir_number || '....................'}</strong></span>
-                <span>तिथि <strong class="underline-field">${data.fir_date || '....................'}</strong></span>
-                <span>घटना की तिथि और स्थान <strong class="underline-field">${data.event_date_place || '...............................................'}</strong></span>
-                <span>धाराः <strong class="underline-field">${data.sections || '................................................'}</strong></span>
+                <span>थाना <strong class="underline-field">${data.thana || ''}</strong></span>
+                <span>जिला <strong class="underline-field">${data.district || ''}</strong></span>
+                <span>प्रथम इत्तिला रिपोर्ट सं. <strong class="underline-field">${data.fir_number || ''}</strong></span>
+                <span>तिथि <strong class="underline-field">${data.fir_date || ''}</strong></span>
+                <span>घटना की तिथि और स्थान <strong class="underline-field">${data.event_date_place || ''}</strong></span>
+                <span>धाराः <strong class="underline-field">${data.sections || ''}</strong></span>
             </div>
         </div>
     `,
@@ -361,7 +361,7 @@ export const pagedExportTemplates = {
             ${data.showHeader ? `
             <tr class="table-header">
                 <th class="left-column">किन तिथि को (समय सहित )<br>कार्रवाई की गई, और किन-किन स्थानों को जाकर देखा गया |</th>
-                <th class="right-column">अन्वेषण का अभिलेख ${data.investigation_record || '....................'}</th>
+                <th class="right-column">अन्वेषण का अभिलेख <strong class="underline-field">${data.investigation_record || ''}</strong></th>
             </tr>
             ` : ''}
             <tr>

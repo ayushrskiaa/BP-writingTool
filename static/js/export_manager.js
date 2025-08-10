@@ -28,14 +28,8 @@ export class ExportManager {
             throw new Error('Cannot export empty document!');
         }
 
-        // Get Quill editor instance
-        const quillEditor = window.quillEditor;
-        if (!quillEditor) {
-            throw new Error('Quill editor not found');
-        }
-
-        // Get formatted content from Quill
-        const formattedContent = quillEditor.root.innerHTML;
+        // Get formatted content from centralized helper
+        const formattedContent = this.getQuillContent();
         
         // Create letter content with proper HTML handling
         const letterContent = pagedExportTemplates.letterContent({ 
@@ -111,12 +105,7 @@ export class ExportManager {
 
     // Export as HTML file (for sharing)
     async exportLetterHTML() {
-        const quillEditor = window.quillEditor;
-        if (!quillEditor) {
-            throw new Error('Quill editor not found');
-        }
-
-        const formattedContent = quillEditor.root.innerHTML;
+        const formattedContent = this.getQuillContent();
         if (!formattedContent || formattedContent === '<p><br></p>') {
             throw new Error('Cannot export empty document!');
         }
@@ -127,26 +116,6 @@ export class ExportManager {
         
         const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
         this.downloadHTML(documentHtml, 'letter.html');
-    }
-
-    // Export as plain text (for compatibility)
-    async exportLetterText() {
-        const quillEditor = window.quillEditor;
-        if (!quillEditor) {
-            throw new Error('Quill editor not found');
-        }
-
-        const plainText = quillEditor.getText();
-        if (!plainText.trim()) {
-            throw new Error('Cannot export empty document!');
-        }
-
-        const letterContent = pagedExportTemplates.letterContent({ 
-            letter_content: plainText 
-        });
-        
-        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
-        this.openPrintWindow(documentHtml);
     }
 
     // Export Utilities
@@ -176,21 +145,9 @@ export class ExportManager {
     }
 
     // Get Quill content in different formats
-    getQuillContent(format = 'html') {
+    getQuillContent() {
         const quillEditor = window.quillEditor;
-        if (!quillEditor) {
-            return '';
-        }
-
-        switch (format) {
-            case 'html':
-                return quillEditor.root.innerHTML;
-            case 'text':
-                return quillEditor.getText();
-            case 'delta':
-                return JSON.stringify(quillEditor.getContents());
-            default:
-                return quillEditor.root.innerHTML;
-        }
+        if (!quillEditor) return '';
+        return quillEditor.root.innerHTML;
     }
 } 

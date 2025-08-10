@@ -12,6 +12,10 @@ export class DataManager {
         inputs.forEach(input => {
             data[input.getAttribute('data-field')] = input.value || '';
         });
+        // Include Quill editor contents (HTML) for diary left/right boxes
+        const { left, right } = this.getDiaryQuillContent();
+        if (typeof left === 'string') data.left_box = left;
+        if (typeof right === 'string') data.right_box = right;
         return data;
     }
 
@@ -26,6 +30,12 @@ export class DataManager {
             } else {
                 input.value = '';
             }
+        });
+
+        // Populate Quill editors for diary boxes if present
+        this.setDiaryQuillContent({
+            left: (data && typeof data.left_box === 'string') ? data.left_box : '',
+            right: (data && typeof data.right_box === 'string') ? data.right_box : ''
         });
     }
 
@@ -64,6 +74,9 @@ export class DataManager {
         } else {
             const container = document.getElementById('diaryExportLayout');
             container.querySelectorAll('input, textarea').forEach(el => el.value = '');
+
+            // Also clear diary Quill editors if available
+            this.clearDiaryQuillEditors();
         }
     }
 
@@ -83,5 +96,52 @@ export class DataManager {
         } else {
             this.setDiaryContent(content);
         }
+    }
+
+    // --- Quill helpers (centralized) ---
+    getDiaryQuillContent() {
+        try {
+            const leftQuill = window.diaryQuillEditors?.leftBox;
+            const rightQuill = window.diaryQuillEditors?.rightBox;
+
+            const getHtml = (q) => (q?.root?.innerHTML || '').trim();
+
+            return {
+                left: leftQuill ? getHtml(leftQuill) : this._readDiaryEditorFallback('left'),
+                right: rightQuill ? getHtml(rightQuill) : this._readDiaryEditorFallback('right')
+            };
+        } catch (_) {
+            return {
+                left: this._readDiaryEditorFallback('left'),
+                right: this._readDiaryEditorFallback('right')
+            };
+        }
+    }
+
+    setDiaryQuillContent({ left = '', right = '' } = {}) {
+        try {
+            const leftQuill = window.diaryQuillEditors?.leftBox;
+            const rightQuill = window.diaryQuillEditors?.rightBox;
+
+            if (leftQuill) {
+                if (left.includes('<') && left.includes('>')) leftQuill.root.innerHTML = left; else leftQuill.setText(left);
+            }
+            if (rightQuill) {
+                if (right.includes('<') && right.includes('>')) rightQuill.root.innerHTML = right; else rightQuill.setText(right);
+            }
+        } catch (_) {}
+    }
+
+    clearDiaryQuillEditors() {
+        try {
+            if (window.diaryQuillEditors?.leftBox) window.diaryQuillEditors.leftBox.setText('');
+            if (window.diaryQuillEditors?.rightBox) window.diaryQuillEditors.rightBox.setText('');
+        } catch (_) {}
+    }
+
+    _readDiaryEditorFallback(which) {
+        const id = which === 'right' ? 'quill-right-box' : 'quill-left-box';
+        const el = document.getElementById(id)?.querySelector('.ql-editor');
+        return el ? el.innerHTML.trim() : '';
     }
 } 

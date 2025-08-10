@@ -120,54 +120,65 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsContainer.className = 'history-items-container';
 
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                let firstLine;
-                if (typeof doc.content === 'object' && doc.content !== null && 'right_box' in doc.content) {
-                    firstLine = String(doc.content.right_box || '').slice(0, 50);
-                } else {
-                    firstLine = (typeof doc.content === 'string' ? doc.content : JSON.stringify(doc.content)).slice(0, 50);
-                }
                 const updated = new Date(doc.updated_at);
                 const updatedStr = updated.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
-                    <div class="history-item-details" style="cursor:pointer; padding: 0 10px; display: flex; flex-direction: column; gap: 2px;">
-                        <span class="history-item-name" style="color:#0a225d;font-weight:500;">${doc.filename}</span>
+                    <div class="history-item-details">
+                        <span class="history-item-name">${doc.filename}</span>
                         <span class="history-item-time">${updatedStr}</span>
-                        <span class="history-item-preview" style="color:#444;">${firstLine}</span>
+                        <span class="history-item-description">${doc.content}</span>
                     </div>
                     <div class="history-item-actions">
                         <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
 
-                // Load document on click (whole item)
-                item.querySelector('.history-item-details').onclick = () => {
-                    filenameInput.value = doc.filename;
-                    currentDocumentId = doc._id; // Set current document ID
-                    
-                    if (getActiveTemplate() === 'diary') {
-                        document.querySelector('.editor-letter').style.display = 'none';
-                        document.querySelector('.editor-diary').style.display = '';
-                        document.querySelector('.template-filter .filter-text').textContent = 'Diary';
-                        let diaryData;
-                        try {
-                            diaryData = typeof doc.content === 'string' ? JSON.parse(doc.content) : doc.content;
-                        } catch {
-                            diaryData = {};
+                // Load document on click (whole item) using single-document route
+                item.querySelector('.history-item-details').onclick = async () => {
+                    const template = getActiveTemplate();
+                    const id = doc._id;
+                    try {
+                        const resp = await fetch(`/get_document/${template}/${id}`);
+                        if (!resp.ok) throw new Error('Failed to load document');
+                        const payload = await resp.json();
+                        const full = payload.document || {};
+
+                        filenameInput.value = full.filename || doc.filename || '';
+                        currentDocumentId = id; // Set current document ID
+
+                        if (template === 'diary') {
+                            document.querySelector('.editor-letter').style.display = 'none';
+                            document.querySelector('.editor-diary').style.display = '';
+                            document.querySelector('.template-filter .filter-text').textContent = 'Diary';
+
+                            let diaryData;
+                            if (typeof full.content === 'string') {
+                                try {
+                                    diaryData = JSON.parse(full.content);
+                                } catch (e) {
+                                    diaryData = {};
+                                }
+                            } else {
+                                diaryData = full.content || {};
+                            }
+                            dataManager.setDiaryContent(diaryData);
+                            // Ensure diary editors are initialized
+                            setTimeout(() => { try { initializeDiaryQuillEditors(); } catch (_) {} }, 0);
+                        } else {
+                            document.querySelector('.editor-letter').style.display = '';
+                            document.querySelector('.editor-diary').style.display = 'none';
+                            document.querySelector('.template-filter .filter-text').textContent = 'Letter';
+                            dataManager.setLetterContent(full.content || '');
+                            if (quillEditor) {
+                                quillEditor.focus();
+                            }
                         }
-                        dataManager.setDiaryContent(diaryData);
-                        // Focus first diary field
-                        // Focus will be handled by Quill editors
-                    } else {
-                        document.querySelector('.editor-letter').style.display = '';
-                        document.querySelector('.editor-diary').style.display = 'none';
-                        document.querySelector('.template-filter .filter-text').textContent = 'Letter';
-                        dataManager.setLetterContent(doc.content);
-                        if (quillEditor) {
-                            quillEditor.focus();
-                        }
+                    } catch (err) {
+                        console.error('Failed to load document:', err);
+                        alert('Failed to load document.');
                     }
                 };
 

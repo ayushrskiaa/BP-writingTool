@@ -12,13 +12,14 @@ import queue
 
 from src.utils import check_port_available, kill_process_on_port
 from src.logger import logger
+from src import __version__
 
 
 class FlaskAppGUI:
     def __init__(self, app):
         self.app = app
         self.root = tk.Tk()
-        self.root.title("Bihar Police Writing Tool Launcher")
+        self.root.title(f"Bihar Police Notebook Launcher v{__version__}")
         self.root.geometry("450x550")
         self.root.minsize(450, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
@@ -37,15 +38,14 @@ class FlaskAppGUI:
 
     def setup_styles(self):
         self.colors = {
-            'bg': '#F0F0F0',
-            'frame': '#FFFFFF',
+            'bg': '#e0d3b3',
+            'frame': '#ede9de',
             'text': '#333333',
             'subtext': '#666666',
             'success': '#28a745',
             'danger': '#dc3545',
             'warning': '#ffc107',
-            'info': '#17a2b8',
-            'light': '#F8F9FA',
+            'info': '#052361',
             'dark': '#343A40',
             'border': '#DDDDDD'
         }
@@ -62,7 +62,7 @@ class FlaskAppGUI:
         style.configure('Card.TFrame', background=self.colors['frame'], borderwidth=1, relief='solid')
         style.configure('TLabel', background=self.colors['frame'], foreground=self.colors['text'], font=(font_family, 10))
         style.configure('Header.TLabel', font=(font_family, 18, 'bold'), background=self.colors['bg'])
-        style.configure('SubHeader.TLabel', foreground=self.colors['subtext'], font=(font_family, 10), background=self.colors['bg'])
+        style.configure('SubHeader.TLabel', foreground=self.colors['subtext'], font=(font_family, 15), background=self.colors['bg'])
         style.configure('Status.TLabel', font=(font_family, 14, 'bold'), background=self.colors['frame'])
 
         for btn_style, color in [('Success', 'success'), ('Danger', 'danger'), ('Info', 'info'), ('Dark', 'dark')]:
@@ -80,20 +80,22 @@ class FlaskAppGUI:
         main_frame = ttk.Frame(self.root, style='BG.TFrame', padding=(20, 20))
         main_frame.pack(fill='both', expand=True)
         
-        # --- Header ---
-        header = ttk.Label(main_frame, text="✍️ Bihar Police Writing Tool", style='Header.TLabel')
-        header.pack(pady=(0, 5))
-        subheader = ttk.Label(main_frame, text="Write Diary and Application in Hindi", style='SubHeader.TLabel')
-        subheader.pack(pady=(0, 20))
-
         # --- Logo ---
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'images', 'bihar-police-logo.png')
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'images', 'logo.png')
         if os.path.exists(logo_path):
             logo_img = Image.open(logo_path)
-            logo_img = logo_img.resize((64, 70), Image.LANCZOS)  # Resize as needed
+            logo_img = logo_img.resize((80, 90), Image.LANCZOS)  # Increased size for square image
             self.logo_photo = ImageTk.PhotoImage(logo_img)
             logo_label = tk.Label(main_frame, image=self.logo_photo, bg=self.colors['bg'])
             logo_label.pack(pady=(0, 10))
+        
+        # --- Header ---
+        header = ttk.Label(main_frame, text="Bihar Police Notebook", style='Header.TLabel')
+        header.pack(pady=(0, 5))
+        
+        # --- Subheader ---
+        subheader1 = ttk.Label(main_frame, text="By courtesy of Vaishali Police", style='SubHeader.TLabel')
+        subheader1.pack(pady=(0, 10))
 
         # --- Status Card ---
         status_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
@@ -117,13 +119,12 @@ class FlaskAppGUI:
         # --- Activity Log ---
         log_card = ttk.Frame(main_frame, style='Card.TFrame', padding=(20, 15))
         log_card.pack(fill='both', expand=True, pady=10)
-        ttk.Label(log_card, text="Activity Log", font=("Helvetica", 12, 'bold')).pack(pady=(0, 10))
 
         log_text_frame = ttk.Frame(log_card, style='TFrame')
         log_text_frame.pack(fill='both', expand=True)
 
         self.log_text = tk.Text(log_text_frame, height=5, font=("Courier", 9), relief='solid', borderwidth=1,
-                                bg=self.colors['light'], fg=self.colors['text'], wrap=tk.WORD,
+                                bg=self.colors['frame'], fg=self.colors['text'], wrap=tk.WORD,
                                 state='disabled', highlightthickness=1, highlightbackground=self.colors['border'])
         
         log_scrollbar = ttk.Scrollbar(log_text_frame, orient="vertical", command=self.log_text.yview)
@@ -214,12 +215,11 @@ class FlaskAppGUI:
             self.root.after(100, self.check_status_queue)
             
     def quit_app(self):
-        if messagebox.askokcancel("Quit Application", "Are you sure you want to quit?"):
-            if self.server_running and self.flask_server:
-                self.log_message("Stopping server before quitting...")
-                self.update_status('stopping', 'warning')
-                threading.Thread(target=self.flask_server.shutdown, daemon=True).start()
-                # Wait a bit for server to shutdown gracefully
-                self.root.after(1000, self.root.destroy)
-            else:
-                self.root.destroy()
+        if self.server_running and self.flask_server:
+            self.log_message("Stopping server before quitting...")
+            self.update_status('stopping', 'warning')
+            threading.Thread(target=self.flask_server.shutdown, daemon=True).start()
+            # Wait a bit for server to shutdown gracefully
+            self.root.after(1000, self.root.destroy)
+        else:
+            self.root.destroy()
