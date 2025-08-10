@@ -2,7 +2,7 @@
 
 import os
 import sys
-from src import __version__
+__version__ = '0.0.5'
 
 a = Analysis(
     ['app.py'],
@@ -39,7 +39,7 @@ if sys.platform == 'win32':
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon='static/images/logo.png'
+        icon='static/images/logo.ico'
     )
 elif sys.platform == 'darwin':
     # macOS build - using working parameters from reference
@@ -52,7 +52,7 @@ elif sys.platform == 'darwin':
         name='Bihar-Police-Notebook',
         debug=False,
         bootloader_ignore_signals=False,
-        strip=False,
+        strip=True,
         upx=True,
         upx_exclude=[],
         runtime_tmpdir=None,
