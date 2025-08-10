@@ -28,7 +28,18 @@ if sys.platform == 'win32':
         [],
         name='Bihar-Police-Notebook-Windows',
         console=False,
-        icon='static/images/logo.png'
+        icon='static/images/logo.png',
+        strip=True,
+        upx=True,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        debug=False,
+        bootloader_ignore_signals=False,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None
     )
 elif sys.platform == 'darwin':
     # macOS build
@@ -40,7 +51,18 @@ elif sys.platform == 'darwin':
         [],
         name='Bihar-Police-Notebook',
         console=False,
-        icon='static/images/logo.png'
+        icon='static/images/logo.png',
+        strip=True,
+        upx=True,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        debug=False,
+        bootloader_ignore_signals=False,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None
     )
     
     app = BUNDLE(
