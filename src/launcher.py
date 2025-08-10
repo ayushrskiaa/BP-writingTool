@@ -12,13 +12,14 @@ import queue
 
 from src.utils import check_port_available, kill_process_on_port
 from src.logger import logger
+from src import __version__
 
 
 class FlaskAppGUI:
     def __init__(self, app):
         self.app = app
         self.root = tk.Tk()
-        self.root.title("Bihar Police Notebook Launcher")
+        self.root.title(f"Bihar Police Notebook Launcher v{__version__}")
         self.root.geometry("450x550")
         self.root.minsize(450, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.quit_app)

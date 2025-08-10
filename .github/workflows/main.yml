@@ -2,8 +2,9 @@ name: Build and Release Application
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -34,7 +35,7 @@ jobs:
       id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: BP-writing-tool-windows
+        name: Bihar-Police-Notebook-windows
         path: dist/
         retention-days: 30
 
@@ -66,14 +67,14 @@ jobs:
       id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: BP-writing-tool-macos
+        name: Bihar-Police-Notebook-macos
         path: dist/
         retention-days: 0
 
   create-release:
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     
@@ -81,21 +82,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Generate version and date
+    - name: Derive version from tag
       id: version
       run: |
-        echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+        echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
         echo "date=$(date)" >> $GITHUB_OUTPUT
         
     - name: Download Windows artifact
       uses: actions/download-artifact@v4
       with:
-        name: BP-writing-tool-windows
+        name: Bihar-Police-Notebook-windows
         
     - name: Download macOS artifact
       uses: actions/download-artifact@v4
       with:
-        name: BP-writing-tool-macos
+        name: Bihar-Police-Notebook-macos
         
     - name: Debug - List all files
       run: |
@@ -106,28 +107,28 @@ jobs:
         ls -la
         echo ""
         echo "=== Find all executable files ==="
-        find . -name "*.exe" -o -name "*.app" -o -name "BP-writing*" -o -name "MyApp*" 2>/dev/null || true
+        find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
         echo ""
         echo "=== Check if files exist ==="
-        [ -f "BP-writing tool.exe" ] && echo "✅ BP-writing tool.exe exists" || echo "❌ BP-writing tool.exe not found"
-        [ -f "MyApp.app" ] && echo "✅ MyApp.app exists" || echo "❌ MyApp.app not found"
-        [ -d "MyApp.app" ] && echo "✅ MyApp.app directory exists" || echo "❌ MyApp.app directory not found"
+        [ -f "Bihar-Police-Notebook-Windows.exe" ] && echo "✅ Bihar-Police-Notebook-Windows.exe exists" || echo "❌ Bihar-Police-Notebook-Windows.exe not found"
+        [ -f "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app exists" || echo "❌ Bihar-Police-Notebook.app not found"
+        [ -d "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app directory exists" || echo "❌ Bihar-Police-Notebook.app directory not found"
         
     - name: Validate build files exist
       run: |
         echo "Validating that build files exist before creating release..."
         
         # Check for Windows executable
-        if [ ! -f "BP-writing tool.exe" ]; then
-          echo "❌ ERROR: Windows executable 'BP-writing tool.exe' not found!"
+        if [ ! -f "Bihar-Police-Notebook-Windows.exe" ]; then
+          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook-Windows.exe' not found!"
           echo "Available files:"
           ls -la
           exit 1
         fi
         
         # Check for macOS app bundle
-        if [ ! -d "MyApp.app" ]; then
-          echo "❌ ERROR: macOS app bundle 'MyApp.app' not found!"
+        if [ ! -d "Bihar-Police-Notebook.app" ]; then
+          echo "❌ ERROR: macOS app bundle 'Bihar-Police-Notebook.app' not found!"
           echo "Available files:"
           ls -la
           exit 1
@@ -138,30 +139,30 @@ jobs:
     - name: Create macOS app zip
       run: |
         echo "Creating zip file for macOS app bundle..."
-        zip -r "BP-writing-tool-macos.zip" "MyApp.app"
-        echo "✅ Created BP-writing-tool-macos.zip"
+        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.app"
+        echo "✅ Created Bihar-Police-Notebook-macos.zip"
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ steps.version.outputs.version }}
-        name: Release v${{ steps.version.outputs.version }}
+        tag_name: ${{ steps.version.outputs.version }}
+        name: Release ${{ steps.version.outputs.version }}
         body: |
-          ## BP Writing Tool v${{ steps.version.outputs.version }}
+          ## Bihar Police Notebook ${{ steps.version.outputs.version }}
           
           ### Downloads
-          - **Windows**: BP-writing tool.exe (executable)
-          - **macOS**: BP-writing-tool-macos.zip (macOS app bundle)
+          - **Windows**: Bihar-Police-Notebook-Windows.exe (executable)
+          - **macOS**: Bihar-Police-Notebook-macos.zip (macOS app bundle)
           
           ### Installation
           - **Windows**: Download and run the .exe file
-          - **macOS**: Download the zip file, extract, and drag MyApp.app to Applications folder
+          - **macOS**: Download the zip file, extract, and drag Bihar-Police-Notebook.app to Applications folder
           
           ### Changes
           - Built from commit: ${{ github.sha }}
           - Build date: ${{ steps.version.outputs.date }}
         files: |
-          BP-writing tool.exe
-          BP-writing-tool-macos.zip
+          Bihar-Police-Notebook-Windows.exe
+          Bihar-Police-Notebook-macos.zip
         draft: false
         prerelease: false 

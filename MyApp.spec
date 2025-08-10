@@ -2,6 +2,7 @@
 
 import os
 import sys
+from src import __version__
 
 a = Analysis(
     ['app.py'],
@@ -22,7 +23,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Bihar Police Notebook',
+    name='Bihar-Police-Notebook-Windows',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -47,8 +48,8 @@ if sys.platform == 'darwin':
         info_plist={
             'CFBundleName': 'Bihar Police Notebook',
             'CFBundleDisplayName': 'Bihar Police Notebook',
-            'CFBundleVersion': '1.0.0',
-            'CFBundleShortVersionString': '1.0.0',
+            'CFBundleVersion': __version__,
+            'CFBundleShortVersionString': __version__,
             'NSHighResolutionCapable': True,
             'LSBackgroundOnly': False,
             'LSUIElement': False,
