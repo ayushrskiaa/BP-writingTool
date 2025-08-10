@@ -39,7 +39,7 @@ class FlaskAppGUI:
     def setup_styles(self):
         self.colors = {
             'bg': '#e0d3b3',
-            'frame': '#ede9de',
+            'frame': '#faf8f1',
             'text': '#333333',
             'subtext': '#666666',
             'success': '#28a745',
