@@ -19,10 +19,12 @@
   },
   "windows": {
     "flags": [
+      "--standalone",
       "--onefile",
       "--windows-icon-from-ico=static/images/logo.ico",
-      "--windows-console-mode=disable"
+      "--windows-console-mode=disable",
+      "--assume-yes-for-downloads"
     ],
-    "description": "Windows .exe file"
+    "description": "Windows standalone executable with all dependencies"
   }
 }
