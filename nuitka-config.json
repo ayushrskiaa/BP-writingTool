@@ -19,6 +19,7 @@
   },
   "windows": {
     "flags": [
+      "--onefile",
       "--windows-icon-from-ico=static/images/logo.ico",
       "--windows-console-mode=disable"
     ],
