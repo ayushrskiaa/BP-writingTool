@@ -14,14 +14,14 @@ def load_config():
     try:
         with open(config_path, 'r') as f:
             config = json.load(f)
-        print("✓ Configuration loaded from nuitka-config.json")
+        print("Configuration loaded from nuitka-config.json")
                 
         return config
     except FileNotFoundError:
-        print(f"✗ Configuration file not found: {config_path}")
+        print(f"Configuration file not found: {config_path}")
         return None
     except json.JSONDecodeError as e:
-        print(f"✗ Invalid JSON in configuration file: {e}")
+        print(f"Invalid JSON in configuration file: {e}")
         return None
 
 def get_platform_config(config):
@@ -50,18 +50,18 @@ def build_app(config):
     # Add platform-specific flags
     if platform_config.get("flags"):
         cmd.extend(platform_config["flags"])
-        print(f"📱 Building for {platform_config['description']}")
+        print(f"Building for {platform_config['description']}")
     
     # Add main script
     cmd.append(config["common"]["main_script"])
     
-    print(f"🌍 Platform: {platform}")
-    print(f"🔧 Command: {' '.join(cmd)}")
+    print(f"Platform: {platform}")
+    print(f"Command: {' '.join(cmd)}")
     
     try:
         subprocess.check_call(cmd)
-        print("✓ Build completed successfully!")
-        print("✓ Executable created in dist/ directory")
+        print("Build completed successfully!")
+        print("Executable created in dist/ directory")
         
         # List output files
         if os.path.exists("dist"):
@@ -70,7 +70,7 @@ def build_app(config):
                 print(f"  - {item}")
                 
     except subprocess.CalledProcessError as e:
-        print(f"✗ Build failed with error: {e}")
+        print(f"Build failed with error: {e}")
         return False
     
     return True
@@ -83,20 +83,20 @@ def main():
         "darwin": "macOS",
         "win32": "Windows"
     }.get(sys.platform, "Windows")
-    print(f"🌍 Building for: {platform_name}")
+    print(f"Building for: {platform_name}")
     
     # Load configuration
     config = load_config()
     if not config:
-        print("✗ Cannot proceed without configuration")
+        print("Cannot proceed without configuration")
         return
     
     # Build the application
     if build_app(config):
-        print("\n🎉 Build completed! You can now test the executable.")
+        print("\nBuild completed! You can now test the executable.")
         print(f"   Look for the output in the dist/ directory")
     else:
-        print("\n❌ Build failed. Check the error messages above.")
+        print("\nBuild failed. Check the error messages above.")
 
 if __name__ == "__main__":
     main()
