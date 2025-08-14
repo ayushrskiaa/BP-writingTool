@@ -131,24 +131,24 @@ jobs:
       security-events: read
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    # - name: Checkout code
+    #   uses: actions/checkout@v4
       
-    - name: Derive version from commit
-      id: version
-      run: |
-        echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
-        echo "date=$(date)" >> $GITHUB_OUTPUT
+    # - name: Derive version from commit
+    #   id: version
+    #   run: |
+    #     echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+    #     echo "date=$(date)" >> $GITHUB_OUTPUT
         
-    - name: Download Windows artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: Bihar-Police-Notebook-windows
+    # - name: Download Windows artifact
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: Bihar-Police-Notebook-windows
         
-    - name: Download macOS artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: Bihar-Police-Notebook-macos
+    # - name: Download macOS artifact
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: Bihar-Police-Notebook-macos
         
     - name: Download CodeQL Results
       uses: actions/download-artifact@v4
@@ -205,49 +205,49 @@ jobs:
         echo "   https://github.com/${{ github.repository }}/security/code-scanning"
         echo "🔒 ========================================"
         
-    - name: Debug - List all files
-      run: |
-        echo "=== Current Directory ==="
-        pwd
-        echo ""
-        echo "=== All Files and Directories ==="
-        ls -la
-        echo ""
-        echo "=== Find all executable files ==="
-        find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
-        echo ""
-        echo "=== Check if files exist ==="
-        [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
-        [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
-        
-    - name: Verify zip files
-      run: |
-        echo "Verifying zip files are available..."
-        ls -la *.zip
-        echo "✅ Zip files ready for release"
-        
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: commit-${{ steps.version.outputs.version }}
-        name: Build ${{ steps.version.outputs.version }}
-        body: |
-          ## Bihar Police Notebook Build ${{ steps.version.outputs.version }}
-          
-          ### Downloads
-          - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
-          - **macOS**: Bihar-Police-Notebook-macos.zip (zipped DMG installer)
-          
-          ### Installation
-          - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
-          - **macOS**: Download the zip file, extract it, and run the DMG installer to install the app
-          
-          ### Build Info
-          - **Commit**: ${{ github.sha }}
-          - **Build Date**: ${{ steps.version.outputs.date }}
-          - **Branch**: main
-        files: |
-          Bihar-Police-Notebook-windows.zip
-          Bihar-Police-Notebook-macos.zip
-        draft: false
-        prerelease: false 
+    # - name: Debug - List all files
+    #   run: |
+    #     echo "=== Current Directory ==="
+    #     pwd
+    #     echo ""
+    #     echo "=== All Files and Directories ==="
+    #     ls -la
+    #     echo ""
+    #     echo "=== Find all executable files ==="
+    #     find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
+    #     echo ""
+    #     echo "=== Check if files exist ==="
+    #     [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
+    #     [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
+    # 
+    # - name: Verify zip files
+    #   run: |
+    #     echo "Verifying zip files are available..."
+    #     ls -la *.zip
+    #     echo "✅ Zip files ready for release"
+    #    
+    # - name: Create Release
+    #   uses: softprops/action-gh-release@v1
+    #   with:
+    #     tag_name: commit-${{ steps.version.outputs.version }}
+    #     name: Build ${{ steps.version.outputs.version }}
+    #     body: |
+    #       ## Bihar Police Notebook Build ${{ steps.version.outputs.version }}
+    #  
+    #       ### Downloads
+    #       - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
+    #       - **macOS**: Bihar-Police-Notebook-macos.zip (zipped DMG installer)
+    # 
+    #       ### Installation
+    #       - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
+    #       - **macOS**: Download the zip file, extract it, and run the DMG installer to install the app
+    #      
+    #       ### Build Info
+    #       - **Commit**: ${{ github.sha }}
+    #       - **Build Date**: ${{ steps.version.outputs.date }}
+    #       - **Branch**: main
+    #     files: |
+    #       Bihar-Police-Notebook-windows.zip
+    #       Bihar-Police-Notebook-macos.zip
+    #     draft: false
+    #     prerelease: false 
