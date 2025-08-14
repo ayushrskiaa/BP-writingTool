@@ -6,8 +6,34 @@ on:
         - feat_nautica
 
 jobs:
+  codeql-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: python, javascript, html
+        queries: security-extended,security-and-quality
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+
   build-windows:
     runs-on: windows-latest
+    needs: codeql-analysis
     
     steps:
     - name: Checkout code
@@ -46,6 +72,7 @@ jobs:
 
   build-macos:
     runs-on: macos-14
+    needs: codeql-analysis
     
     steps:
     - name: Checkout code
@@ -93,36 +120,6 @@ jobs:
         name: Bihar-Police-Notebook-macos
         path: dist/*.zip
         retention-days: 0
-
-  codeql-analysis:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['python']
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        queries: security-extended,security-and-quality
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
 
   create-release:
     needs: [build-windows, build-macos, codeql-analysis]
