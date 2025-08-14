@@ -23,6 +23,9 @@ class FlaskAppGUI:
         self.root.geometry("450x550")
         self.root.minsize(450, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
+        
+        # Set window icon for taskbar and title bar
+        self.set_window_icon()
 
         self.setup_styles()
         
@@ -35,6 +38,12 @@ class FlaskAppGUI:
         
         # Auto-start the server when app launches
         self.root.after(1000, self.auto_start_server)  # Start after 1 second
+
+    def set_window_icon(self):
+        """Set the window icon for taskbar, title bar, and other system UI elements"""
+        if sys.platform == "win32":
+            ico_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'images', 'logo.ico')
+            self.root.iconbitmap(ico_path)
 
     def setup_styles(self):
         self.colors = {
