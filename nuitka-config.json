@@ -19,7 +19,7 @@
   },
   "windows": {
     "flags": [
-      "--windows-icon-from-ico=static/images/logo.png",
+      "--windows-icon-from-ico=static/images/logo.ico",
       "--windows-console-mode=disable"
     ],
     "description": "Windows .exe file"
