@@ -138,25 +138,24 @@ jobs:
         find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
         echo ""
         echo "=== Check if files exist ==="
-        [ -f "Bihar-Police-Notebook.exe" ] && echo "✅ Bihar-Police-Notebook.exe exists" || echo "❌ Bihar-Police-Notebook.exe not found"
-        [ -f "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app exists" || echo "❌ Bihar-Police-Notebook.app not found"
-        [ -d "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app directory exists" || echo "❌ Bihar-Police-Notebook.app directory not found"
+        [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
+        [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
         
     - name: Validate build files exist
       run: |
         echo "Validating that build files exist before creating release..."
         
         # Check for Windows executable
-        if [ ! -f "Bihar-Police-Notebook.exe" ]; then
-          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook.exe' not found!"
+        if [ ! -f "Bihar-Police-Notebook-windows.zip" ]; then
+          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook-windows.zip' not found!"
           echo "Available files:"
           ls -la
           exit 1
         fi
         
-        # Check for macOS app bundle
-        if [ ! -d "Bihar-Police-Notebook.app" ]; then
-          echo "❌ ERROR: macOS app bundle 'Bihar-Police-Notebook.app' not found!"
+        # Check for macOS zip file
+        if [ ! -f "Bihar-Police-Notebook-macos.zip" ]; then
+          echo "❌ ERROR: macOS zip file 'Bihar-Police-Notebook-macos.zip' not found!"
           echo "Available files:"
           ls -la
           exit 1
@@ -164,11 +163,12 @@ jobs:
         
         echo "✅ All build files found successfully!"
         
-    - name: Copy DMG from artifacts
+    - name: Copy zip files from artifacts
       run: |
-        echo "Copying DMG installer from artifacts..."
-        cp "Bihar-Police-Notebook-0.0.1.dmg" .
-        echo "✅ DMG copied for release"
+        echo "Copying zip files from artifacts..."
+        cp "Bihar-Police-Notebook-windows.zip" .
+        cp "Bihar-Police-Notebook-macos.zip" .
+        echo "✅ Zip files copied for release"
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
