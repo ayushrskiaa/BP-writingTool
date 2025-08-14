@@ -3,7 +3,7 @@ name: Build and Release Application
 on:
   push:
       branches:
-        - feat_nautica
+        - main
 
 jobs:
   codeql-analysis:
@@ -31,223 +31,167 @@ jobs:
       with:
         category: "/language:python"
 
-  # build-windows:
-  #   runs-on: windows-latest
-  #   needs: codeql-analysis
+  build-windows:
+    runs-on: windows-latest
+    needs: codeql-analysis
     
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v4
-  #     with:
-  #       python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
         
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
-  #       pip install nuitka
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install nuitka
         
-  #   - name: Build application
-  #     run: |
-  #       # $env:PYTHONPATH = "$env:PYTHONPATH;$PWD"
-  #       python build_nuitka.py
+    - name: Build application
+      run: |
+        # $env:PYTHONPATH = "$env:PYTHONPATH;$PWD"
+        python build_nuitka.py
         
-  #   - name: Create Windows zip
-  #     run: |
-  #       echo "Creating Windows zip package..."
-  #       cd dist
-  #       Compress-Archive -Path "Bihar-Police-Notebook.exe" -DestinationPath "Bihar-Police-Notebook-windows.zip"
-  #       echo "✅ Windows zip created: Bihar-Police-Notebook-windows.zip"
+    - name: Create Windows zip
+      run: |
+        echo "Creating Windows zip package..."
+        cd dist
+        Compress-Archive -Path "Bihar-Police-Notebook.exe" -DestinationPath "Bihar-Police-Notebook-windows.zip"
+        echo "✅ Windows zip created: Bihar-Police-Notebook-windows.zip"
         
-  #   - name: Upload Windows artifacts
-  #     id: upload
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: Bihar-Police-Notebook-windows
-  #       path: dist/*.zip
-  #       retention-days: 30
+    - name: Upload Windows artifacts
+      id: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bihar-Police-Notebook-windows
+        path: dist/*.zip
+        retention-days: 30
 
-  # build-macos:
-  #   runs-on: macos-14
-  #   needs: codeql-analysis
+  build-macos:
+    runs-on: macos-14
+    needs: codeql-analysis
     
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v4
-  #     with:
-  #       python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
         
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
-  #       pip install nuitka
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install nuitka
         
-  #   - name: Build application
-  #     run: |
-  #       # export PYTHONPATH="${PYTHONPATH}:${PWD}"
-  #       python build_nuitka.py
+    - name: Build application
+      run: |
+        # export PYTHONPATH="${PYTHONPATH}:${PWD}"
+        python build_nuitka.py
         
-  #   - name: Install create-dmg
-  #     run: |
-  #       brew install create-dmg
+    - name: Install create-dmg
+      run: |
+        brew install create-dmg
         
-  #   - name: Create DMG installer
-  #     run: |
-  #       echo "Creating DMG installer using create_dmg.sh..."
-  #       chmod +x create_dmg.sh
-  #       ./create_dmg.sh
+    - name: Create DMG installer
+      run: |
+        echo "Creating DMG installer using create_dmg.sh..."
+        chmod +x create_dmg.sh
+        ./create_dmg.sh
         
-  #       echo "✅ DMG created using create_dmg.sh script"
+        echo "✅ DMG created using create_dmg.sh script"
         
-  #   - name: Create macOS zip
-  #     run: |
-  #       echo "Creating macOS zip package..."
-  #       cd dist
-  #       zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.dmg"
-  #       echo "✅ macOS zip created: Bihar-Police-Notebook-macos.zip"
+    - name: Create macOS zip
+      run: |
+        echo "Creating macOS zip package..."
+        cd dist
+        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.dmg"
+        echo "✅ macOS zip created: Bihar-Police-Notebook-macos.zip"
         
-  #   - name: Upload macOS artifacts
-  #     id: upload
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: Bihar-Police-Notebook-macos
-  #       path: dist/*.zip
-  #       retention-days: 0
+    - name: Upload macOS artifacts
+      id: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bihar-Police-Notebook-macos
+        path: dist/*.zip
+        retention-days: 0
 
   create-release:
-    needs: codeql-analysis
-    # needs: [build-windows, build-macos, codeql-analysis]
+    needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/feat_nautica'
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
       security-events: read
     
     steps:
-    # - name: Checkout code
-    #   uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-    # - name: Derive version from commit
-    #   id: version
-    #   run: |
-    #     echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
-    #     echo "date=$(date)" >> $GITHUB_OUTPUT
+    - name: Derive version from commit
+      id: version
+      run: |
+        echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+        echo "date=$(date)" >> $GITHUB_OUTPUT
         
-    # - name: Download Windows artifact
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: Bihar-Police-Notebook-windows
-        
-    # - name: Download macOS artifact
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: Bihar-Police-Notebook-macos
-        
-    - name: Download CodeQL Results
+    - name: Download Windows artifact
       uses: actions/download-artifact@v4
       with:
-        name: codeql-database
-        path: ./
+        name: Bihar-Police-Notebook-windows
         
-    - name: Parse CodeQL Results
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: Bihar-Police-Notebook-macos
+         
+    - name: Debug - List all files
       run: |
-        echo "Parsing CodeQL analysis results..."
-        
-        # Initialize counters
-        CRITICAL=0
-        HIGH=0
-        MEDIUM=0
-        LOW=0
-        
-        # Try to parse SARIF results if available
-        if [ -f "results.sarif" ]; then
-          echo "Found SARIF results file"
-          # Parse SARIF for vulnerability counts (simplified parsing)
-          CRITICAL=$(grep -c '"level": "error"' results.sarif || echo "0")
-          HIGH=$(grep -c '"level": "warning"' results.sarif || echo "0")
-          MEDIUM=$(grep -c '"level": "note"' results.sarif || echo "0")
-          LOW=$(grep -c '"level": "hint"' results.sarif || echo "0")
-        else
-          echo "No SARIF results found, using default values"
-        fi
-        
-        # Export for use in next step
-        echo "CRITICAL=$CRITICAL" >> $GITHUB_ENV
-        echo "HIGH=$HIGH" >> $GITHUB_ENV
-        echo "MEDIUM=$MEDIUM" >> $GITHUB_ENV
-        echo "LOW=$LOW" >> $GITHUB_ENV
-        
-        echo "Vulnerability counts: Critical=$CRITICAL, High=$HIGH, Medium=$MEDIUM, Low=$LOW"
-        
-    - name: Log Security Report
+        echo "=== Current Directory ==="
+        pwd
+        echo ""
+        echo "=== All Files and Directories ==="
+        ls -la
+        echo ""
+        echo "=== Find all executable files ==="
+        find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
+        echo ""
+        echo "=== Check if files exist ==="
+        [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
+        [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
+    
+    - name: Verify zip files
       run: |
-        echo "🔒 ========================================"
-        echo "🔒 SECURITY SCAN RESULTS"
-        echo "🔒 ========================================"
-        echo "📅 Scan Date: $(date '+%Y-%m-%d %H:%M:%S')"
-        echo "🔍 Repository: ${{ github.repository }}"
-        echo "✅ Status: Security scanning completed"
-        echo ""
-        echo "📊 VULNERABILITY SUMMARY:"
-        echo "   🚨 Critical: $CRITICAL"
-        echo "   ⚠️  High: $HIGH"
-        echo "   ⚡ Medium: $MEDIUM"
-        echo "   ℹ️  Low: $LOW"
-        echo ""
-        echo "🔗 View detailed results:"
-        echo "   https://github.com/${{ github.repository }}/security/code-scanning"
-        echo "🔒 ========================================"
-        
-    # - name: Debug - List all files
-    #   run: |
-    #     echo "=== Current Directory ==="
-    #     pwd
-    #     echo ""
-    #     echo "=== All Files and Directories ==="
-    #     ls -la
-    #     echo ""
-    #     echo "=== Find all executable files ==="
-    #     find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
-    #     echo ""
-    #     echo "=== Check if files exist ==="
-    #     [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
-    #     [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
-    # 
-    # - name: Verify zip files
-    #   run: |
-    #     echo "Verifying zip files are available..."
-    #     ls -la *.zip
-    #     echo "✅ Zip files ready for release"
-    #    
-    # - name: Create Release
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     tag_name: commit-${{ steps.version.outputs.version }}
-    #     name: Build ${{ steps.version.outputs.version }}
-    #     body: |
-    #       ## Bihar Police Notebook Build ${{ steps.version.outputs.version }}
-    #  
-    #       ### Downloads
-    #       - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
-    #       - **macOS**: Bihar-Police-Notebook-macos.zip (zipped DMG installer)
-    # 
-    #       ### Installation
-    #       - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
-    #       - **macOS**: Download the zip file, extract it, and run the DMG installer to install the app
-    #      
-    #       ### Build Info
-    #       - **Commit**: ${{ github.sha }}
-    #       - **Build Date**: ${{ steps.version.outputs.date }}
-    #       - **Branch**: main
-    #     files: |
-    #       Bihar-Police-Notebook-windows.zip
-    #       Bihar-Police-Notebook-macos.zip
-    #     draft: false
-    #     prerelease: false 
+        echo "Verifying zip files are available..."
+        ls -la *.zip
+        echo "✅ Zip files ready for release"
+       
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: commit-${{ steps.version.outputs.version }}
+        name: Build ${{ steps.version.outputs.version }}
+        body: |
+          ## Bihar Police Notebook Build ${{ steps.version.outputs.version }}
+     
+          ### Downloads
+          - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
+          - **macOS**: Bihar-Police-Notebook-macos.zip (zipped DMG installer)
+    
+          ### Installation
+          - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
+          - **macOS**: Download the zip file, extract it, and run the DMG installer to install the app
+         
+          ### Build Info
+          - **Commit**: ${{ github.sha }}
+          - **Build Date**: ${{ steps.version.outputs.date }}
+          - **Branch**: main
+        files: |
+          Bihar-Police-Notebook-windows.zip
+          Bihar-Police-Notebook-macos.zip
+        draft: false
+        prerelease: false 
