@@ -10,12 +10,12 @@
 
 <table>
   <tr>
-    <td><img src="image.png" alt="alt text" width="600"/></td>
-    <td><img src="image-1.png" alt="alt text" width="600"/></td>
+    <td><img src="doc/1.png" alt="alt text" width="600"/></td>
+    <td><img src="doc/2.png" alt="alt text" width="600"/></td>
   </tr>
   <tr>
-    <td><img src="image-2.png" alt="alt text" width="600"/></td>
-    <td><img src="image-3.png" alt="alt text" width="600"/></td>
+    <td><img src="doc/3.png" alt="alt text" width="600"/></td>
+    <td><img src="doc/4.png" alt="alt text" width="600"/></td>
   </tr>
 </table>
 
