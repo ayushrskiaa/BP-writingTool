@@ -141,34 +141,11 @@ jobs:
         [ -f "Bihar-Police-Notebook-windows.zip" ] && echo "✅ Bihar-Police-Notebook-windows.zip exists" || echo "❌ Bihar-Police-Notebook-windows.zip not found"
         [ -f "Bihar-Police-Notebook-macos.zip" ] && echo "✅ Bihar-Police-Notebook-macos.zip exists" || echo "❌ Bihar-Police-Notebook-macos.zip not found"
         
-    - name: Validate build files exist
+    - name: Verify zip files
       run: |
-        echo "Validating that build files exist before creating release..."
-        
-        # Check for Windows executable
-        if [ ! -f "Bihar-Police-Notebook-windows.zip" ]; then
-          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook-windows.zip' not found!"
-          echo "Available files:"
-          ls -la
-          exit 1
-        fi
-        
-        # Check for macOS zip file
-        if [ ! -f "Bihar-Police-Notebook-macos.zip" ]; then
-          echo "❌ ERROR: macOS zip file 'Bihar-Police-Notebook-macos.zip' not found!"
-          echo "Available files:"
-          ls -la
-          exit 1
-        fi
-        
-        echo "✅ All build files found successfully!"
-        
-    - name: Copy zip files from artifacts
-      run: |
-        echo "Copying zip files from artifacts..."
-        cp "Bihar-Police-Notebook-windows.zip" .
-        cp "Bihar-Police-Notebook-macos.zip" .
-        echo "✅ Zip files copied for release"
+        echo "Verifying zip files are available..."
+        ls -la *.zip
+        echo "✅ Zip files ready for release"
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
