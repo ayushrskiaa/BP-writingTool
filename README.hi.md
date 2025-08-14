@@ -6,22 +6,26 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey.svg)](https://github.com/ayushrskiaa/BP-writingTool/releases)
 [![Security Status](https://img.shields.io/badge/Security-CodeQL%20Active-brightgreen.svg)](https://github.com/ayushrskiaa/BP-writingTool/security/code-scanning)
 
-<table>
-  <tr>
-    <td><img src="doc/1.png" alt="alt text" width="600"/></td>
-    <td><img src="doc/2.png" alt="alt text" width="600"/></td>
-  </tr>
-  <tr>
-    <td><img src="doc/3.png" alt="alt text" width="600"/></td>
-    <td><img src="doc/4.png" alt="alt text" width="600"/></td>
-  </tr>
-</table>
-
 ## About
 
 **बिहार पुलिस नोटबुक टूल** एक specialized desktop application है जो **बिहार पुलिस** के लिए बनाया गया है। इस tool से officers और staff Hindi में documents create और manage कर सकते हैं।
 
-### ✨ Main Features:
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="doc/1.png" alt="Main Interface" width="600"/></td>
+    <td><img src="doc/2.png" alt="Document Editor" width="600"/></td>
+  </tr>
+  <tr>
+    <td><img src="doc/3.png" alt="History View" width="600"/></td>
+    <td><img src="doc/4.png" alt="Export Options" width="600"/></td>
+  </tr>
+</table>
+
+---
+
+### Main Features:
 - 🚀 **Instant Transliteration** - Hinglish में type करें, Hindi output real-time में देखें
 - 📄 **Document Management** - Multiple documents create, edit, save और delete करें
 - 📚 **History Sidebar** - आपके document history को date-wise browse करें
@@ -31,7 +35,7 @@
 
 ---
 
-## 💻 Installation
+## Installation
 
 ### Quick Download:
 Visit our [Releases page](https://github.com/ayushrskiaa/BP-writingTool/releases) to download latest version:
@@ -39,7 +43,7 @@ Visit our [Releases page](https://github.com/ayushrskiaa/BP-writingTool/releases
 - **Windows**: `BP-writing tool.exe` download करें
 - **macOS**: `BP-writing-tool-macos.zip` download करें, extract करें, फिर `MyApp.app` को Applications folder में drag करें
 
-### Browser Extensions (Optional):
+### Browser Extensions (For Hindi Typing):
 Full functionality के लिए Google Chrome browser में ये extensions install करें:
 
 1. **[Google Input Tools](https://chromewebstore.google.com/detail/google-input-tools/mclkkofklkfljcocdinagocijmpgbhab)** - 90+ languages के लिए virtual keyboards
@@ -59,21 +63,6 @@ Full functionality के लिए Google Chrome browser में ये exten
 - आपके documents internet पर नहीं जाते
 - सब कुछ आपके device पर locally store होता है
 - Chrome extensions internet connectivity require करते हैं
-
----
-
-## 📱 Screenshots
-
-<table>
-  <tr>
-    <td><img src="doc/1.png" alt="Main Interface" width="600"/></td>
-    <td><img src="doc/2.png" alt="Document Editor" width="600"/></td>
-  </tr>
-  <tr>
-    <td><img src="doc/3.png" alt="History View" width="600"/></td>
-    <td><img src="doc/4.png" alt="Export Options" width="600"/></td>
-  </tr>
-</table>
 
 ---
 
@@ -101,29 +90,8 @@ Full functionality के लिए Google Chrome browser में ये exten
 2. New issue create करें
 3. आपका operating system, Python version और error messages mention करें
 
-### For Developers:
-```bash
-# Clone repository
-git clone https://github.com/ayushrskiaa/BP-writingTool.git
-cd BP-writingTool
-
-# Virtual environment create करें
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Dependencies install करें
-pip install -r requirements.txt
-
-# Application run करें
-python app.py
-```
-
 ---
 
 ## 📄 License
 
 MIT License के under यह project available है - [LICENSE](LICENSE) file देखें।
-
----
-
-*यह README file Hindi में है ताकि सभी users easily understand कर सकें। English technical terms included हैं clarity के लिए।*
