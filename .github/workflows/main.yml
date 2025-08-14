@@ -41,9 +41,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Bihar-Police-Notebook-windows
-        path: |
-          dist/
-          dist/*.zip
+        path: dist/*.zip
         retention-days: 30
 
   build-macos:
@@ -85,7 +83,7 @@ jobs:
       run: |
         echo "Creating macOS zip package..."
         cd dist
-        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.app"
+        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.dmg"
         echo "✅ macOS zip created: Bihar-Police-Notebook-macos.zip"
         
     - name: Upload macOS artifacts
@@ -93,10 +91,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Bihar-Police-Notebook-macos
-        path: |
-          dist/
-          dist/*.dmg
-          dist/*.zip
+        path: dist/*.zip
         retention-days: 0
 
   create-release:
@@ -157,11 +152,11 @@ jobs:
           
           ### Downloads
           - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
-          - **macOS**: Bihar-Police-Notebook-macos.zip (zipped app bundle)
+          - **macOS**: Bihar-Police-Notebook-macos.zip (zipped DMG installer)
           
           ### Installation
           - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
-          - **macOS**: Download the zip file, extract it, and drag Bihar-Police-Notebook.app to Applications folder
+          - **macOS**: Download the zip file, extract it, and run the DMG installer to install the app
           
           ### Build Info
           - **Commit**: ${{ github.sha }}
