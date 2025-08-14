@@ -107,7 +107,7 @@ BP-writingTool/
 ├── app.py                  # Main Flask application
 ├── requirements.txt        # Python dependencies
 ├── Makefile               # Build and management commands
-├── MyApp.spec             # PyInstaller spec for packaging
+├── build_nuitka.py        # Nuitka build script for packaging
 ├── src/                   # Source code
 │   ├── launcher.py        # Tkinter GUI launcher
 │   ├── routers.py         # Flask routes
@@ -129,14 +129,14 @@ BP-writingTool/
 ### Building Standalone Applications
 
 ```bash
-# Install PyInstaller
-pip install pyinstaller
+# Install Nuitka
+pip install nuitka
 
 # Build for current platform
 make build
 
 # Or manually
-pyinstaller MyApp.spec
+python build_nuitka.py
 ```
 
 The executables will be in the `dist/` folder.
@@ -157,7 +157,7 @@ make help       # Show all commands
 - **Backend**: Python (Flask)
 - **Transliteration**: [hindi-xlit](https://pypi.org/project/hindi-xlit/)
 - **Database**: TinyDB (local JSON storage)
-- **Packaging**: PyInstaller for standalone executables
+- **Packaging**: Nuitka for standalone executables
 - **CI/CD**: GitHub Actions for automated builds and releases
 
 ### Requirements
@@ -192,7 +192,7 @@ Please feel free to submit a Pull Request. For major changes, please open an iss
 - [Flask](https://flask.palletsprojects.com/) - Web framework
 - [hindi-xlit](https://pypi.org/project/hindi-xlit/) - Transliteration engine
 - [TinyDB](https://tinydb.readthedocs.io/) - Lightweight database
-- [PyInstaller](https://pyinstaller.org/) - Application packaging
+- [Nuitka](https://nuitka.net/) - Application packaging
 
 ## 📊 Project Status
 

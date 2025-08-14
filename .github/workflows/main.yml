@@ -3,13 +3,11 @@ name: Build and Release Application
 on:
   push:
       branches:
-        - enhance_history
+        - feat_nautica
 
 jobs:
   build-windows:
     runs-on: windows-latest
-    outputs:
-      artifact-path: ${{ steps.upload.outputs.artifact-path }}
     
     steps:
     - name: Checkout code
@@ -24,25 +22,32 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pyinstaller
+        pip install nuitka
         
     - name: Build application
       run: |
         # $env:PYTHONPATH = "$env:PYTHONPATH;$PWD"
-        pyinstaller MyApp.spec --noconfirm
+        python build_nuitka.py
         
-    - name: Upload Windows artifact
+    - name: Create Windows zip
+      run: |
+        echo "Creating Windows zip package..."
+        cd dist
+        Compress-Archive -Path "Bihar-Police-Notebook.exe" -DestinationPath "Bihar-Police-Notebook-windows.zip"
+        echo "✅ Windows zip created: Bihar-Police-Notebook-windows.zip"
+        
+    - name: Upload Windows artifacts
       id: upload
       uses: actions/upload-artifact@v4
       with:
         name: Bihar-Police-Notebook-windows
-        path: dist/
+        path: |
+          dist/
+          dist/*.zip
         retention-days: 30
 
   build-macos:
     runs-on: macos-14
-    outputs:
-      artifact-path: ${{ steps.upload.outputs.artifact-path }}
     
     steps:
     - name: Checkout code
@@ -57,25 +62,47 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pyinstaller
+        pip install nuitka
         
     - name: Build application
       run: |
         # export PYTHONPATH="${PYTHONPATH}:${PWD}"
-        pyinstaller MyApp.spec --noconfirm
+        python build_nuitka.py
         
-    - name: Upload macOS artifact
+    - name: Install create-dmg
+      run: |
+        brew install create-dmg
+        
+    - name: Create DMG installer
+      run: |
+        echo "Creating DMG installer using create_dmg.sh..."
+        chmod +x create_dmg.sh
+        ./create_dmg.sh
+        
+        echo "✅ DMG created using create_dmg.sh script"
+        
+    - name: Create macOS zip
+      run: |
+        echo "Creating macOS zip package..."
+        cd dist
+        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.app"
+        echo "✅ macOS zip created: Bihar-Police-Notebook-macos.zip"
+        
+    - name: Upload macOS artifacts
       id: upload
       uses: actions/upload-artifact@v4
       with:
         name: Bihar-Police-Notebook-macos
-        path: dist/
+        path: |
+          dist/
+          dist/*.dmg
+          dist/*.zip
         retention-days: 0
 
   create-release:
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/feat_nautica'
     permissions:
       contents: write
     
@@ -83,10 +110,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Derive version from tag
+    - name: Derive version from commit
       id: version
       run: |
-        echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+        echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
         echo "date=$(date)" >> $GITHUB_OUTPUT
         
     - name: Download Windows artifact
@@ -111,7 +138,7 @@ jobs:
         find . -name "*.exe" -o -name "*.app" -o -name "Bihar*Notebook*" 2>/dev/null || true
         echo ""
         echo "=== Check if files exist ==="
-        [ -f "Bihar-Police-Notebook-Windows.exe" ] && echo "✅ Bihar-Police-Notebook-Windows.exe exists" || echo "❌ Bihar-Police-Notebook-Windows.exe not found"
+        [ -f "Bihar-Police-Notebook.exe" ] && echo "✅ Bihar-Police-Notebook.exe exists" || echo "❌ Bihar-Police-Notebook.exe not found"
         [ -f "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app exists" || echo "❌ Bihar-Police-Notebook.app not found"
         [ -d "Bihar-Police-Notebook.app" ] && echo "✅ Bihar-Police-Notebook.app directory exists" || echo "❌ Bihar-Police-Notebook.app directory not found"
         
@@ -120,8 +147,8 @@ jobs:
         echo "Validating that build files exist before creating release..."
         
         # Check for Windows executable
-        if [ ! -f "Bihar-Police-Notebook-Windows.exe" ]; then
-          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook-Windows.exe' not found!"
+        if [ ! -f "Bihar-Police-Notebook.exe" ]; then
+          echo "❌ ERROR: Windows executable 'Bihar-Police-Notebook.exe' not found!"
           echo "Available files:"
           ls -la
           exit 1
@@ -137,33 +164,34 @@ jobs:
         
         echo "✅ All build files found successfully!"
         
-    - name: Create macOS app zip
+    - name: Copy DMG from artifacts
       run: |
-        echo "Creating zip file for macOS app bundle..."
-        zip -r "Bihar-Police-Notebook-macos.zip" "Bihar-Police-Notebook.app"
-        echo "✅ Created Bihar-Police-Notebook-macos.zip"
+        echo "Copying DMG installer from artifacts..."
+        cp "Bihar-Police-Notebook-0.0.1.dmg" .
+        echo "✅ DMG copied for release"
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ steps.version.outputs.version }}
-        name: Release ${{ steps.version.outputs.version }}
+        tag_name: commit-${{ steps.version.outputs.version }}
+        name: Build ${{ steps.version.outputs.version }}
         body: |
-          ## Bihar Police Notebook ${{ steps.version.outputs.version }}
+          ## Bihar Police Notebook Build ${{ steps.version.outputs.version }}
           
           ### Downloads
-          - **Windows**: Bihar-Police-Notebook-Windows.exe (executable)
-          - **macOS**: Bihar-Police-Notebook-macos.zip (macOS app bundle)
+          - **Windows**: Bihar-Police-Notebook-windows.zip (zipped executable)
+          - **macOS**: Bihar-Police-Notebook-macos.zip (zipped app bundle)
           
           ### Installation
-          - **Windows**: Download and run the .exe file
-          - **macOS**: Download the zip file, extract, and drag Bihar-Police-Notebook.app to Applications folder
+          - **Windows**: Download the zip file, extract it, and run Bihar-Police-Notebook.exe
+          - **macOS**: Download the zip file, extract it, and drag Bihar-Police-Notebook.app to Applications folder
           
-          ### Changes
-          - Built from commit: ${{ github.sha }}
-          - Build date: ${{ steps.version.outputs.date }}
+          ### Build Info
+          - **Commit**: ${{ github.sha }}
+          - **Build Date**: ${{ steps.version.outputs.date }}
+          - **Branch**: main
         files: |
-          Bihar-Police-Notebook-Windows.exe
+          Bihar-Police-Notebook-windows.zip
           Bihar-Police-Notebook-macos.zip
         draft: false
         prerelease: false 

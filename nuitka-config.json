@@ -1,0 +1,27 @@
+{
+  "common": {
+    "flags": [
+      "--enable-plugin=tk-inter",
+      "--include-package=flask",
+      "--include-package=tinydb",
+      "--include-data-dir=static=static",
+      "--include-data-dir=templates=templates",
+      "--output-dir=dist"
+    ],
+    "main_script": "Bihar-Police-Notebook.py"
+  },
+  "macos": {
+    "flags": [
+      "--macos-create-app-bundle",
+      "--macos-app-icon=static/images/logo.icns"
+    ],
+    "description": "macOS .app bundle"
+  },
+  "windows": {
+    "flags": [
+      "--windows-icon-from-ico=static/images/logo.png",
+      "--windows-console-mode=disable"
+    ],
+    "description": "Windows .exe file"
+  }
+}
