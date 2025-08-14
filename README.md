@@ -4,6 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey.svg)](https://github.com/ayushrskiaa/BP-writingTool/releases)
+[![Security](https://github.com/ayushrskiaa/BP-writingTool/actions/workflows/main.yml/badge.svg)](https://github.com/ayushrskiaa/BP-writingTool/security/code-scanning)
+[![CodeQL](https://github.com/ayushrskiaa/BP-writingTool/security/code-scanning/badge.svg)](https://github.com/ayushrskiaa/BP-writingTool/security/code-scanning)
 
 **BP Writing Tool** is a specialized desktop application developed specifically for the **Bihar Police** to facilitate Hindi document creation and management. This tool enables officers and staff to write in Hindi (Devanagari script) efficiently by typing in Hinglish (Romanized Hindi), with instant transliteration to Hindi script using advanced language models.
 
@@ -107,7 +109,7 @@ BP-writingTool/
 ├── app.py                  # Main Flask application
 ├── requirements.txt        # Python dependencies
 ├── Makefile               # Build and management commands
-├── MyApp.spec             # PyInstaller spec for packaging
+├── build_nuitka.py        # Nuitka build script for packaging
 ├── src/                   # Source code
 │   ├── launcher.py        # Tkinter GUI launcher
 │   ├── routers.py         # Flask routes
@@ -129,14 +131,14 @@ BP-writingTool/
 ### Building Standalone Applications
 
 ```bash
-# Install PyInstaller
-pip install pyinstaller
+# Install Nuitka
+pip install nuitka
 
 # Build for current platform
 make build
 
 # Or manually
-pyinstaller MyApp.spec
+python build_nuitka.py
 ```
 
 The executables will be in the `dist/` folder.
@@ -157,7 +159,7 @@ make help       # Show all commands
 - **Backend**: Python (Flask)
 - **Transliteration**: [hindi-xlit](https://pypi.org/project/hindi-xlit/)
 - **Database**: TinyDB (local JSON storage)
-- **Packaging**: PyInstaller for standalone executables
+- **Packaging**: Nuitka for standalone executables
 - **CI/CD**: GitHub Actions for automated builds and releases
 
 ### Requirements
@@ -192,7 +194,7 @@ Please feel free to submit a Pull Request. For major changes, please open an iss
 - [Flask](https://flask.palletsprojects.com/) - Web framework
 - [hindi-xlit](https://pypi.org/project/hindi-xlit/) - Transliteration engine
 - [TinyDB](https://tinydb.readthedocs.io/) - Lightweight database
-- [PyInstaller](https://pyinstaller.org/) - Application packaging
+- [Nuitka](https://nuitka.net/) - Application packaging
 
 ## 📊 Project Status
 
