@@ -75,7 +75,7 @@ def get_document(template_type, doc_id):
 
 @bp.route('/api/transliterate', methods=['POST'])
 def api_transliterate():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     word = data.get('word', '')
     suggestions = []
     if word:
@@ -88,7 +88,7 @@ def api_transliterate():
 
 @bp.route('/api/transliterate_text', methods=['POST'])
 def api_transliterate_text():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     text = data.get('text', '')
     if not text:
         return jsonify({'result': ''})
@@ -109,13 +109,13 @@ def api_get_documents():
 
 @bp.route('/api/letters', methods=['GET'])
 def api_get_letters():
-    docs = [dict(doc, _id=str(doc.doc_id), type='letter') for doc in db.table('letter').all()]
+    docs = [dict(doc, type='letter') for doc in get_all_letters()]
     return jsonify({'documents': docs})
 
 
 @bp.route('/api/diaries', methods=['GET'])
 def api_get_diaries():
-    docs = [dict(doc, _id=str(doc.doc_id), type='diary') for doc in db.table('diary').all()]
+    docs = [dict(doc, type='diary') for doc in get_all_diary()]
     return jsonify({'documents': docs})
 
 
@@ -139,7 +139,7 @@ def _save_to_table(tbl_name, filename, content):
 
 @bp.route('/api/save_letter', methods=['POST'])
 def api_save_letter():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     filename = data.get('filename', '').strip()
     content = data.get('content', '')
     if not filename or not content:
@@ -150,7 +150,7 @@ def api_save_letter():
 
 @bp.route('/api/save_diary', methods=['POST'])
 def api_save_diary():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     filename = data.get('filename', '').strip()
     content = data.get('content', '')
     if not filename or not content:
@@ -161,7 +161,7 @@ def api_save_diary():
 
 @bp.route('/api/save_document', methods=['POST'])
 def api_save_document():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     filename = data.get('filename', '').strip()
     content = data.get('content', '')
     doc_type = data.get('type', 'letter').strip().lower()
@@ -183,7 +183,7 @@ def _delete_from_table(tbl_name, filename):
 
 @bp.route('/api/delete_letter', methods=['POST'])
 def api_delete_letter():
-    filename = (request.get_json() or {}).get('filename', '').strip()
+    filename = (request.get_json(silent=True) or {}).get('filename', '').strip()
     if not filename:
         return jsonify({'error': 'filename is required'}), 400
     if _delete_from_table('letter', filename):
@@ -193,7 +193,7 @@ def api_delete_letter():
 
 @bp.route('/api/delete_diary', methods=['POST'])
 def api_delete_diary():
-    filename = (request.get_json() or {}).get('filename', '').strip()
+    filename = (request.get_json(silent=True) or {}).get('filename', '').strip()
     if not filename:
         return jsonify({'error': 'filename is required'}), 400
     if _delete_from_table('diary', filename):
@@ -203,7 +203,7 @@ def api_delete_diary():
 
 @bp.route('/api/delete_document', methods=['POST'])
 def api_delete_document():
-    filename = (request.get_json() or {}).get('filename', '').strip()
+    filename = (request.get_json(silent=True) or {}).get('filename', '').strip()
     if not filename:
         return jsonify({'error': 'filename is required'}), 400
     for tbl_name in ('letter', 'diary'):

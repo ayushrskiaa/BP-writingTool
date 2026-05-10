@@ -795,19 +795,6 @@ body {
     display: none;
 }
 
-.history-delete-btn {
-    background: none;
-    border: none;
-    color: #d32f2f;
-    cursor: pointer;
-    margin-left: 8px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-}
-
 .suggestions-box {
     position: fixed;
     z-index: 9999;
@@ -831,11 +818,6 @@ body {
     background: #f0f4ff;
     color: var(--brand-primary);
 }
-
-.history-delete-btn:hover {
-    color: #a62828;
-}
-
 
 .main-content {
     transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);

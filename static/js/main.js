@@ -51,7 +51,7 @@ function attachTransliteration(el) {
         clearTimeout(typingTimer);
         const value = el.value;
         const cursor = el.selectionStart;
-        const [start, end] = getWordBoundaries(value, cursor - 1);
+        const [start, end] = getWordBoundaries(value, Math.max(0, cursor - 1));
         const currentWord = value.slice(start, end);
 
         if (currentWord.trim()) {
@@ -200,6 +200,14 @@ function getTextWidth(text, element) {
     return metrics.width;
 }
 
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 // Ensure suggestions don't go off-screen
 function adjustSuggestionsPosition() {
     if (suggestionsBox.style.display === 'none') return;
@@ -267,34 +275,29 @@ document.addEventListener('DOMContentLoaded', function () {
         return document.querySelector('.editor-letter').style.display !== 'none' ? 'letter' : 'diary';
     }
 
-    // Save document to localStorage
+    // Save document to server
     saveBtn.addEventListener('click', async function () {
         const filename = filenameInput.value.trim() || 'Untitled';
+        const type = getActiveTemplate();
         let content = '';
-        if (getActiveTemplate() === 'letter') {
-            content = `<pre style="
-                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                font-size: 16px;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-                border: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-            ">${input.value}</pre>`;
+        if (type === 'letter') {
+            content = input.value;
+            if (!content.trim()) return alert('Cannot save empty document!');
         } else {
             content = getDiaryContent();
+            let parsed = {};
+            try { parsed = JSON.parse(content); } catch (e) { parsed = {}; }
+            if (!Object.values(parsed).some(v => String(v).trim())) return alert('Cannot save empty document!');
         }
-        if (!content) return alert('Cannot save empty document!');
 
         try {
-            const type = getActiveTemplate();
             const saveRoute = type === 'letter' ? '/api/save_letter' : '/api/save_diary';
-            await fetch(saveRoute, {
+            const resp = await fetch(saveRoute, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ filename, content })
             });
+            if (!resp.ok) throw new Error(`Server error ${resp.status}`);
             showNotification('Document saved!');
             await loadHistoryFromServer();
         } catch (err) {
@@ -400,11 +403,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     e.stopPropagation();
                     if (confirm(`Delete "${doc.filename}"?`)) {
                         const delRoute = doc.type === 'letter' ? '/api/delete_letter' : '/api/delete_diary';
-                        await fetch(delRoute, {
+                        const delResp = await fetch(delRoute, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ filename: doc.filename })
                         });
+                        if (!delResp.ok) { alert('Failed to delete document.'); return; }
                         showNotification('Document deleted.');
                         await loadHistoryFromServer();
                     }
@@ -442,6 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial render
     loadHistoryFromServer();
+    restoreSavedContent();
 
     // Close modal handlers
     [closeNewFile, cancelNewFile].forEach(btn => {
@@ -451,31 +456,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Create new file handler
-    createNewFile.addEventListener('click', function () {
-        const fileName = newFileName.value.trim();
-        if (fileName) {
-            filenameInput.value = fileName;
-            newFileModal.style.display = 'none';
-            document.getElementById('hinglish-input').value = ''; // Clear existing content
-            document.getElementById('hinglish-input').focus();
-        }
-    });
-
     // Update the export button handler
     exportBtn.addEventListener('click', async function () {
         let content = '';
         if (getActiveTemplate() === 'letter') {
-            content = `<pre style="
-                font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-                font-size: 18px;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-                border: none;
-                white-space: pre-wrap;
-                word-break: break-word;
-            ">${input.value}</pre>`;
+            content = `<pre style="font-family: 'Noto Sans Devanagari', Arial, sans-serif; font-size: 18px; margin: 0; padding: 0; background: #fff; border: none; white-space: pre-wrap; word-break: break-word;">${escapeHtml(input.value)}</pre>`;
         } else {
             const container = document.getElementById('diaryExportLayout');
             const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
@@ -522,11 +507,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span style="font-size:17px;font-weight:bold;">
                                 केस-दैनिकी सं0
                                 <span style="display:inline-block; min-width:80px; border-bottom:1px dotted #333; text-align:center;">
-                                    ${get('case_diary_no')}
+                                    ${escapeHtml(get('case_diary_no'))}
                                 </span>
                             </span>
                             <div style="font-size:14px; margin-top:2px;">
-                                (नियम-${get('rule_no')})
+                                (नियम-${escapeHtml(get('rule_no'))})
                             </div>
                         </div>
                         <div style="font-size:13px; min-width:110px; text-align:right;">
@@ -534,23 +519,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div style="text-align:right; margin-top: 2px;">
-                        <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${get('against_1')}</span>
+                        <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${escapeHtml(get('against_1'))}</span>
                         <span style="margin:0 10px;">बनाम</span>
-                        <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${get('against_2')}</span>
+                        <span style="display:inline-block; min-width:120px; border-bottom:1px dotted #333;">${escapeHtml(get('against_2'))}</span>
                     </div>
                     <div style="display: flex; justify-content: flex-end; margin-top: 2px;">
                         <div style="text-align:right;">
                             <span>विशेष रिपोर्ट केस सं.</span>
-                            <span style="display:inline-block; min-width:100px; border-bottom:1px dotted #333;">${get('special_report_no')}</span>
+                            <span style="display:inline-block; min-width:100px; border-bottom:1px dotted #333;">${escapeHtml(get('special_report_no'))}</span>
                         </div>
                     </div>
                     <div style="margin-top: 12px; font-size:15px;">
-                        थाना&nbsp;<b>${get('thana') || '....................'}</b>&nbsp;&nbsp;
-                        जिला&nbsp;<b>${get('district') || '....................'}</b>&nbsp;&nbsp;
-                        प्रथम इत्तिला रिपोर्ट सं.&nbsp;<b>${get('fir_number') || '....................'}</b>&nbsp;&nbsp;
-                        तिथि&nbsp;<b>${get('fir_date') || '....................'}</b>&nbsp;&nbsp;
-                        घटना की तिथि और स्थान&nbsp;<b>${get('event_date_place') || '....................................................'}</b>&nbsp;&nbsp;
-                        धाराः&nbsp;<b>${get('sections') || '....................................................'}</b>
+                        थाना&nbsp;<b>${escapeHtml(get('thana')) || '....................'}</b>&nbsp;&nbsp;
+                        जिला&nbsp;<b>${escapeHtml(get('district')) || '....................'}</b>&nbsp;&nbsp;
+                        प्रथम इत्तिला रिपोर्ट सं.&nbsp;<b>${escapeHtml(get('fir_number')) || '....................'}</b>&nbsp;&nbsp;
+                        तिथि&nbsp;<b>${escapeHtml(get('fir_date')) || '....................'}</b>&nbsp;&nbsp;
+                        घटना की तिथि और स्थान&nbsp;<b>${escapeHtml(get('event_date_place')) || '....................................................'}</b>&nbsp;&nbsp;
+                        धाराः&nbsp;<b>${escapeHtml(get('sections')) || '....................................................'}</b>
                     </div>
                     <div style="margin-top:12px; border-top:1px solid #333;"></div>
                 </div>
@@ -574,11 +559,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         ` : ''}
                         <tr>
                             <td style="width:32%;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:1px solid #000;vertical-align:top;padding:8px;">
-                                <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${left || ''}</div>
+                                <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${escapeHtml(left || '')}</div>
                             </td>
-                            <td style="width:68
-                            %;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:none;vertical-align:top;padding:8px;">
-                                <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${right || ''}</div>
+                            <td style="width:68%;border-top:none;border-bottom:1px solid #000;border-left:none;border-right:none;vertical-align:top;padding:8px;">
+                                <div style="min-height:400px;margin-top:8px;white-space:pre-wrap;">${escapeHtml(right || '')}</div>
                             </td>
                         </tr>
                     </table>
@@ -766,10 +750,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // By default, enable transliteration (Hinglish mode)
-    input.addEventListener('input', transliterateOnInput);
-    input.addEventListener('keydown', transliterateOnSpace);
-
     function updateLogoBg() {
         if (input.value.trim() === '') {
             input.classList.add('bg-logo');
@@ -855,26 +835,31 @@ function showNotification(message) {
         setTimeout(() => document.body.removeChild(messageDiv), 500);
     }, 2000);
 }
-// Serialize all FIR Diary fields into a string for saving/exporting
+// Serialize all FIR Diary fields as JSON keyed by data-field
 function getDiaryContent() {
     const container = document.getElementById('diaryExportLayout');
-    const inputs = container.querySelectorAll('input, textarea');
-    let content = '';
-    inputs.forEach(input => {
-        const label = input.closest('td')?.querySelector('b')?.innerText || input.dataset.field || '';
-        content += (label ? label + ': ' : '') + (input.value || '') + '\n';
+    const data = {};
+    container.querySelectorAll('[data-field]').forEach(el => {
+        data[el.dataset.field] = el.value || '';
     });
-    return content.trim();
+    return JSON.stringify(data);
 }
 
-// Restore content to the FIR Diary fields (if you want to support editing)
+// Restore FIR Diary fields from JSON (with legacy line-format fallback)
 function setDiaryContent(content) {
     const container = document.getElementById('diaryExportLayout');
-    const inputs = container.querySelectorAll('input, textarea');
-    // This assumes content is a string with lines in the same order as fields
-    const lines = content.split('\n');
-    inputs.forEach((input, i) => {
-        input.value = lines[i] ? lines[i].replace(/^.*?:\s*/, '') : '';
+    let data = {};
+    try {
+        data = typeof content === 'string' ? JSON.parse(content) : (content || {});
+    } catch (e) {
+        // Legacy line-by-line format fallback
+        const inputs = [...container.querySelectorAll('[data-field]')];
+        const lines = (content || '').split('\n');
+        inputs.forEach((el, i) => { el.value = lines[i] ? lines[i].replace(/^.*?:\s*/, '') : ''; });
+        return;
+    }
+    container.querySelectorAll('[data-field]').forEach(el => {
+        if (el.dataset.field in data) el.value = data[el.dataset.field];
     });
 }
 
