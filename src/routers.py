@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, current_app
 from src.letter.utils import get_all_letters, get_letter_by_id, create_letter, update_letter, delete_letter
 from src.diary.utils import get_all_diary, get_diary_by_id, create_diary, update_diary, delete_diary
 
@@ -69,4 +69,16 @@ def get_document(template_type, doc_id):
         return jsonify({'error': 'Invalid template type'}), 400
     if not doc:
         return jsonify({'error': 'Document not found'}), 404
-    return jsonify({'document': doc}) 
+    return jsonify({'document': doc})
+
+@bp.route('/transliterate', methods=['POST'])
+def transliterate():
+    data = request.get_json()
+    text = data.get('text', '')
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+    try:
+        transliterated = current_app.cached_transliterate(text)
+        return jsonify({'transliterated': transliterated})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500 
