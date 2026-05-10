@@ -146,7 +146,6 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// Update showSuggestions to position the box near the clicked word
 function showSuggestions(suggestions, wordStart, wordEnd) {
     suggestionsBox.innerHTML = '';
     if (!suggestions || suggestions.length === 0) {
@@ -154,16 +153,21 @@ function showSuggestions(suggestions, wordStart, wordEnd) {
         return;
     }
 
-    // Get the position of the clicked word
+    const inputRect = input.getBoundingClientRect();
+    const style = window.getComputedStyle(input);
+    const lineHeight = parseInt(style.lineHeight) || 24;
+    const paddingTop = parseInt(style.paddingTop) || 0;
+    const paddingLeft = parseInt(style.paddingLeft) || 0;
     const textBeforeWord = input.value.substring(0, wordStart);
-    const textWidth = getTextWidth(textBeforeWord, input);
-    const inputPos = input.getBoundingClientRect();
-    const lineHeight = parseInt(window.getComputedStyle(input).lineHeight);
     const lines = textBeforeWord.split('\n').length - 1;
+    // Use only the last line's text for horizontal positioning
+    const currentLineText = textBeforeWord.split('\n').pop();
+    const textWidth = getTextWidth(currentLineText, input);
 
     suggestionsBox.style.position = 'fixed';
-    suggestionsBox.style.left = (inputPos.left + Math.min(textWidth, input.offsetWidth - 200)) + 'px';
-    suggestionsBox.style.top = (inputPos.top + (lines * lineHeight) + lineHeight + 5) + 'px';
+    suggestionsBox.style.left = (inputRect.left + paddingLeft + Math.min(textWidth, input.offsetWidth - paddingLeft - 200)) + 'px';
+    // paddingTop places suggestions below the content area top; (lines+1)*lineHeight puts it below the current line; -scrollTop corrects for internal scroll
+    suggestionsBox.style.top = (inputRect.top + paddingTop + (lines + 1) * lineHeight + 5 - input.scrollTop) + 'px';
 
     suggestions.forEach((suggestion) => {
         const div = document.createElement('div');
@@ -179,6 +183,20 @@ function showSuggestions(suggestions, wordStart, wordEnd) {
     });
 
     suggestionsBox.style.display = 'block';
+
+    // Clamp to viewport bounds, respecting fixed header (60px)
+    const boxRect = suggestionsBox.getBoundingClientRect();
+    const HEADER_HEIGHT = 65;
+    if (boxRect.right > window.innerWidth) {
+        suggestionsBox.style.left = (window.innerWidth - boxRect.width - 10) + 'px';
+    }
+    if (boxRect.bottom > window.innerHeight) {
+        // flip above the current line instead
+        suggestionsBox.style.top = (inputRect.top + paddingTop + lines * lineHeight - boxRect.height - 5 - input.scrollTop) + 'px';
+    }
+    if (parseInt(suggestionsBox.style.top) < HEADER_HEIGHT) {
+        suggestionsBox.style.top = HEADER_HEIGHT + 'px';
+    }
 }
 
 // Helper function to calculate text width
