@@ -19,8 +19,13 @@ def get_all_diary():
         doc_dict = {**doc, '_id': str(doc.doc_id)}
         content = doc_dict.get('content')
         if content:
-            doc_dict['content'] = content
-            # doc_dict['content'] = content[:50]
+            doc_dict['content'] = f"""<p>
+                                        FIR No. {content.get('fir_number', '')} 
+                                        <br> 
+                                        Case Diary No. {content.get('case_diary_no', '')} 
+                                        <br> 
+                                        {content.get('event_date_place', '')}
+                                    </p>"""
         result.append(doc_dict)
     return result
 

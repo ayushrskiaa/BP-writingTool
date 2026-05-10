@@ -117,10 +117,8 @@ function attachTransliteration(el) {
 attachTransliteration(input);
 
 document.addEventListener('click', function (e) {
-    if (!suggestionsBox.contains(e.target) &&
-        e.target !== input &&
-        !e.target.classList.contains('hinglish-input') &&
-        !e.target.classList.contains('fir-input')) {
+    const tag = e.target.tagName;
+    if (!suggestionsBox.contains(e.target) && tag !== 'INPUT' && tag !== 'TEXTAREA') {
         suggestionsBox.style.display = 'none';
     }
 });
@@ -789,6 +787,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Toggle editor visibility
             document.querySelector('.editor-letter').style.display = (template === 'letter') ? '' : 'none';
             document.querySelector('.editor-diary').style.display = (template === 'diary') ? '' : 'none';
+            
             // Optionally update dropdown label
             document.querySelector('.template-filter .filter-text').textContent = this.textContent;
         });
@@ -800,7 +799,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Attach transliteration to all diary inputs and textareas (skip date pickers)
-    document.querySelectorAll('.editor-diary .fir-input:not([type="date"])').forEach(el => {
+    document.querySelectorAll('.editor-diary input:not([type="date"]), .editor-diary textarea').forEach(el => {
         attachTransliteration(el);
     });
 
@@ -810,8 +809,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (leftTextarea && rightTextarea) {
         leftTextarea.addEventListener('input', syncDiaryTextareaHeights);
         rightTextarea.addEventListener('input', syncDiaryTextareaHeights);
-
-        // Initial sync
         syncDiaryTextareaHeights();
     }
 });
@@ -886,15 +883,9 @@ function syncDiaryTextareaHeights() {
     const left = document.querySelector('textarea[data-field="left_box"]');
     const right = document.querySelector('textarea[data-field="right_box"]');
     if (!left || !right) return;
-
-    // Reset heights to auto to get correct scrollHeight
     left.style.height = 'auto';
     right.style.height = 'auto';
-
-    // Find the max height
     const maxHeight = Math.max(left.scrollHeight, right.scrollHeight);
-
-    // Set both to the max
     left.style.height = right.style.height = maxHeight + 'px';
 }
 

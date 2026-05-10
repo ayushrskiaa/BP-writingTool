@@ -9,34 +9,62 @@ export class ExportManager {
 
     // Main export handler
     async handleExport(template) {
-        if (template === 'letter') {
-            this.exportLetter();
-        } else {
-            this.exportDiary();
+        try {
+            if (template === 'letter') {
+                await this.exportLetter();
+            } else {
+                await this.exportDiary();
+            }
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Export failed: ' + error.message);
         }
     }
 
-    // Export letter with CSS Paged Media
-    exportLetter() {
+    // Export letter with proper Quill content handling
+    async exportLetter() {
         const content = this.dataManager.getLetterContent();
         if (!content) {
-            alert('Cannot export empty document!');
-            return;
+            throw new Error('Cannot export empty document!');
         }
 
-        const letterContent = pagedExportTemplates.letterContent({ letter_content: content });
-        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
+        // Get formatted content from centralized helper
+        const formattedContent = this.getQuillContent();
         
+        // Create letter content with proper HTML handling
+        const letterContent = pagedExportTemplates.letterContent({ 
+            letter_content: formattedContent 
+        });
+        
+        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
         this.openPrintWindow(documentHtml);
     }
 
-    // Export diary with CSS Paged Media
+    // Export diary with CSS Paged Media (unchanged)
     exportDiary() {
         const container = document.getElementById('diaryExportLayout');
+
+        // Log all data-field attributes in the container
+        const dataFields = Array.from(container.querySelectorAll('[data-field]')).map(el => el.getAttribute('data-field'));
+        console.log('data-fields in container:', dataFields);
+        
         const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
         
-        const leftContent = get('left_box');
-        const rightContent = get('right_box');
+        // Get content from Quill editors if available, otherwise fallback to textareas
+        let leftContent = '';
+        let rightContent = '';
+        
+        if (window.diaryQuillEditors?.leftBox) {
+            leftContent = window.diaryQuillEditors.leftBox.root.innerHTML;
+        } else {
+            leftContent = get('left_box');
+        }
+        
+        if (window.diaryQuillEditors?.rightBox) {
+            rightContent = window.diaryQuillEditors.rightBox.root.innerHTML;
+        } else {
+            rightContent = get('right_box');
+        }
         
         if (!leftContent && !rightContent) {
             alert('Cannot export empty document!');
@@ -59,13 +87,15 @@ export class ExportManager {
             left_box: leftContent,
             right_box: rightContent
         };
+        console.log("diaryData", diaryData);
 
         // Build content with header and table - let CSS handle pagination
         const diaryContent = pagedExportTemplates.diaryHeader(diaryData) + 
                            pagedExportTemplates.diaryTable({
                                showHeader: true,
                                left_box: leftContent,
-                               right_box: rightContent
+                               right_box: rightContent,
+                               investigation_record: get('investigation_record')
                            });
 
         const documentHtml = pagedExportTemplates.createDocument(diaryContent, 'Diary Export');
@@ -73,7 +103,22 @@ export class ExportManager {
         this.openPrintWindow(documentHtml);
     }
 
-    // Open print window with formatted content
+    // Export as HTML file (for sharing)
+    async exportLetterHTML() {
+        const formattedContent = this.getQuillContent();
+        if (!formattedContent || formattedContent === '<p><br></p>') {
+            throw new Error('Cannot export empty document!');
+        }
+
+        const letterContent = pagedExportTemplates.letterContent({ 
+            letter_content: formattedContent 
+        });
+        
+        const documentHtml = pagedExportTemplates.createDocument(letterContent, 'Letter Export');
+        this.downloadHTML(documentHtml, 'letter.html');
+    }
+
+    // Export Utilities
     openPrintWindow(htmlContent) {
         const printWindow = window.open('', '_blank');
         printWindow.document.write(htmlContent);
@@ -87,5 +132,22 @@ export class ExportManager {
         };
     }
 
+    downloadHTML(htmlContent, filename) {
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
+    // Get Quill content in different formats
+    getQuillContent() {
+        const quillEditor = window.quillEditor;
+        if (!quillEditor) return '';
+        return quillEditor.root.innerHTML;
+    }
 } 
