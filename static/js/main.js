@@ -119,7 +119,8 @@ attachTransliteration(input);
 document.addEventListener('click', function (e) {
     if (!suggestionsBox.contains(e.target) &&
         e.target !== input &&
-        !e.target.classList.contains('hinglish-input')) {
+        !e.target.classList.contains('hinglish-input') &&
+        !e.target.classList.contains('fir-input')) {
         suggestionsBox.style.display = 'none';
     }
 });
@@ -798,8 +799,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newFileName').focus();
     });
 
-    // Attach transliteration to diary textareas
-    document.querySelectorAll('.editor-diary textarea.hinglish-input').forEach(el => {
+    // Attach transliteration to all diary inputs and textareas (skip date pickers)
+    document.querySelectorAll('.editor-diary .fir-input:not([type="date"])').forEach(el => {
         attachTransliteration(el);
     });
 
