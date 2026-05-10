@@ -12,9 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Quill.js CSS -->
-    <link href="{{ url_for('static', filename='css/quill.snow.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/quill.bubble.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -87,7 +84,8 @@
     <div class="main-content">
         <!-- Letter Editor (default) -->
         <div class="editor-wrapper editor-letter">
-            <div id="quill-editor"></div>
+            <textarea id="hinglish-input" placeholder="यहाँ Hinglish में टाइप करें..." autocomplete="off"
+                autofocus></textarea>
         </div>
         <!-- Diary Editor (hidden by default) -->
         <div class="editor-wrapper editor-diary" style="display:none;">
@@ -154,12 +152,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <div id="quill-left-box" class="diary-quill-editor" data-field="left_box">
-                                </div>
+                                <textarea class="fir-input hinglish-input" data-field="left_box"
+                                    placeholder="यहाँ विवरण लिखें..."></textarea>
                             </td>
                             <td>
-                                <div id="quill-right-box" class="diary-quill-editor" data-field="right_box">
-                                </div>
+                                <textarea class="fir-input hinglish-input" data-field="right_box"
+                                    placeholder="यहाँ विवरण लिखें..."></textarea>
                             </td>
                         </tr>
                     </table>
@@ -179,10 +177,13 @@
     </div>
     </div>
 
+    <footer class="footer-bihar-police">
+        <img src="{{ url_for('static', filename='images/bihar-police-logo.svg') }}" alt="Bihar Police Logo"
+            class="bihar-police-logo-footer">
+        <span>Powered by Bihar Police</span>
+    </footer>
 
-
-    <!-- Quill.js JavaScript -->
-    <script type="module" src="{{ url_for('static', filename='js/quill.min.js') }}"></script>
+    <div id="suggestions" class="suggestions-box"></div>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 

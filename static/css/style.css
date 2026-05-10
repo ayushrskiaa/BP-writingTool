@@ -112,14 +112,18 @@ body {
     display: block;
 }
 
-/* Quill Editor Styles */
-#quill-editor {
+#hinglish-input {
     width: 100%;
-    height: 297mm;
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    min-height: calc(297mm - 40px);
+    padding: 20px;
+    border: 1px solid var(--brand-primary);
+    border-radius: 8px;
     font-size: 16px;
     line-height: 1.5;
-    overflow: hidden;
+    resize: vertical;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .editor-wrapper.editor-diary {
@@ -789,6 +793,30 @@ body {
 
 .history-items-container.collapsed {
     display: none;
+}
+
+.suggestions-box {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    max-width: 200px;
+    display: none;
+}
+
+.suggestion {
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.suggestion:hover {
+    background: #f0f4ff;
+    color: var(--brand-primary);
 }
 
 .main-content {
