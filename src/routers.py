@@ -71,14 +71,28 @@ def get_document(template_type, doc_id):
         return jsonify({'error': 'Document not found'}), 404
     return jsonify({'document': doc})
 
-@bp.route('/transliterate', methods=['POST'])
-def transliterate():
+@bp.route('/api/transliterate', methods=['POST'])
+def api_transliterate():
+    data = request.get_json()
+    word = data.get('word', '')
+    suggestions = []
+    if word:
+        result = current_app.cached_transliterate(word)
+        if isinstance(result, list):
+            suggestions = result[:5]
+        else:
+            suggestions = [result]
+    return jsonify({'suggestions': suggestions[:5]})
+
+@bp.route('/api/transliterate_text', methods=['POST'])
+def api_transliterate_text():
     data = request.get_json()
     text = data.get('text', '')
     if not text:
-        return jsonify({'error': 'No text provided'}), 400
-    try:
-        transliterated = current_app.cached_transliterate(text)
-        return jsonify({'transliterated': transliterated})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500 
+        return jsonify({'result': ''})
+
+    result = current_app.cached_transliterate(text)
+    if isinstance(result, list):
+        result = result[0] if result else ''
+
+    return jsonify({'result': result}) 
