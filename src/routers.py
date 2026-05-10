@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
+from tinydb import Query
 from src.letter.utils import get_all_letters, get_letter_by_id, create_letter, update_letter, delete_letter
 from src.diary.utils import get_all_diary, get_diary_by_id, create_diary, update_diary, delete_diary
+from src.db_handler import db
 
 bp = Blueprint('routes', __name__)
 
@@ -95,4 +97,59 @@ def api_transliterate_text():
     if isinstance(result, list):
         result = result[0] if result else ''
 
-    return jsonify({'result': result}) 
+    return jsonify({'result': result})
+
+
+@bp.route('/api/get_documents', methods=['GET'])
+def api_get_documents():
+    letters = [dict(doc, _id=str(doc.doc_id), type='letter') for doc in db.table('letter').all()]
+    diaries = [dict(doc, _id=str(doc.doc_id), type='diary') for doc in db.table('diary').all()]
+    return jsonify({'documents': letters + diaries})
+
+
+@bp.route('/api/save_document', methods=['POST'])
+def api_save_document():
+    data = request.get_json()
+    filename = data.get('filename', '').strip()
+    content = data.get('content', '')
+    doc_type = data.get('type', 'letter').strip().lower()
+
+    if not filename or not content:
+        return jsonify({'error': 'filename and content are required'}), 400
+
+    Q = Query()
+    table = db.table(doc_type if doc_type in ('letter', 'diary') else 'letter')
+    existing = table.search(Q.filename == filename)
+
+    if existing:
+        doc_id = existing[0].doc_id
+        if doc_type == 'letter':
+            update_letter(doc_id, {'filename': filename, 'content': content})
+        else:
+            update_diary(doc_id, {'filename': filename, 'content': content})
+    else:
+        payload = {'filename': filename, 'content': content}
+        if doc_type == 'letter':
+            create_letter(payload)
+        else:
+            create_diary(payload)
+
+    return jsonify({'success': True})
+
+
+@bp.route('/api/delete_document', methods=['POST'])
+def api_delete_document():
+    data = request.get_json()
+    filename = data.get('filename', '').strip()
+    if not filename:
+        return jsonify({'error': 'filename is required'}), 400
+
+    Q = Query()
+    for tbl_name in ('letter', 'diary'):
+        tbl = db.table(tbl_name)
+        matches = tbl.search(Q.filename == filename)
+        if matches:
+            tbl.remove(doc_ids=[matches[0].doc_id])
+            return jsonify({'success': True})
+
+    return jsonify({'error': 'Document not found'}), 404

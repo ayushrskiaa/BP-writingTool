@@ -345,7 +345,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Sort docs in group by created_at descending (latest first)
             groups[dateKey].sort((a, b) => b.date - a.date).forEach(doc => {
-                const firstLine = doc.content.split('\n')[0].slice(0, 40);
+                const contentStr = typeof doc.content === 'string' ? doc.content : Object.values(doc.content || {}).join(' ');
+                const firstLine = contentStr.split('\n')[0].slice(0, 40);
                 const created = new Date(doc.created_at || doc.date || Date.now());
                 const updated = doc.updated_at ? new Date(doc.updated_at) : created;
                 const createdStr = created.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
