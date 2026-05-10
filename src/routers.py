@@ -107,49 +107,106 @@ def api_get_documents():
     return jsonify({'documents': letters + diaries})
 
 
+@bp.route('/api/letters', methods=['GET'])
+def api_get_letters():
+    docs = [dict(doc, _id=str(doc.doc_id), type='letter') for doc in db.table('letter').all()]
+    return jsonify({'documents': docs})
+
+
+@bp.route('/api/diaries', methods=['GET'])
+def api_get_diaries():
+    docs = [dict(doc, _id=str(doc.doc_id), type='diary') for doc in db.table('diary').all()]
+    return jsonify({'documents': docs})
+
+
+def _save_to_table(tbl_name, filename, content):
+    Q = Query()
+    tbl = db.table(tbl_name)
+    existing = tbl.search(Q.filename == filename)
+    if existing:
+        doc_id = existing[0].doc_id
+        if tbl_name == 'letter':
+            update_letter(doc_id, {'filename': filename, 'content': content})
+        else:
+            update_diary(doc_id, {'filename': filename, 'content': content})
+    else:
+        payload = {'filename': filename, 'content': content}
+        if tbl_name == 'letter':
+            create_letter(payload)
+        else:
+            create_diary(payload)
+
+
+@bp.route('/api/save_letter', methods=['POST'])
+def api_save_letter():
+    data = request.get_json()
+    filename = data.get('filename', '').strip()
+    content = data.get('content', '')
+    if not filename or not content:
+        return jsonify({'error': 'filename and content are required'}), 400
+    _save_to_table('letter', filename, content)
+    return jsonify({'success': True})
+
+
+@bp.route('/api/save_diary', methods=['POST'])
+def api_save_diary():
+    data = request.get_json()
+    filename = data.get('filename', '').strip()
+    content = data.get('content', '')
+    if not filename or not content:
+        return jsonify({'error': 'filename and content are required'}), 400
+    _save_to_table('diary', filename, content)
+    return jsonify({'success': True})
+
+
 @bp.route('/api/save_document', methods=['POST'])
 def api_save_document():
     data = request.get_json()
     filename = data.get('filename', '').strip()
     content = data.get('content', '')
     doc_type = data.get('type', 'letter').strip().lower()
-
     if not filename or not content:
         return jsonify({'error': 'filename and content are required'}), 400
-
-    Q = Query()
-    table = db.table(doc_type if doc_type in ('letter', 'diary') else 'letter')
-    existing = table.search(Q.filename == filename)
-
-    if existing:
-        doc_id = existing[0].doc_id
-        if doc_type == 'letter':
-            update_letter(doc_id, {'filename': filename, 'content': content})
-        else:
-            update_diary(doc_id, {'filename': filename, 'content': content})
-    else:
-        payload = {'filename': filename, 'content': content}
-        if doc_type == 'letter':
-            create_letter(payload)
-        else:
-            create_diary(payload)
-
+    _save_to_table(doc_type if doc_type in ('letter', 'diary') else 'letter', filename, content)
     return jsonify({'success': True})
+
+
+def _delete_from_table(tbl_name, filename):
+    Q = Query()
+    tbl = db.table(tbl_name)
+    matches = tbl.search(Q.filename == filename)
+    if matches:
+        tbl.remove(doc_ids=[matches[0].doc_id])
+        return True
+    return False
+
+
+@bp.route('/api/delete_letter', methods=['POST'])
+def api_delete_letter():
+    filename = (request.get_json() or {}).get('filename', '').strip()
+    if not filename:
+        return jsonify({'error': 'filename is required'}), 400
+    if _delete_from_table('letter', filename):
+        return jsonify({'success': True})
+    return jsonify({'error': 'Document not found'}), 404
+
+
+@bp.route('/api/delete_diary', methods=['POST'])
+def api_delete_diary():
+    filename = (request.get_json() or {}).get('filename', '').strip()
+    if not filename:
+        return jsonify({'error': 'filename is required'}), 400
+    if _delete_from_table('diary', filename):
+        return jsonify({'success': True})
+    return jsonify({'error': 'Document not found'}), 404
 
 
 @bp.route('/api/delete_document', methods=['POST'])
 def api_delete_document():
-    data = request.get_json()
-    filename = data.get('filename', '').strip()
+    filename = (request.get_json() or {}).get('filename', '').strip()
     if not filename:
         return jsonify({'error': 'filename is required'}), 400
-
-    Q = Query()
     for tbl_name in ('letter', 'diary'):
-        tbl = db.table(tbl_name)
-        matches = tbl.search(Q.filename == filename)
-        if matches:
-            tbl.remove(doc_ids=[matches[0].doc_id])
+        if _delete_from_table(tbl_name, filename):
             return jsonify({'success': True})
-
     return jsonify({'error': 'Document not found'}), 404

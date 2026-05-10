@@ -857,6 +857,30 @@ body {
     transition: color 0.2s;
 }
 
+.suggestions-box {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    max-width: 200px;
+    display: none;
+}
+
+.suggestion {
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.suggestion:hover {
+    background: #f0f4ff;
+    color: var(--brand-color-1);
+}
+
 .history-delete-btn:hover {
     color: #a62828;
 }

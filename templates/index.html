@@ -85,7 +85,6 @@
         <div class="editor-wrapper editor-letter">
             <textarea id="hinglish-input" placeholder="यहाँ Hinglish में टाइप करें..." autocomplete="off"
                 autofocus></textarea>
-            <div id="suggestions" class="suggestions-box"></div>
         </div>
         <!-- Diary Editor (hidden by default) -->
         <div class="editor-wrapper editor-diary" style="display:none;">
@@ -186,6 +185,7 @@
         <span>Powered by Bihar Police</span>
     </footer>
 
+    <div id="suggestions" class="suggestions-box"></div>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 

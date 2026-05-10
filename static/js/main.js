@@ -46,77 +46,80 @@ function getCaretPosition(input) {
 let typingTimer;
 const doneTypingInterval = 50; // Reduced delay to 50ms for faster response
 
-input.addEventListener('input', function () {
-    clearTimeout(typingTimer);
-    const value = input.value;
-    const cursor = input.selectionStart;
-    const [start, end] = getWordBoundaries(value, cursor - 1);
-    const currentWord = value.slice(start, end);
-
-    if (currentWord.trim()) {
-        // Wait for user to stop typing for 200ms before fetching suggestions
-        typingTimer = setTimeout(async () => {
-            const suggestions = await fetchSuggestions(currentWord);
-            if (suggestions && suggestions.length > 0) {
-                showSuggestions(suggestions, start, end);
-            }
-        }, doneTypingInterval);
-    } else {
-        suggestionsBox.style.display = 'none';
-    }
-
-    // Add auto-save
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(saveToLocalStorage, AUTOSAVE_DELAY);
-});
-
-input.addEventListener('keydown', async function (e) {
-    if (e.key === ' ') {
-        e.preventDefault();
-        const value = input.value;
-        const cursor = input.selectionStart;
+function attachTransliteration(el) {
+    el.addEventListener('input', function () {
+        clearTimeout(typingTimer);
+        const value = el.value;
+        const cursor = el.selectionStart;
         const [start, end] = getWordBoundaries(value, cursor - 1);
+        const currentWord = value.slice(start, end);
+
+        if (currentWord.trim()) {
+            typingTimer = setTimeout(async () => {
+                const suggestions = await fetchSuggestions(currentWord);
+                if (suggestions && suggestions.length > 0) {
+                    showSuggestions(suggestions, start, end, el);
+                }
+            }, doneTypingInterval);
+        } else {
+            suggestionsBox.style.display = 'none';
+        }
+
+        if (el === input) {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(saveToLocalStorage, AUTOSAVE_DELAY);
+        }
+    });
+
+    el.addEventListener('keydown', async function (e) {
+        if (e.key === ' ') {
+            e.preventDefault();
+            const value = el.value;
+            const cursor = el.selectionStart;
+            const [start, end] = getWordBoundaries(value, cursor - 1);
+            const word = value.slice(start, end);
+
+            if (!word.trim()) {
+                el.value = value.slice(0, cursor) + ' ' + value.slice(cursor);
+                el.selectionStart = el.selectionEnd = cursor + 1;
+                return;
+            }
+
+            let suggestions = await fetchSuggestions(word);
+            if (suggestions && suggestions.length > 0) {
+                const suggestion = suggestions[0];
+                const newValue = value.slice(0, start) + suggestion + ' ' + value.slice(end);
+                el.value = newValue;
+                el.selectionStart = el.selectionEnd = start + suggestion.length + 1;
+            } else {
+                el.value = value.slice(0, cursor) + ' ' + value.slice(cursor);
+                el.selectionStart = el.selectionEnd = cursor + 1;
+            }
+            suggestionsBox.style.display = 'none';
+        }
+    });
+
+    el.addEventListener('click', async function () {
+        const value = el.value;
+        const cursor = el.selectionStart;
+        const [start, end] = getWordBoundaries(value, cursor);
         const word = value.slice(start, end);
 
-        if (!word.trim()) {
-            input.value = value.slice(0, cursor) + ' ' + value.slice(cursor);
-            input.selectionStart = input.selectionEnd = cursor + 1;
-            return;
+        if (word.trim()) {
+            const suggestions = await fetchSuggestions(word);
+            if (suggestions && suggestions.length > 0) {
+                showSuggestions(suggestions, start, end, el);
+            }
         }
+    });
+}
 
-        let suggestions = await fetchSuggestions(word);
-        if (suggestions && suggestions.length > 0) {
-            // Auto-replace with first suggestion
-            const suggestion = suggestions[0];
-            const newValue = value.slice(0, start) + suggestion + ' ' + value.slice(end);
-            input.value = newValue;
-            input.selectionStart = input.selectionEnd = start + suggestion.length + 1;
-        } else {
-            input.value = value.slice(0, cursor) + ' ' + value.slice(cursor);
-            input.selectionStart = input.selectionEnd = cursor + 1;
-        }
-        suggestionsBox.style.display = 'none';
-    }
-});
+attachTransliteration(input);
 
-// Add click handler for the input field
-input.addEventListener('click', async function (e) {
-    const value = input.value;
-    const cursor = input.selectionStart;
-    const [start, end] = getWordBoundaries(value, cursor);
-    const word = value.slice(start, end);
-
-    if (word.trim()) {
-        const suggestions = await fetchSuggestions(word);
-        if (suggestions && suggestions.length > 0) {
-            showSuggestions(suggestions, start, end);
-        }
-    }
-});
-
-// Hide suggestions when clicking outside
 document.addEventListener('click', function (e) {
-    if (!suggestionsBox.contains(e.target) && !input.contains(e.target)) {
+    if (!suggestionsBox.contains(e.target) &&
+        e.target !== input &&
+        !e.target.classList.contains('hinglish-input')) {
         suggestionsBox.style.display = 'none';
     }
 });
@@ -139,44 +142,35 @@ async function fetchSuggestions(word) {
     }
 }
 
-// Update the document click handler to not hide suggestions when clicking inside the input
-document.addEventListener('click', function (e) {
-    if (!suggestionsBox.contains(e.target) && !input.contains(e.target)) {
-        suggestionsBox.style.display = 'none';
-    }
-});
-
-function showSuggestions(suggestions, wordStart, wordEnd) {
+function showSuggestions(suggestions, wordStart, wordEnd, targetEl = input) {
     suggestionsBox.innerHTML = '';
     if (!suggestions || suggestions.length === 0) {
         suggestionsBox.style.display = 'none';
         return;
     }
 
-    const inputRect = input.getBoundingClientRect();
-    const style = window.getComputedStyle(input);
+    const inputRect = targetEl.getBoundingClientRect();
+    const style = window.getComputedStyle(targetEl);
     const lineHeight = parseInt(style.lineHeight) || 24;
     const paddingTop = parseInt(style.paddingTop) || 0;
     const paddingLeft = parseInt(style.paddingLeft) || 0;
-    const textBeforeWord = input.value.substring(0, wordStart);
+    const textBeforeWord = targetEl.value.substring(0, wordStart);
     const lines = textBeforeWord.split('\n').length - 1;
-    // Use only the last line's text for horizontal positioning
     const currentLineText = textBeforeWord.split('\n').pop();
-    const textWidth = getTextWidth(currentLineText, input);
+    const textWidth = getTextWidth(currentLineText, targetEl);
 
     suggestionsBox.style.position = 'fixed';
-    suggestionsBox.style.left = (inputRect.left + paddingLeft + Math.min(textWidth, input.offsetWidth - paddingLeft - 200)) + 'px';
-    // paddingTop places suggestions below the content area top; (lines+1)*lineHeight puts it below the current line; -scrollTop corrects for internal scroll
-    suggestionsBox.style.top = (inputRect.top + paddingTop + (lines + 1) * lineHeight + 5 - input.scrollTop) + 'px';
+    suggestionsBox.style.left = (inputRect.left + paddingLeft + Math.min(textWidth, targetEl.offsetWidth - paddingLeft - 200)) + 'px';
+    suggestionsBox.style.top = (inputRect.top + paddingTop + (lines + 1) * lineHeight + 5 - targetEl.scrollTop) + 'px';
 
     suggestions.forEach((suggestion) => {
         const div = document.createElement('div');
         div.className = 'suggestion';
         div.textContent = suggestion;
         div.onclick = () => {
-            const value = input.value;
-            input.value = value.slice(0, wordStart) + suggestion + value.slice(wordEnd);
-            input.selectionStart = input.selectionEnd = wordStart + suggestion.length;
+            const value = targetEl.value;
+            targetEl.value = value.slice(0, wordStart) + suggestion + value.slice(wordEnd);
+            targetEl.selectionStart = targetEl.selectionEnd = wordStart + suggestion.length;
             suggestionsBox.style.display = 'none';
         };
         suggestionsBox.appendChild(div);
@@ -184,15 +178,13 @@ function showSuggestions(suggestions, wordStart, wordEnd) {
 
     suggestionsBox.style.display = 'block';
 
-    // Clamp to viewport bounds, respecting fixed header (60px)
     const boxRect = suggestionsBox.getBoundingClientRect();
     const HEADER_HEIGHT = 65;
     if (boxRect.right > window.innerWidth) {
         suggestionsBox.style.left = (window.innerWidth - boxRect.width - 10) + 'px';
     }
     if (boxRect.bottom > window.innerHeight) {
-        // flip above the current line instead
-        suggestionsBox.style.top = (inputRect.top + paddingTop + lines * lineHeight - boxRect.height - 5 - input.scrollTop) + 'px';
+        suggestionsBox.style.top = (inputRect.top + paddingTop + lines * lineHeight - boxRect.height - 5 - targetEl.scrollTop) + 'px';
     }
     if (parseInt(suggestionsBox.style.top) < HEADER_HEIGHT) {
         suggestionsBox.style.top = HEADER_HEIGHT + 'px';
@@ -298,10 +290,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const type = getActiveTemplate();
-            await fetch('/api/save_document', {
+            const saveRoute = type === 'letter' ? '/api/save_letter' : '/api/save_diary';
+            await fetch(saveRoute, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename, content, type })
+                body: JSON.stringify({ filename, content })
             });
             showNotification('Document saved!');
             await loadHistoryFromServer();
@@ -407,7 +400,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
                     if (confirm(`Delete "${doc.filename}"?`)) {
-                        await fetch('/api/delete_document', {
+                        const delRoute = doc.type === 'letter' ? '/api/delete_letter' : '/api/delete_diary';
+                        await fetch(delRoute, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ filename: doc.filename })
@@ -435,9 +429,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load history from server
     async function loadHistoryFromServer() {
         try {
-            const resp = await fetch('/api/get_documents');
-            const data = await resp.json();
-            renderHistory(data.documents);
+            const [lettersResp, diariesResp] = await Promise.all([
+                fetch('/api/letters'),
+                fetch('/api/diaries')
+            ]);
+            const lettersData = await lettersResp.json();
+            const diariesData = await diariesResp.json();
+            renderHistory([...lettersData.documents, ...diariesData.documents]);
         } catch (err) {
             console.error('Failed to load history:', err);
         }
@@ -480,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 word-break: break-word;
             ">${input.value}</pre>`;
         } else {
-            const container = document.getElementById('firExportLayout');
+            const container = document.getElementById('diaryExportLayout');
             const get = field => container.querySelector(`[data-field="${field}"]`)?.value || '';
 
             // --- PAGINATION LOGIC ---
@@ -656,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 input.focus();
             } else {
                 // Clear all FIR Diary fields
-                const container = document.getElementById('firExportLayout');
+                const container = document.getElementById('diaryExportLayout');
                 container.querySelectorAll('input, textarea').forEach(el => el.value = '');
             }
         }
@@ -800,6 +798,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newFileName').focus();
     });
 
+    // Attach transliteration to diary textareas
+    document.querySelectorAll('.editor-diary textarea.hinglish-input').forEach(el => {
+        attachTransliteration(el);
+    });
+
     // Sync diary textarea heights
     const leftTextarea = document.querySelector('textarea[data-field="left_box"]');
     const rightTextarea = document.querySelector('textarea[data-field="right_box"]');
@@ -856,7 +859,7 @@ function showNotification(message) {
 }
 // Serialize all FIR Diary fields into a string for saving/exporting
 function getDiaryContent() {
-    const container = document.getElementById('firExportLayout');
+    const container = document.getElementById('diaryExportLayout');
     const inputs = container.querySelectorAll('input, textarea');
     let content = '';
     inputs.forEach(input => {
@@ -868,7 +871,7 @@ function getDiaryContent() {
 
 // Restore content to the FIR Diary fields (if you want to support editing)
 function setDiaryContent(content) {
-    const container = document.getElementById('firExportLayout');
+    const container = document.getElementById('diaryExportLayout');
     const inputs = container.querySelectorAll('input, textarea');
     // This assumes content is a string with lines in the same order as fields
     const lines = content.split('\n');
