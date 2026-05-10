@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const langToggleBtn = document.querySelector('.lang-toggle-btn');
     let isHindi = false;
 
-    langToggleBtn.addEventListener('click', function () {
+    langToggleBtn && langToggleBtn.addEventListener('click', function () {
         isHindi = !isHindi;
         this.classList.toggle('active');
 
