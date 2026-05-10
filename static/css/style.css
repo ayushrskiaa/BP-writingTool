@@ -95,10 +95,8 @@ body {
 }
 
 #hinglish-input {
-    width: 210mm;
-    height: 600px;
-    min-height: 1080px;
-    max-height: 600px;
+    width: 100%;
+    min-height: calc(297mm - 40px); /* A4 height minus wrapper padding */
     padding: 20px;
     border: 1px solid var(--brand-color-1);
     border-radius: 8px;
@@ -107,6 +105,7 @@ body {
     resize: vertical;
     font-family: 'Noto Sans Devanagari', sans-serif;
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 #hinglish-input:focus {
